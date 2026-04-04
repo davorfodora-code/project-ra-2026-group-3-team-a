@@ -1,0 +1,59 @@
+﻿<Window x:Class="CommunityHub.Ui.Views.BuildingRegistrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Registracija zgrade" Height="600" Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Registracija zgrade" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                <!-- Adresa -->
+                <TextBlock Text="Ulica:" Margin="0,5,0,2"/>
+                <TextBox x:Name="StreetTextBox" Margin="0,0,0,5"/>
+
+                <TextBlock Text="Broj:" Margin="0,5,0,2"/>
+                <TextBox x:Name="StreetNumberTextBox" Margin="0,0,0,5"/>
+
+                <!-- Naselje -->
+                <TextBlock Text="Naselje:" Margin="0,5,0,2"/>
+                <TextBox x:Name="DistrictTextBox" Margin="0,0,0,5"/>
+
+                <!-- Lokacija -->
+                <TextBlock Text="Grad:" Margin="0,5,0,2"/>
+                <TextBox x:Name="CityTextBox" Margin="0,0,0,5"/>
+
+                <TextBlock Text="Država:" Margin="0,5,0,2"/>
+                <TextBox x:Name="CountryTextBox" Margin="0,0,0,5"/>
+
+                <!-- Broj spratova -->
+                <TextBlock Text="Broj spratova:" Margin="0,5,0,2"/>
+                <TextBox x:Name="NumberOfFloorsTextBox" Margin="0,0,0,5"
+                         TextChanged="NumberOfFloorsTextBox_TextChanged"/>
+
+                <!-- Dinamički panel za unos stanova po spratu -->
+                <TextBlock Text="Stanovi po spratu:" Margin="0,10,0,2" FontWeight="SemiBold"/>
+                <TextBlock Text="(unesite brojeve stanova odvojene zarezom, npr: 1, 2, 3)"
+                           FontSize="11" Foreground="Gray" Margin="0,0,0,5"/>
+                <StackPanel x:Name="FloorsPanel" Margin="0,0,0,5"/>
+
+                <!-- Slike -->
+                <TextBlock Text="Slike zgrade:" Margin="0,10,0,2" FontWeight="SemiBold"/>
+                <Button Content="Odaberi slike..." Click="SelectImagesButton_Click"
+                        HorizontalAlignment="Left" Padding="10,5" Margin="0,0,0,5"/>
+                <ListBox x:Name="ImagesListBox" Height="80" Margin="0,0,0,10"/>
+
+                <!-- Greška -->
+                <TextBlock x:Name="ErrorTextBlock" Foreground="Red"
+                           Visibility="Collapsed" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+                <!-- Dugmad -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Registruj zgradu" Click="RegisterButton_Click"
+                            Padding="15,8" Margin="0,0,10,0" FontWeight="SemiBold"/>
+                    <Button Content="Otkaži" Click="CancelButton_Click" Padding="15,8"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
