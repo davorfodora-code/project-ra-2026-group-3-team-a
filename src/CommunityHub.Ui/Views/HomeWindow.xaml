@@ -27,7 +27,12 @@
         </Border>
 
         <Grid Grid.Row="1">
-
+            <Button Content="Registruj zgradu"
+            Click="RegisterBuildingButton_Click"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Padding="20,10"
+            FontSize="16"/>
         </Grid>
     </Grid>
 </Window>

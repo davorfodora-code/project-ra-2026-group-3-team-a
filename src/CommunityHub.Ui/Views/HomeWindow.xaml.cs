@@ -25,4 +25,11 @@ public partial class HomeWindow : Window
         loginForm.Show();
         this.Close();
     }
+
+    private void RegisterBuildingButton_Click(object sender, RoutedEventArgs e)
+    {
+        BuildingRegistrationWindow window = new BuildingRegistrationWindow(_userId);
+        window.Show();
+    }
+
 }

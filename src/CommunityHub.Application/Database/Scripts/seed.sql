@@ -29,3 +29,51 @@ INSERT INTO posts (id, title, content, created_at, user_id) VALUES
 (-18, 'Putovanje', 'Planiram putovanje na more.', '2024-01-24 12:00:00', -7),
 (-19, 'Film', 'Pogledala sam odličan film sinoć.', '2024-01-22 20:00:00', -8),
 (-20, 'Trening', 'Redovno treniram u teretani.', '2024-01-25 06:30:00', -8);
+
+-- Lokacije
+INSERT INTO locations (id, city, country) VALUES
+(-1, 'Beograd', 'Srbija'),
+(-2, 'Novi Sad', 'Srbija');
+ 
+-- Naselja
+INSERT INTO districts (id, name) VALUES
+(-1, 'Zemun'),
+(-2, 'Novi Beograd');
+ 
+-- Adrese
+INSERT INTO addresses (id, street, street_number) VALUES
+(-1, 'Glavna', '15'),
+(-2, 'Bulevar Mihajla Pupina', '22');
+ 
+-- Zgrade (manager_id referencira korisnike iz seed.sql)
+INSERT INTO buildings (id, address_id, district_id, location_id, number_of_floors, manager_id) VALUES
+(-1, -1, -1, -1, 3, -1),
+(-2, -2, -2, -1, 2, -2);
+ 
+-- Spratovi za prvu zgradu (3 sprata)
+INSERT INTO floors (id, building_id, floor_number) VALUES
+(-1, -1, 1),
+(-2, -1, 2),
+(-3, -1, 3);
+ 
+-- Spratovi za drugu zgradu (2 sprata)
+INSERT INTO floors (id, building_id, floor_number) VALUES
+(-4, -2, 1),
+(-5, -2, 2);
+ 
+-- Stanovi za prvu zgradu
+INSERT INTO apartments (id, floor_id, apartment_number) VALUES
+(-1, -1, 1), (-2, -1, 2), (-3, -1, 3),
+(-4, -2, 4), (-5, -2, 5), (-6, -2, 6),
+(-7, -3, 7), (-8, -3, 8);
+ 
+-- Stanovi za drugu zgradu
+INSERT INTO apartments (id, floor_id, apartment_number) VALUES
+(-9, -4, 1), (-10, -4, 2),
+(-11, -5, 3), (-12, -5, 4);
+ 
+-- Slike
+INSERT INTO building_images (id, building_id, image_path) VALUES
+(-1, -1, 'images/zgrada1_front.jpg'),
+(-2, -1, 'images/zgrada1_side.jpg'),
+(-3, -2, 'images/zgrada2_front.jpg');
