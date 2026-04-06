@@ -14,6 +14,7 @@ public class Building
     public long ManagerId { get; private set; }
     public List<Floor> Floors { get; private set; }
     public List<BuildingImage> Images { get; private set; }
+    public int TotalApartments { get; internal set; }
 
     public Building(long id, Address address, District district, Location location, int numberOfFloors, long managerId)
     {
