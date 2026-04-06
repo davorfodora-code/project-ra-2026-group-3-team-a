@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace CommunityHub.Application.Domain;
 
-namespace CommunityHub.Application.Domain
+public enum DistrictAccessRequestStatus
 {
-    public enum DistrictAccessRequestStatus
-    {
-        Pending = 0,
-        Accepted = 1,
-        Rejected = 2
-    }
+    Pending,
+    Approved,
+    Rejected
 }

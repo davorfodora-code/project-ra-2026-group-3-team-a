@@ -31,9 +31,9 @@ namespace CommunityHub.Application.Domain
             Status = DistrictAccessRequestStatus.Pending;
         }
 
-        public void Accept()
+        public void Approve()
         {
-            Status = DistrictAccessRequestStatus.Accepted;
+            Status = DistrictAccessRequestStatus.Approved;
         }
         
         public void Reject()
