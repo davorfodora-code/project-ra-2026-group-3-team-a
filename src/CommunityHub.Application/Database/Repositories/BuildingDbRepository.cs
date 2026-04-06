@@ -107,6 +107,99 @@ public class BuildingDbRepository
         );
     }
 
+    public List<Building> Search(string? address, string? district, string? city, string? country)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT b.id, b.number_of_floors, b.manager_id,
+                   a.id AS address_id, a.street, a.street_number,
+                   d.id AS district_id, d.name AS district_name,
+                   l.id AS location_id, l.city, l.country,
+                   (SELECT COUNT(*) FROM floors f
+                    JOIN apartments ap ON ap.floor_id = f.id
+                    WHERE f.building_id = b.id) AS total_apartments
+            FROM buildings b
+            JOIN addresses a ON a.id = b.address_id
+            JOIN districts d ON d.id = b.district_id
+            JOIN locations l ON l.id = b.location_id
+            WHERE 1=1";
+
+        if (!string.IsNullOrWhiteSpace(address))
+        {
+            cmd.CommandText += " AND (a.street || ' ' || a.street_number) ILIKE @address";
+            AddParameter(cmd, "@address", "%" + address + "%");
+        }
+
+        if (!string.IsNullOrWhiteSpace(district))
+        {
+            cmd.CommandText += " AND d.name ILIKE @district";
+            AddParameter(cmd, "@district", "%" + district + "%");
+        }
+
+        if (!string.IsNullOrWhiteSpace(city))
+        {
+            cmd.CommandText += " AND l.city ILIKE @city";
+            AddParameter(cmd, "@city", "%" + city + "%");
+        }
+
+        if (!string.IsNullOrWhiteSpace(country))
+        {
+            cmd.CommandText += " AND l.country ILIKE @country";
+            AddParameter(cmd, "@country", "%" + country + "%");
+        }
+
+        List<Building> buildings = new List<Building>();
+
+        using (IDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                Address addr = new Address(
+                    reader.GetInt64(reader.GetOrdinal("address_id")),
+                    reader.GetString(reader.GetOrdinal("street")),
+                    reader.GetString(reader.GetOrdinal("street_number")));
+
+                District dist = new District(
+                    reader.GetInt64(reader.GetOrdinal("district_id")),
+                    reader.GetString(reader.GetOrdinal("district_name")));
+
+                Location loc = new Location(
+                    reader.GetInt64(reader.GetOrdinal("location_id")),
+                    reader.GetString(reader.GetOrdinal("city")),
+                    reader.GetString(reader.GetOrdinal("country")));
+
+                Building building = new Building(
+                    reader.GetInt64(reader.GetOrdinal("id")),
+                    addr, dist, loc,
+                    reader.GetInt32(reader.GetOrdinal("number_of_floors")),
+                    reader.GetInt64(reader.GetOrdinal("manager_id")));
+
+                building.TotalApartments = reader.GetInt32(reader.GetOrdinal("total_apartments"));
+
+                buildings.Add(building);
+            }
+        }
+
+        foreach (Building building in buildings)
+        {
+            IDbCommand imgCmd = connection.CreateCommand();
+            imgCmd.CommandText = "SELECT id, image_path FROM building_images WHERE building_id = @buildingId";
+            AddParameter(imgCmd, "@buildingId", building.Id);
+
+            using IDataReader imgReader = imgCmd.ExecuteReader();
+            while (imgReader.Read())
+            {
+                building.AddImage(new BuildingImage(
+                    imgReader.GetInt64(imgReader.GetOrdinal("id")),
+                    imgReader.GetString(imgReader.GetOrdinal("image_path"))));
+            }
+        }
+
+        return buildings;
+    }
+
     // Pomoćna metoda za dodavanje parametara — smanjuje ponavljanje koda
     private void AddParameter(IDbCommand command, string name, object value)
     {
