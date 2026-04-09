@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using CommunityHub.Application.Domain;
 
 namespace CommunityHub.Application.Database.Repositories;
@@ -20,17 +20,7 @@ public class BuildingDbRepository
         AddParameter(locationCmd, "@country", building.Location.Country);
         long locationId = Convert.ToInt64(locationCmd.ExecuteScalar());
 
-        // 2. Upiši naselje
-        IDbCommand districtCmd = connection.CreateCommand();
-        districtCmd.CommandText = @"
-            INSERT INTO districts (name)
-            VALUES (@name)
-            RETURNING id";
-
-        AddParameter(districtCmd, "@name", building.District.Name);
-        long districtId = Convert.ToInt64(districtCmd.ExecuteScalar());
-
-        // 3. Upiši adresu
+        // 2. Upiši adresu
         IDbCommand addressCmd = connection.CreateCommand();
         addressCmd.CommandText = @"
             INSERT INTO addresses (street, street_number)
@@ -41,21 +31,21 @@ public class BuildingDbRepository
         AddParameter(addressCmd, "@streetNumber", building.Address.StreetNumber);
         long addressId = Convert.ToInt64(addressCmd.ExecuteScalar());
 
-        // 4. Upiši zgradu
+        // 3. Upiši zgradu (naselje se upisuje direktno kao tekst, nije zaseban entitet)
         IDbCommand buildingCmd = connection.CreateCommand();
         buildingCmd.CommandText = @"
-            INSERT INTO buildings (address_id, district_id, location_id, number_of_floors, manager_id)
-            VALUES (@addressId, @districtId, @locationId, @numberOfFloors, @managerId)
+            INSERT INTO buildings (address_id, neighborhood, location_id, number_of_floors, manager_id)
+            VALUES (@addressId, @neighborhood, @locationId, @numberOfFloors, @managerId)
             RETURNING id";
 
         AddParameter(buildingCmd, "@addressId", addressId);
-        AddParameter(buildingCmd, "@districtId", districtId);
+        AddParameter(buildingCmd, "@neighborhood", building.Neighborhood);
         AddParameter(buildingCmd, "@locationId", locationId);
         AddParameter(buildingCmd, "@numberOfFloors", building.NumberOfFloors);
         AddParameter(buildingCmd, "@managerId", building.ManagerId);
         long buildingId = Convert.ToInt64(buildingCmd.ExecuteScalar());
 
-        // 5. Upiši spratove i stanove
+        // 4. Upiši spratove i stanove
         foreach (Floor floor in building.Floors)
         {
             IDbCommand floorCmd = connection.CreateCommand();
@@ -82,7 +72,7 @@ public class BuildingDbRepository
             }
         }
 
-        // 6. Upiši slike
+        // 5. Upiši slike
         foreach (BuildingImage image in building.Images)
         {
             IDbCommand imgCmd = connection.CreateCommand();
@@ -100,29 +90,27 @@ public class BuildingDbRepository
         return new Building(
             buildingId,
             new Address(addressId, building.Address.Street, building.Address.StreetNumber),
-            new District(districtId, building.District.Name),
+            building.Neighborhood,
             new Location(locationId, building.Location.City, building.Location.Country),
             building.NumberOfFloors,
             building.ManagerId
         );
     }
 
-    public List<Building> Search(string? address, string? district, string? city, string? country)
+    public List<Building> Search(string? address, string? neighborhood, string? city, string? country)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
-            SELECT b.id, b.number_of_floors, b.manager_id,
+            SELECT b.id, b.neighborhood, b.number_of_floors, b.manager_id,
                    a.id AS address_id, a.street, a.street_number,
-                   d.id AS district_id, d.name AS district_name,
                    l.id AS location_id, l.city, l.country,
                    (SELECT COUNT(*) FROM floors f
                     JOIN apartments ap ON ap.floor_id = f.id
                     WHERE f.building_id = b.id) AS total_apartments
             FROM buildings b
             JOIN addresses a ON a.id = b.address_id
-            JOIN districts d ON d.id = b.district_id
             JOIN locations l ON l.id = b.location_id
             WHERE 1=1";
 
@@ -132,10 +120,10 @@ public class BuildingDbRepository
             AddParameter(cmd, "@address", "%" + address + "%");
         }
 
-        if (!string.IsNullOrWhiteSpace(district))
+        if (!string.IsNullOrWhiteSpace(neighborhood))
         {
-            cmd.CommandText += " AND d.name ILIKE @district";
-            AddParameter(cmd, "@district", "%" + district + "%");
+            cmd.CommandText += " AND b.neighborhood ILIKE @neighborhood";
+            AddParameter(cmd, "@neighborhood", "%" + neighborhood + "%");
         }
 
         if (!string.IsNullOrWhiteSpace(city))
@@ -161,10 +149,6 @@ public class BuildingDbRepository
                     reader.GetString(reader.GetOrdinal("street")),
                     reader.GetString(reader.GetOrdinal("street_number")));
 
-                District dist = new District(
-                    reader.GetInt64(reader.GetOrdinal("district_id")),
-                    reader.GetString(reader.GetOrdinal("district_name")));
-
                 Location loc = new Location(
                     reader.GetInt64(reader.GetOrdinal("location_id")),
                     reader.GetString(reader.GetOrdinal("city")),
@@ -172,7 +156,9 @@ public class BuildingDbRepository
 
                 Building building = new Building(
                     reader.GetInt64(reader.GetOrdinal("id")),
-                    addr, dist, loc,
+                    addr,
+                    reader.GetString(reader.GetOrdinal("neighborhood")),
+                    loc,
                     reader.GetInt32(reader.GetOrdinal("number_of_floors")),
                     reader.GetInt64(reader.GetOrdinal("manager_id")));
 

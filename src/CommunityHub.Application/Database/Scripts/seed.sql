@@ -53,12 +53,11 @@ INSERT INTO locations (id, city, country) VALUES
 
 
 -- ============================================================
---  Kvartovi (za sada dvostruka namena: i "naselje" iz
---  registracije zgrade i "kvart" za koordinatora)
+--  Kvartovi (za koordinatora kvarta — funkcionalnosti 3.x i 4.x)
 -- ============================================================
 INSERT INTO districts (id, name, description, location_id, budget, coordinator_id) VALUES
-(-1, 'Zemun',        'Naselje Zemun u Beogradu',        -1, 0, -1),
-(-2, 'Novi Beograd', 'Naselje Novi Beograd u Beogradu', -1, 0, -2);
+(-1, 'Zemun',        'Kvart Zemun u Beogradu',        -1, 0, -1),
+(-2, 'Novi Beograd', 'Kvart Novi Beograd u Beogradu', -1, 0, -2);
 
 
 -- ============================================================
@@ -72,9 +71,9 @@ INSERT INTO addresses (id, street, street_number) VALUES
 -- ============================================================
 --  Zgrade
 -- ============================================================
-INSERT INTO buildings (id, address_id, district_id, location_id, number_of_floors, manager_id) VALUES
-(-1, -1, -1, -1, 3, -1),
-(-2, -2, -2, -1, 2, -2);
+INSERT INTO buildings (id, address_id, neighborhood, location_id, number_of_floors, manager_id) VALUES
+(-1, -1, 'Zemun',        -1, 3, -1),
+(-2, -2, 'Novi Beograd', -1, 2, -2);
 
 
 -- ============================================================

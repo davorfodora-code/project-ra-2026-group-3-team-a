@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +8,9 @@ public class Building
 {
     public long Id { get; private set; }
     public Address Address { get; private set; }
-    public District District { get; private set; }
+    // Naselje je obican tekst (deo grada koji ima svoj naziv), ne referenca na `District`.
+    // "District" je zaseban entitet kvarta kojim upravlja koordinator (funkcionalnosti 3.x).
+    public string Neighborhood { get; private set; }
     public Location Location { get; private set; }
     public int NumberOfFloors { get; private set; }
     public long ManagerId { get; private set; }
@@ -16,11 +18,11 @@ public class Building
     public List<BuildingImage> Images { get; private set; }
     public int TotalApartments { get; internal set; }
 
-    public Building(long id, Address address, District district, Location location, int numberOfFloors, long managerId)
+    public Building(long id, Address address, string neighborhood, Location location, int numberOfFloors, long managerId)
     {
         Id = id;
         Address = address;
-        District = district;
+        Neighborhood = neighborhood;
         Location = location;
         NumberOfFloors = numberOfFloors;
         ManagerId = managerId;
@@ -28,11 +30,11 @@ public class Building
         Images = new List<BuildingImage>();
     }
 
-    public Building(Address address, District district, Location location, int numberOfFloors, long managerId)
+    public Building(Address address, string neighborhood, Location location, int numberOfFloors, long managerId)
     {
         Id = 0;
         Address = address;
-        District = district;
+        Neighborhood = neighborhood;
         Location = location;
         NumberOfFloors = numberOfFloors;
         ManagerId = managerId;
