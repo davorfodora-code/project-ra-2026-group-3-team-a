@@ -24,10 +24,12 @@
         </Border>
 
         <Grid Grid.Row="1" Margin="20">
-            <TextBlock Text="Dobrodošli na stranicu upravnika zgrade."
-                       FontSize="16"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+            <Button Content="Registruj zgradu"
+                    Click="RegisterBuildingButton_Click"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Padding="20,10"
+                    FontSize="16"/>
         </Grid>
     </Grid>
 </Window>

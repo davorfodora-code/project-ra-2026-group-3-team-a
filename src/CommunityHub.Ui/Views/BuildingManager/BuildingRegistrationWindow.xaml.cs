@@ -7,7 +7,7 @@ using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Application.Domain;
 using Microsoft.Win32;
 
-namespace CommunityHub.Ui.Views;
+namespace CommunityHub.Ui.Views.BuildingManager;
 
 public partial class BuildingRegistrationWindow : Window
 {
