@@ -13,7 +13,10 @@ CREATE TABLE users (
     password VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NOT NULL,
-    birthday DATE NOT NULL
+    birthday DATE NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    CONSTRAINT chk_user_role
+        CHECK (role IN ('BuildingManager', 'Tenant', 'DistrictCoordinator', 'Citizen'))
 );
 
 -- Legacy iz starter projekta (primer) — biće uklonjeno kasnije

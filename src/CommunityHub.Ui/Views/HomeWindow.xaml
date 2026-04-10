@@ -27,12 +27,8 @@
         </Border>
 
         <Grid Grid.Row="1">
-            <Button Content="Registruj zgradu"
-            Click="RegisterBuildingButton_Click"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Padding="20,10"
-            FontSize="16"/>
+            <!-- Legacy — HomeWindow se više ne koristi kao landing page.
+                 Login rutira na odgovarajuće prozore po ulozi. -->
         </Grid>
     </Grid>
 </Window>
