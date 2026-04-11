@@ -109,3 +109,21 @@ INSERT INTO building_images (id, building_id, image_path) VALUES
 (-1, -1, 'images/zgrada1_front.jpg'),
 (-2, -1, 'images/zgrada1_side.jpg'),
 (-3, -2, 'images/zgrada2_front.jpg');
+
+
+-- ============================================================
+--  Zahtevi za pristup zgradi (test podaci za funkcionalnost 1.2)
+-- ============================================================
+INSERT INTO building_access_requests (id, tenant_id, building_id, apartment_number, created_at, status, rejection_reason) VALUES
+(-1, -3, -1, 1, '2026-04-01 10:00:00', 'Pending', NULL),
+(-2, -4, -1, 4, '2026-04-02 14:30:00', 'Pending', NULL),
+(-3, -5, -2, 2, '2026-04-03 09:00:00', 'Pending', NULL),
+(-4, -7, -1, 7, '2026-03-20 11:00:00', 'Accepted', NULL),
+(-5, -8, -1, 2, '2026-03-15 16:00:00', 'Rejected', 'Stan je već zauzet.');
+
+
+-- ============================================================
+--  Članstva u zgradama (za prethodno odobren zahtev -4)
+-- ============================================================
+INSERT INTO building_memberships (id, building_id, tenant_id, floor_number, apartment_number, joined_at) VALUES
+(-1, -1, -7, 3, 7, '2026-03-20 11:00:00');

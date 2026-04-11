@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Database.Repositories;
+using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
 using Microsoft.Win32;
 
