@@ -7,6 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -33,8 +34,18 @@
             </ComboBox>
         </StackPanel>
 
+        <!-- Dugmad za akcije -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="Odobri" Click="ApproveButton_Click"
+                    Padding="15,8" Margin="0,0,10,0" FontSize="14"
+                    Background="#27AE60" Foreground="White"/>
+            <Button Content="Odbij" Click="RejectButton_Click"
+                    Padding="15,8" FontSize="14"
+                    Background="#E74C3C" Foreground="White"/>
+        </StackPanel>
+
         <!-- Tabela zahteva -->
-        <DataGrid Grid.Row="2" x:Name="RequestsDataGrid"
+        <DataGrid Grid.Row="3" x:Name="RequestsDataGrid"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   CanUserAddRows="False"

@@ -96,6 +96,86 @@ public partial class AccessRequestsWindow : Window
         return true;
     }
 
+    // Odobrava selektovani zahtev
+    private void ApproveButton_Click(object sender, RoutedEventArgs e)
+    {
+        AccessRequestRow? selected = RequestsDataGrid.SelectedItem as AccessRequestRow;
+
+        if (selected == null)
+        {
+            MessageBox.Show("Morate selektovati zahtev.", "Upozorenje",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (selected.Status != "Pending")
+        {
+            MessageBox.Show("Možete odobriti samo zahteve sa statusom 'Pending'.", "Upozorenje",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        MessageBoxResult confirm = MessageBox.Show(
+            $"Da li ste sigurni da želite da odobrite zahtev stanara {selected.TenantFullName} za stan {selected.ApartmentNumber}?",
+            "Potvrda odobravanja",
+            MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            _repository.Approve(selected.RequestId);
+            MessageBox.Show("Zahtev je odobren i članstvo je kreirano.", "Uspeh",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            LoadRequests();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Greška prilikom odobravanja: {ex.Message}", "Greška",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    // Odbija selektovani zahtev sa opcionim obrazloženjem
+    private void RejectButton_Click(object sender, RoutedEventArgs e)
+    {
+        AccessRequestRow? selected = RequestsDataGrid.SelectedItem as AccessRequestRow;
+
+        if (selected == null)
+        {
+            MessageBox.Show("Morate selektovati zahtev.", "Upozorenje",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (selected.Status != "Pending")
+        {
+            MessageBox.Show("Možete odbiti samo zahteve sa statusom 'Pending'.", "Upozorenje",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // Dijalog za unos obrazloženja
+        RejectReasonDialog dialog = new RejectReasonDialog();
+        dialog.Owner = this;
+
+        if (dialog.ShowDialog() != true) return;
+
+        try
+        {
+            string? reason = string.IsNullOrWhiteSpace(dialog.Reason) ? null : dialog.Reason;
+            _repository.Reject(selected.RequestId, reason);
+            MessageBox.Show("Zahtev je odbijen.", "Uspeh",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            LoadRequests();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Greška prilikom odbijanja: {ex.Message}", "Greška",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     // Kad se promeni filter
     private void StatusFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
