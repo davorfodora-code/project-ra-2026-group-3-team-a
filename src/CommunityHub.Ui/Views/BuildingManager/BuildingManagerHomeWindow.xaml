@@ -30,6 +30,10 @@
                     FontSize="16"/>
             <Button Content="Zahtevi za pristup"
                     Click="AccessRequestsButton_Click"
+                    Padding="20,10" Margin="0,0,0,10"
+                    FontSize="16"/>
+            <Button Content="Članstva u zgradama"
+                    Click="MembershipsButton_Click"
                     Padding="20,10"
                     FontSize="16"/>
         </StackPanel>

@@ -24,6 +24,12 @@ public partial class BuildingManagerHomeWindow : Window
         window.Show();
     }
 
+    private void MembershipsButton_Click(object sender, RoutedEventArgs e)
+    {
+        BuildingMembershipsWindow window = new BuildingMembershipsWindow(_userId);
+        window.Show();
+    }
+
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
         LogInForm loginForm = new LogInForm();
