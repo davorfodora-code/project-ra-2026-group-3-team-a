@@ -23,13 +23,15 @@
             </DockPanel>
         </Border>
 
-        <Grid Grid.Row="1" Margin="20">
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Button Content="Registruj zgradu"
                     Click="RegisterBuildingButton_Click"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
+                    Padding="20,10" Margin="0,0,0,10"
+                    FontSize="16"/>
+            <Button Content="Zahtevi za pristup"
+                    Click="AccessRequestsButton_Click"
                     Padding="20,10"
                     FontSize="16"/>
-        </Grid>
+        </StackPanel>
     </Grid>
 </Window>

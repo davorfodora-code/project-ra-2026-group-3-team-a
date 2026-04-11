@@ -18,6 +18,12 @@ public partial class BuildingManagerHomeWindow : Window
         window.Show();
     }
 
+    private void AccessRequestsButton_Click(object sender, RoutedEventArgs e)
+    {
+        AccessRequestsWindow window = new AccessRequestsWindow(_userId);
+        window.Show();
+    }
+
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
         LogInForm loginForm = new LogInForm();
