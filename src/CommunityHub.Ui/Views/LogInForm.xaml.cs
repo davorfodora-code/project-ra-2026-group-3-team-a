@@ -1,6 +1,7 @@
-using System.Windows;
+﻿using System.Windows;
 using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Ui.Views.BuildingManager;
+using CommunityHub.Ui.Views.DistrictCoordinator;
 
 namespace CommunityHub.Ui.Views;
 
@@ -23,7 +24,7 @@ public partial class LogInForm : Window
 
         if (credentials == null)
         {
-            ErrorMessageTextBlock.Text = "Neispravno korisničko ime ili lozinka.";
+            ErrorMessageTextBlock.Text = "Neispravno korisnicko ime ili lozinka.";
             ErrorMessageTextBlock.Visibility = Visibility.Visible;
             return;
         }
@@ -35,7 +36,7 @@ public partial class LogInForm : Window
         {
             "BuildingManager" => new BuildingManagerHomeWindow(userId),
             // "Tenant" => new TenantHomeWindow(userId),
-            // "DistrictCoordinator" => new DistrictCoordinatorHomeWindow(userId),
+            "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
             // "Citizen" => new CitizenHomeWindow(userId),
             _ => null
         };
@@ -47,7 +48,7 @@ public partial class LogInForm : Window
         }
         else
         {
-            ErrorMessageTextBlock.Text = $"Stranica za ulogu \"{role}\" je u pripremi.";
+            ErrorMessageTextBlock.Text = $"Uloga '{role}' jos nije implementirana.";
             ErrorMessageTextBlock.Visibility = Visibility.Visible;
         }
     }
