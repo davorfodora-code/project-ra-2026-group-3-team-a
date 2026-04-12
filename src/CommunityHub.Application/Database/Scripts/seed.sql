@@ -1,4 +1,4 @@
--- ============================================================
+﻿-- ============================================================
 --  CommunityHub — početni test podaci
 --  Pokrenuti POSLE database.sql kroz pgAdmin
 -- ============================================================
@@ -81,3 +81,72 @@ INSERT INTO district_access_requests (id, user_id, district_id, creation_date, s
 -- Članstva u kvartovima (za odobrene zahteve)
 INSERT INTO district_memberships (id, district_id, user_id, join_date) VALUES
 (-1, -2, -8, '2025-03-12 16:45:00');
+
+
+-- ============================================================
+--  Adrese
+-- ============================================================
+INSERT INTO addresses (id, street, street_number) VALUES
+(-1, 'Glavna', '15'),
+(-2, 'Bulevar Mihajla Pupina', '22');
+
+
+-- ============================================================
+--  Zgrade
+-- ============================================================
+INSERT INTO buildings (id, address_id, neighborhood, location_id, number_of_floors, manager_id) VALUES
+(-1, -1, 'Zemun',        -1, 3, -1),
+(-2, -2, 'Novi Beograd', -1, 2, -2);
+
+
+-- ============================================================
+--  Spratovi i stanovi
+-- ============================================================
+-- Prva zgrada (3 sprata)
+INSERT INTO floors (id, building_id, floor_number) VALUES
+(-1, -1, 1),
+(-2, -1, 2),
+(-3, -1, 3);
+
+-- Druga zgrada (2 sprata)
+INSERT INTO floors (id, building_id, floor_number) VALUES
+(-4, -2, 1),
+(-5, -2, 2);
+
+-- Stanovi za prvu zgradu
+INSERT INTO apartments (id, floor_id, apartment_number) VALUES
+(-1, -1, 1), (-2, -1, 2), (-3, -1, 3),
+(-4, -2, 4), (-5, -2, 5), (-6, -2, 6),
+(-7, -3, 7), (-8, -3, 8);
+
+-- Stanovi za drugu zgradu
+INSERT INTO apartments (id, floor_id, apartment_number) VALUES
+(-9, -4, 1), (-10, -4, 2),
+(-11, -5, 3), (-12, -5, 4);
+
+
+-- ============================================================
+--  Slike zgrada
+-- ============================================================
+INSERT INTO building_images (id, building_id, image_path) VALUES
+(-1, -1, 'images/zgrada1_front.jpg'),
+(-2, -1, 'images/zgrada1_side.jpg'),
+(-3, -2, 'images/zgrada2_front.jpg');
+
+
+-- ============================================================
+--  Zahtevi za pristup zgradi (test podaci za funkcionalnost 1.2)
+-- ============================================================
+INSERT INTO building_access_requests (id, tenant_id, building_id, apartment_number, created_at, status, rejection_reason) VALUES
+(-1, -3, -1, 1, '2026-04-01 10:00:00', 'Pending', NULL),
+(-2, -4, -1, 4, '2026-04-02 14:30:00', 'Pending', NULL),
+(-3, -3, -2, 2, '2026-04-03 09:00:00', 'Pending', NULL),
+(-4, -7, -1, 7, '2026-03-20 11:00:00', 'Accepted', NULL),
+(-5, -8, -1, 2, '2026-03-15 16:00:00', 'Rejected', 'Stan je već zauzet.');
+
+
+-- ============================================================
+--  Članstva u zgradama (za prethodno odobren zahtev -4)
+-- ============================================================
+INSERT INTO building_memberships (id, building_id, tenant_id, floor_number, apartment_number, joined_at) VALUES
+(-1, -1, -7, 3, 7, '2026-03-20 11:00:00');
