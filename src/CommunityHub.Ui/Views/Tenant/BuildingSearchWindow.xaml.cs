@@ -24,6 +24,13 @@ public partial class BuildingSearchWindow : Window
         BuildingsDataGrid.ItemsSource = buildings.Select(b => new BuildingViewModel(b)).ToList();
     }
 
+    private void BackButton_Click(object sender, RoutedEventArgs e)
+    {
+        TenantHomeWindow homeWindow = new TenantHomeWindow(_userId);
+        homeWindow.Show();
+        this.Close();
+    }
+
     private void SearchButton_Click(object sender, RoutedEventArgs e)
     {
         PerformSearch();
