@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CommunityHub.Application.Domain;
+﻿namespace CommunityHub.Application.Domain;
 
 public class DistrictStreet
 {
