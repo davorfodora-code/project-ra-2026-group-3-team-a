@@ -2,6 +2,7 @@
 using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Ui.Views.BuildingManager;
 using CommunityHub.Ui.Views.DistrictCoordinator;
+using CommunityHub.Ui.Views.Tenant;
 
 namespace CommunityHub.Ui.Views;
 
@@ -35,7 +36,7 @@ public partial class LogInForm : Window
         Window? targetWindow = role switch
         {
             "BuildingManager" => new BuildingManagerHomeWindow(userId),
-            // "Tenant" => new TenantHomeWindow(userId),
+            "Tenant" => new TenantHomeWindow(userId),
             "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
             // "Citizen" => new CitizenHomeWindow(userId),
             _ => null
