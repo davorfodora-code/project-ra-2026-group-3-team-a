@@ -75,6 +75,168 @@ public class DistrictDbRepository
         );
     }
 
+    public List<District> GetAll()
+    {
+        return Search(null, null, null, null);
+    }
+
+    public List<District> Search(string? name, string? address, string? city, string? country)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT d.id, d.name, d.description, d.budget,
+                   l.id AS location_id, l.city, l.country,
+                   u.id AS coordinator_id, u.username, u.password, u.name AS coordinator_name, u.surname, u.birthday
+            FROM districts d
+            JOIN locations l ON l.id = d.location_id
+            JOIN users u ON u.id = d.coordinator_id
+            WHERE 1=1";
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            cmd.CommandText += " AND d.name ILIKE @name";
+            AddParameter(cmd, "@name", "%" + name.Trim() + "%");
+        }
+
+        if (!string.IsNullOrWhiteSpace(city))
+        {
+            cmd.CommandText += " AND l.city ILIKE @city";
+            AddParameter(cmd, "@city", "%" + city.Trim() + "%");
+        }
+
+        if (!string.IsNullOrWhiteSpace(country))
+        {
+            cmd.CommandText += " AND l.country ILIKE @country";
+            AddParameter(cmd, "@country", "%" + country.Trim() + "%");
+        }
+
+        if (!string.IsNullOrWhiteSpace(address))
+        {
+            ParseAddressFilter(address, out string streetPart, out int? number);
+
+            if (!string.IsNullOrWhiteSpace(streetPart))
+            {
+                cmd.CommandText += @"
+                    AND EXISTS (
+                        SELECT 1
+                        FROM district_streets ds
+                        WHERE ds.district_id = d.id
+                          AND ds.street_name ILIKE @street";
+
+                AddParameter(cmd, "@street", "%" + streetPart + "%");
+
+                if (number.HasValue)
+                {
+                    cmd.CommandText += " AND @addressNumber BETWEEN ds.start_number AND ds.end_number";
+                    AddParameter(cmd, "@addressNumber", number.Value);
+                }
+
+                cmd.CommandText += ")";
+            }
+        }
+
+        List<District> districts = new List<District>();
+
+        using (IDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                Location location = new Location(
+                    reader.GetInt64(reader.GetOrdinal("location_id")),
+                    reader.GetString(reader.GetOrdinal("city")),
+                    reader.GetString(reader.GetOrdinal("country")));
+
+                User coordinator = new User(
+                    reader.GetInt64(reader.GetOrdinal("coordinator_id")),
+                    reader.GetString(reader.GetOrdinal("username")),
+                    reader.GetString(reader.GetOrdinal("password")),
+                    reader.GetString(reader.GetOrdinal("coordinator_name")),
+                    reader.GetString(reader.GetOrdinal("surname")),
+                    reader.GetDateTime(reader.GetOrdinal("birthday")));
+
+                District district = new District(
+                    reader.GetInt64(reader.GetOrdinal("id")),
+                    reader.GetString(reader.GetOrdinal("name")),
+                    reader.GetString(reader.GetOrdinal("description")),
+                    location,
+                    reader.GetDecimal(reader.GetOrdinal("budget")),
+                    coordinator);
+
+                districts.Add(district);
+            }
+        }
+
+        foreach (District district in districts)
+        {
+            LoadDistrictStreets(connection, district);
+            LoadDistrictImages(connection, district);
+        }
+
+        return districts;
+    }
+
+    private void LoadDistrictStreets(IDbConnection connection, District district)
+    {
+        IDbCommand streetCmd = connection.CreateCommand();
+        streetCmd.CommandText = @"
+            SELECT id, street_name, start_number, end_number
+            FROM district_streets
+            WHERE district_id = @districtId";
+
+        AddParameter(streetCmd, "@districtId", district.Id);
+
+        using IDataReader streetReader = streetCmd.ExecuteReader();
+        while (streetReader.Read())
+        {
+            district.AddStreet(new DistrictStreet(
+                streetReader.GetInt64(streetReader.GetOrdinal("id")),
+                streetReader.GetString(streetReader.GetOrdinal("street_name")),
+                streetReader.GetInt32(streetReader.GetOrdinal("start_number")),
+                streetReader.GetInt32(streetReader.GetOrdinal("end_number"))));
+        }
+    }
+
+    private void LoadDistrictImages(IDbConnection connection, District district)
+    {
+        IDbCommand imageCmd = connection.CreateCommand();
+        imageCmd.CommandText = @"
+            SELECT id, url
+            FROM images
+            WHERE district_id = @districtId";
+
+        AddParameter(imageCmd, "@districtId", district.Id);
+
+        using IDataReader imageReader = imageCmd.ExecuteReader();
+        while (imageReader.Read())
+        {
+            district.AddImage(new Image(
+                imageReader.GetInt64(imageReader.GetOrdinal("id")),
+                imageReader.GetString(imageReader.GetOrdinal("url"))));
+        }
+    }
+
+    private static void ParseAddressFilter(string input, out string streetPart, out int? number)
+    {
+        string value = input.Trim();
+        number = null;
+
+        int lastSpaceIndex = value.LastIndexOf(' ');
+        if (lastSpaceIndex > 0)
+        {
+            string lastToken = value[(lastSpaceIndex + 1)..];
+            if (int.TryParse(lastToken, out int parsedNumber))
+            {
+                number = parsedNumber;
+                streetPart = value[..lastSpaceIndex].Trim();
+                return;
+            }
+        }
+
+        streetPart = value;
+    }
+
     // Pomoćna metoda za dodavanje parametara — smanjuje ponavljanje koda
     private void AddParameter(IDbCommand command, string name, object value)
     {
