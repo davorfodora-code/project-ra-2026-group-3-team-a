@@ -32,4 +32,11 @@ public partial class TenantHomeWindow : Window
         window.Show();
         this.Close();
     }
+
+    private void MyRequestsButton_Click(object sender, RoutedEventArgs e)
+    {
+        MyBuildingRequestsWindow window = new MyBuildingRequestsWindow(_userId);
+        window.Show();
+        this.Close();
+    }
 }

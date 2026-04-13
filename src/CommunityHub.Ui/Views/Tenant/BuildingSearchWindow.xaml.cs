@@ -54,8 +54,19 @@ public partial class BuildingSearchWindow : Window
         ImagesBorder.Visibility = Visibility.Collapsed;
     }
 
+    private void AccessRequestButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (BuildingsDataGrid.SelectedItem is BuildingViewModel selected)
+        {
+            var form = new BuildingAccessRequestForm(_userId, selected.BuildingId);
+            form.ShowDialog();
+        }
+    }
+
     private void BuildingsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        AccessRequestButton.IsEnabled = BuildingsDataGrid.SelectedItem != null;
+
         if (BuildingsDataGrid.SelectedItem is BuildingViewModel selected)
         {
             ImagesBorder.Visibility = Visibility.Visible;
@@ -82,6 +93,7 @@ public partial class BuildingSearchWindow : Window
 
 public class BuildingViewModel
 {
+    public long BuildingId { get; }
     public string AddressDisplay { get; }
     public string Neighborhood { get; }
     public string LocationDisplay { get; }
@@ -92,6 +104,7 @@ public class BuildingViewModel
 
     public BuildingViewModel(Building building)
     {
+        BuildingId = building.Id;
         AddressDisplay = $"{building.Address.Street} {building.Address.StreetNumber}";
         Neighborhood = building.Neighborhood;
         LocationDisplay = $"{building.Location.City}, {building.Location.Country}";
