@@ -1,5 +1,8 @@
 ﻿using System.Windows;
 using CommunityHub.Application.Database.Repositories;
+using CommunityHub.Ui.Views.BuildingManager;
+using CommunityHub.Ui.Views.DistrictCoordinator;
+using CommunityHub.Ui.Views.Tenant;
 
 namespace CommunityHub.Ui.Views;
 
@@ -18,17 +21,35 @@ public partial class LogInForm : Window
         string username = UsernameTextBox.Text;
         string password = PasswordBox.Password;
 
-        long? userId = _userRepository.GetIdByCredentials(username, password);
+        var credentials = _userRepository.GetByCredentials(username, password);
 
-        if (userId != null)
+        if (credentials == null)
         {
-            HomeWindow homeWindow = new HomeWindow(userId.Value);
-            homeWindow.Show();
+            ErrorMessageTextBlock.Text = "Neispravno korisnicko ime ili lozinka.";
+            ErrorMessageTextBlock.Visibility = Visibility.Visible;
+            return;
+        }
+
+        long userId = credentials.Value.Id;
+        string role = credentials.Value.Role;
+
+        Window? targetWindow = role switch
+        {
+            "BuildingManager" => new BuildingManagerHomeWindow(userId),
+            "Tenant" => new TenantHomeWindow(userId),
+            "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
+            // "Citizen" => new CitizenHomeWindow(userId),
+            _ => null
+        };
+
+        if (targetWindow != null)
+        {
+            targetWindow.Show();
             this.Close();
         }
         else
         {
-            ErrorMessageTextBlock.Text = "Neispravno korisničko ime ili lozinka.";
+            ErrorMessageTextBlock.Text = $"Uloga '{role}' jos nije implementirana.";
             ErrorMessageTextBlock.Visibility = Visibility.Visible;
         }
     }

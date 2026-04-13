@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CommunityHub.Application.Domain;
 
@@ -15,7 +14,6 @@ public class District
     public decimal Budget { get; private set; }
     public User Coordinator { get; private set; }
 
-    // Razliciti konstruktori za ucitavanje iz baze 
     public District(long id, string name)
     {
         Id = id;

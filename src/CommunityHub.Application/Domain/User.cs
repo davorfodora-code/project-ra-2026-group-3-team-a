@@ -1,4 +1,4 @@
-namespace CommunityHub.Application.Domain;
+﻿namespace CommunityHub.Application.Domain;
 
 public class User
 {
@@ -8,9 +8,11 @@ public class User
     public string Name { get; private set; }
     public string Surname { get; private set; }
     public DateTime BirthDay { get; private set; }
+    public string Role { get; private set; }
+    public string? Address { get; private set; }
     public List<Post>? Posts { get; private set; }
 
-    public User(long id, string username, string password, string name, string surname, DateTime birthDay)
+    public User(long id, string username, string password, string name, string surname, DateTime birthDay, string role)
     {
         Id = id;
         Username = username;
@@ -18,6 +20,21 @@ public class User
         Name = name;
         Surname = surname;
         BirthDay = birthDay;
+        Role = role;
+        Address = null;
+        Posts = null;
+    }
+
+    public User(long id, string username, string password, string name, string surname, DateTime birthDay, string role, string? address)
+    {
+        Id = id;
+        Username = username;
+        Password = password;
+        Name = name;
+        Surname = surname;
+        BirthDay = birthDay;
+        Role = role;
+        Address = address;
         Posts = null;
     }
 

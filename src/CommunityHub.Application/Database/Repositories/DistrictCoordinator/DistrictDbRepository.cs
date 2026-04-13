@@ -1,7 +1,7 @@
 using System.Data;
 using CommunityHub.Application.Domain;
 
-namespace CommunityHub.Application.Database.Repositories;
+namespace CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 
 public class DistrictDbRepository
 {

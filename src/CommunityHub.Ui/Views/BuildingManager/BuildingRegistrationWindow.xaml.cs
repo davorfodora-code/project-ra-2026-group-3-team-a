@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Database.Repositories;
+using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
 using Microsoft.Win32;
 
-namespace CommunityHub.Ui.Views;
+namespace CommunityHub.Ui.Views.BuildingManager;
 
 public partial class BuildingRegistrationWindow : Window
 {
@@ -132,12 +132,12 @@ public partial class BuildingRegistrationWindow : Window
             return;
         }
 
-        // Kreiranje Building objekta
+        // Kreiranje Building objekta — naselje je obican tekst, nije zaseban entitet
         Address address = new Address(StreetTextBox.Text.Trim(), StreetNumberTextBox.Text.Trim());
-        District district = new District(DistrictTextBox.Text.Trim());
+        string neighborhood = DistrictTextBox.Text.Trim();
         Location location = new Location(CityTextBox.Text.Trim(), CountryTextBox.Text.Trim());
 
-        Building building = new Building(address, district, location, numberOfFloors, _managerId);
+        Building building = new Building(address, neighborhood, location, numberOfFloors, _managerId);
 
         foreach (Floor floor in floors)
         {

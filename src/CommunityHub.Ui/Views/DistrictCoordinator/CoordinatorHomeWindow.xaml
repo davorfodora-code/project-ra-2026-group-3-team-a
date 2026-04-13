@@ -1,0 +1,41 @@
+﻿<Window x:Class="CommunityHub.Ui.Views.DistrictCoordinator.CoordinatorHomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Koordinator kvarta" Height="600" Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#2C3E50" Padding="15">
+            <DockPanel>
+                <TextBlock Text="Koordinator kvarta"
+                           Foreground="White" FontSize="18" FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Odjavi se"
+                            Click="LogoutButton_Click"
+                            Padding="15,8"
+                            FontSize="14"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Content="Registruj kvart"
+                    Click="RegisterDistrictButton_Click"
+                    Padding="20,10" Margin="0,0,0,10"
+                    FontSize="16"/>
+            <Button Content="Zahtevi za pristup"
+                    Click="AccessRequestsButton_Click"
+                    Padding="20,10" Margin="0,0,0,10"
+                    FontSize="16"/>
+            <Button Content="Clanstva u kvartovima"
+                    Click="MembershipsButton_Click"
+                    Padding="20,10"
+                    FontSize="16"/>
+        </StackPanel>
+    </Grid>
+</Window>
