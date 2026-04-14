@@ -14,10 +14,11 @@
         <!-- Naslov i nazad dugme -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
             <Button Content="← Nazad"
+                    x:Name="BackButton"
                     Padding="10,5"
                     Margin="0,0,15,0"
                     VerticalAlignment="Center"
-                    IsEnabled="False"/>
+                    Click="BackButton_Click"/>
             <TextBlock Text="Pretraga kvartova"
                        FontSize="20"
                        FontWeight="Bold"
@@ -46,29 +47,30 @@
 
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Naziv:" Margin="0,0,0,5"/>
-                    <TextBox x:Name="NameTextBox" Padding="5"/>
+                    <TextBox x:Name="NameTextBox" Padding="5" TextChanged="FilterTextBox_TextChanged"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2">
                     <TextBlock Text="Adresa:" Margin="0,0,0,5"/>
-                    <TextBox x:Name="AddressTextBox" Padding="5"/>
+                    <TextBox x:Name="AddressTextBox" Padding="5" TextChanged="FilterTextBox_TextChanged"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="4">
                     <TextBlock Text="Grad:" Margin="0,0,0,5"/>
-                    <TextBox x:Name="CityTextBox" Padding="5"/>
+                    <TextBox x:Name="CityTextBox" Padding="5" TextChanged="FilterTextBox_TextChanged"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="6">
                     <TextBlock Text="Država:" Margin="0,0,0,5"/>
-                    <TextBox x:Name="CountryTextBox" Padding="5"/>
+                    <TextBox x:Name="CountryTextBox" Padding="5" TextChanged="FilterTextBox_TextChanged"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="8" VerticalAlignment="Bottom">
                     <Button Content="Pretraži"
+                            x:Name="SearchButton"
                             Padding="20,7"
                             FontSize="14"
-                            IsEnabled="False"/>
+                            Click="SearchButton_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -83,7 +85,8 @@
                   HeadersVisibility="Column"
                   GridLinesVisibility="Horizontal"
                   BorderThickness="1"
-                  BorderBrush="#CCCCCC">
+                  BorderBrush="#CCCCCC"
+                  SelectionChanged="DistrictsDataGrid_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Naziv" Binding="{Binding Name}" Width="180"/>
                 <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>

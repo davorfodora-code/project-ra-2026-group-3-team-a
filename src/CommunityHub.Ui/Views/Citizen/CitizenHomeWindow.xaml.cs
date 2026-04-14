@@ -14,11 +14,9 @@ public partial class CitizenHomeWindow : Window
 
     private void DistrictSearchButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Prikaz i pretraga kvartova se dodaje u sledećem commitu.",
-            "U izradi",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        DistrictSearchWindow window = new DistrictSearchWindow(_userId);
+        window.Show();
+        Close();
     }
 
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
