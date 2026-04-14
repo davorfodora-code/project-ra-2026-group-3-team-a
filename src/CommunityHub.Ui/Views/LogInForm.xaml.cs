@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Ui.Views.BuildingManager;
+using CommunityHub.Ui.Views.Citizen;
 using CommunityHub.Ui.Views.DistrictCoordinator;
 using CommunityHub.Ui.Views.Tenant;
 
@@ -38,7 +39,7 @@ public partial class LogInForm : Window
             "BuildingManager" => new BuildingManagerHomeWindow(userId),
             "Tenant" => new TenantHomeWindow(userId),
             "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
-            // "Citizen" => new CitizenHomeWindow(userId),
+            "Citizen" => new CitizenHomeWindow(userId),
             _ => null
         };
 
