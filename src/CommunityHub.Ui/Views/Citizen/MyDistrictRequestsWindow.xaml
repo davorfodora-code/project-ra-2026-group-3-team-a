@@ -56,7 +56,7 @@
                         <DataTemplate>
                             <Button Content="Obriši" Click="DeleteRequestButton_Click"
                                     Padding="10,4"
-                                    Visibility="{Binding CancelButtonVisibility}"/>
+                                    Visibility="{Binding DeleteButtonVisibility}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

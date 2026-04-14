@@ -65,14 +65,16 @@ public partial class MyDistrictRequestsWindow : Window
         if (sender is not Button button || button.DataContext is not DistrictAccessRequestRowViewModel vm)
             return;
 
-        if (vm.Status != DistrictAccessRequestStatus.Pending.ToString())
+        if (!Enum.TryParse(vm.Status, out DistrictAccessRequestStatus status) || status != DistrictAccessRequestStatus.Pending)
         {
+            MessageBox.Show("Možete obrisati samo zahteve u statusu Pending.", "Upozorenje",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         MessageBoxResult result = MessageBox.Show(
             "Da li ste sigurni da želite da obrišete zahtev?",
-            "Potvrda brisanja",
+            "Potvrda brisanja zahteva",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 

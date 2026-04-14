@@ -102,7 +102,7 @@ public partial class DistrictSearchWindow : Window
         District? district = FindDistrictById(selectedVm.DistrictId);
         if (district == null)
         {
-            MessageBox.Show("Selektovani kvart nije pronadjen.", "Greska",
+            MessageBox.Show("Selektovani kvart nije pronađen.", "Greška",
                 MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
@@ -112,30 +112,20 @@ public partial class DistrictSearchWindow : Window
             long? existingDistrictId = _membershipRepository.GetMembershipDistrictId(_userId);
             if (existingDistrictId == district.Id)
             {
-                MessageBox.Show("Vec ste clan ovog kvarta.", "Informacija",
+                MessageBox.Show("Već ste član ovog kvarta.", "Informacija",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            MessageBox.Show("Vec ste clan nekog kvarta. Ne mozete traziti pristup drugom kvartu.", "Upozorenje",
+            MessageBox.Show("Već ste član nekog kvarta. Ne možete tražiti pristup drugom kvartu.", "Upozorenje",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        if (HasAnyPendingRequest())
-        {
-            MessageBox.Show(
-                "Vec imate zahtev u statusu 'Pending'. Obrisite ga pre nego sto podnesete novi zahtev.",
-                "Upozorenje",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
             return;
         }
 
         string? rawAddress = _userProfileRepository.GetAddressByUserId(_userId);
         if (string.IsNullOrWhiteSpace(rawAddress))
         {
-            MessageBox.Show("Nije moguce procitati adresu stanovanja iz profila.", "Greska",
+            MessageBox.Show("Nije moguće pročitati adresu stanovanja iz profila.", "Greška",
                 MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
@@ -143,8 +133,8 @@ public partial class DistrictSearchWindow : Window
         if (!TryParseResidenceStreetAndNumber(rawAddress, out string streetName, out int streetNumber))
         {
             MessageBox.Show(
-                "Adresa stanovanja nije u ocekivanom formatu (npr. 'Zemunska 10, Novi Sad').",
-                "Greska",
+                "Adresa stanovanja nije u očekivanom formatu (npr. 'Zemunska 10, Novi Sad').",
+                "Greška",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             return;
@@ -155,14 +145,14 @@ public partial class DistrictSearchWindow : Window
             if (IsAddressInDistrict(streetName, streetNumber, district))
             {
                 _membershipRepository.Create(_userId, district.Id, DateTime.Now);
-                MessageBox.Show("Adresa se poklapa sa kvartom — automatski ste uclanjeni.", "Uspeh",
+                MessageBox.Show("Adresa se poklapa sa kvartom — automatski ste učlanjeni.", "Uspeh",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             if (_accessRequestRepository.ExistsPending(_userId, district.Id))
             {
-                MessageBox.Show("Vec imate aktivan zahtev za ovaj kvart.", "Upozorenje",
+                MessageBox.Show("Već imate aktivan zahtev za ovaj kvart.", "Upozorenje",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -173,7 +163,7 @@ public partial class DistrictSearchWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Greska: {ex.Message}", "Greska",
+            MessageBox.Show($"Greška: {ex.Message}", "Greška",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -181,12 +171,6 @@ public partial class DistrictSearchWindow : Window
     private District? FindDistrictById(long districtId)
     {
         return _currentDistricts.FirstOrDefault(d => d.Id == districtId);
-    }
-
-    private bool HasAnyPendingRequest()
-    {
-        List<DistrictAccessRequest> requests = _accessRequestRepository.GetAllByUserId(_userId);
-        return requests.Any(r => r.Status == DistrictAccessRequestStatus.Pending);
     }
 
     private static bool TryParseResidenceStreetAndNumber(string rawAddress, out string streetName, out int streetNumber)
@@ -197,6 +181,8 @@ public partial class DistrictSearchWindow : Window
         {
             trimmed = trimmed[..commaIndex].Trim();
         }
+
+        trimmed = trimmed.Trim().TrimEnd('.', ',', ';');
 
         int lastSpace = trimmed.LastIndexOf(' ');
         if (lastSpace <= 0)
@@ -240,8 +226,8 @@ public partial class DistrictSearchWindow : Window
 
     private static bool IsSameStreetName(string districtStreetName, string residenceStreetName)
     {
-        string a = districtStreetName.Trim();
-        string b = residenceStreetName.Trim();
+        string a = NormalizeStreetToken(districtStreetName);
+        string b = NormalizeStreetToken(residenceStreetName);
 
         if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
         {
@@ -255,6 +241,13 @@ public partial class DistrictSearchWindow : Window
         }
 
         return false;
+    }
+
+    private static string NormalizeStreetToken(string value)
+    {
+        return value.Trim()
+            .Replace("  ", " ", StringComparison.Ordinal)
+            .TrimEnd('.', ',', ';');
     }
 }
 
