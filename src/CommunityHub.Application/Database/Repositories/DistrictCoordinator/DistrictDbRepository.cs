@@ -154,7 +154,8 @@ public class DistrictDbRepository
                     reader.GetString(reader.GetOrdinal("password")),
                     reader.GetString(reader.GetOrdinal("coordinator_name")),
                     reader.GetString(reader.GetOrdinal("surname")),
-                    reader.GetDateTime(reader.GetOrdinal("birthday")));
+                    reader.GetDateTime(reader.GetOrdinal("birthday")),
+                    "DistrictCoordinator");
 
                 District district = new District(
                     reader.GetInt64(reader.GetOrdinal("id")),
