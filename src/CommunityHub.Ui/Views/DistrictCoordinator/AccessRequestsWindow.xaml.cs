@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -92,78 +92,95 @@ public partial class AccessRequestsWindow : Window
     private void ApproveButton_Click(object sender, RoutedEventArgs e)
     {
         DistrictAccessRequestRow? selected = RequestsDataGrid.SelectedItem as DistrictAccessRequestRow;
+        if (!ValidatePendingSelection(selected, "odobriti")) return;
+        if (!ConfirmApproval(selected!)) return;
 
-        if (selected == null)
-        {
-            MessageBox.Show("Morate selektovati zahtev.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        if (selected.Status != "Pending")
-        {
-            MessageBox.Show("Mozete odobriti samo zahteve sa statusom 'Pending'.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        MessageBoxResult confirm = MessageBox.Show(
-            $"Da li ste sigurni da zelite da odobrite zahtev gradjanina {selected.CitizenFullName} za kvart {selected.DistrictName}?",
-            "Potvrda odobravanja",
-            MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-        if (confirm != MessageBoxResult.Yes) return;
-
-        try
-        {
-            _repository.Approve(selected.RequestId);
-            MessageBox.Show("Zahtev je odobren i clanstvo je kreirano.", "Uspeh",
-                MessageBoxButton.OK, MessageBoxImage.Information);
-            LoadRequests();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Greska prilikom odobravanja: {ex.Message}", "Greska",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+        TryApproveRequest(selected!);
     }
 
     private void RejectButton_Click(object sender, RoutedEventArgs e)
     {
         DistrictAccessRequestRow? selected = RequestsDataGrid.SelectedItem as DistrictAccessRequestRow;
+        if (!ValidatePendingSelection(selected, "odbiti")) return;
+        if (!TryGetRejectionReason(out string? reason)) return;
 
+        TryRejectRequest(selected!, reason);
+    }
+
+    private bool ValidatePendingSelection(DistrictAccessRequestRow? selected, string actionLabel)
+    {
         if (selected == null)
         {
-            MessageBox.Show("Morate selektovati zahtev.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
+            ShowWarning("Morate selektovati zahtev.");
+            return false;
         }
-
         if (selected.Status != "Pending")
         {
-            MessageBox.Show("Mozete odbiti samo zahteve sa statusom 'Pending'.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
+            ShowWarning($"Mozete {actionLabel} samo zahteve sa statusom 'Pending'.");
+            return false;
         }
+        return true;
+    }
 
-        RejectReasonDialog dialog = new RejectReasonDialog();
-        dialog.Owner = this;
+    private bool ConfirmApproval(DistrictAccessRequestRow selected)
+    {
+        MessageBoxResult result = MessageBox.Show(
+            $"Da li ste sigurni da zelite da odobrite zahtev gradjanina {selected.CitizenFullName} za kvart {selected.DistrictName}?",
+            "Potvrda odobravanja",
+            MessageBoxButton.YesNo, MessageBoxImage.Question);
+        return result == MessageBoxResult.Yes;
+    }
 
-        if (dialog.ShowDialog() != true) return;
+    private bool TryGetRejectionReason(out string? reason)
+    {
+        reason = null;
+        RejectReasonDialog dialog = new RejectReasonDialog { Owner = this };
+        if (dialog.ShowDialog() != true) return false;
+        reason = string.IsNullOrWhiteSpace(dialog.Reason) ? null : dialog.Reason;
+        return true;
+    }
 
+    private void TryApproveRequest(DistrictAccessRequestRow selected)
+    {
         try
         {
-            string? reason = string.IsNullOrWhiteSpace(dialog.Reason) ? null : dialog.Reason;
-            _repository.Reject(selected.RequestId, reason);
-            MessageBox.Show("Zahtev je odbijen.", "Uspeh",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            _repository.Approve(selected.RequestId);
+            ShowInfo("Zahtev je odobren i clanstvo je kreirano.");
             LoadRequests();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Greska prilikom odbijanja: {ex.Message}", "Greska",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowError($"Greska prilikom odobravanja: {ex.Message}");
         }
+    }
+
+    private void TryRejectRequest(DistrictAccessRequestRow selected, string? reason)
+    {
+        try
+        {
+            _repository.Reject(selected.RequestId, reason);
+            ShowInfo("Zahtev je odbijen.");
+            LoadRequests();
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Greska prilikom odbijanja: {ex.Message}");
+        }
+    }
+
+    private static void ShowWarning(string message)
+    {
+        MessageBox.Show(message, "Upozorenje", MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
+
+    private static void ShowInfo(string message)
+    {
+        MessageBox.Show(message, "Uspeh", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private static void ShowError(string message)
+    {
+        MessageBox.Show(message, "Greska", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     private void StatusFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
