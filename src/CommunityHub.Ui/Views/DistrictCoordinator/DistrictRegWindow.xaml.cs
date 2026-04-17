@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,43 +32,49 @@ public partial class DistrictRegWindow : Window
 
         for (int i = 1; i <= numberOfStreets; i++)
         {
-            Border border = new Border
-            {
-                BorderBrush = System.Windows.Media.Brushes.LightGray,
-                BorderThickness = new Thickness(1),
-                Padding = new Thickness(8),
-                Margin = new Thickness(0, 0, 0, 5),
-                CornerRadius = new CornerRadius(3)
-            };
-
-            StackPanel streetPanel = new StackPanel { Tag = i };
-
-            TextBlock header = new TextBlock
-            {
-                Text = $"Ulica {i}:",
-                FontWeight = FontWeights.SemiBold,
-                Margin = new Thickness(0, 0, 0, 4)
-            };
-            streetPanel.Children.Add(header);
-
-            StackPanel nameRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 2) };
-            nameRow.Children.Add(new TextBlock { Text = "Naziv:", Width = 80, VerticalAlignment = VerticalAlignment.Center });
-            nameRow.Children.Add(new TextBox { Name = $"StreetName{i}", Width = 250 });
-            streetPanel.Children.Add(nameRow);
-
-            StackPanel startRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 2) };
-            startRow.Children.Add(new TextBlock { Text = "Od broja:", Width = 80, VerticalAlignment = VerticalAlignment.Center });
-            startRow.Children.Add(new TextBox { Name = $"StartNumber{i}", Width = 80 });
-            streetPanel.Children.Add(startRow);
-
-            StackPanel endRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 2) };
-            endRow.Children.Add(new TextBlock { Text = "Do broja:", Width = 80, VerticalAlignment = VerticalAlignment.Center });
-            endRow.Children.Add(new TextBox { Name = $"EndNumber{i}", Width = 80 });
-            streetPanel.Children.Add(endRow);
-
-            border.Child = streetPanel;
-            StreetsPanel.Children.Add(border);
+            StreetsPanel.Children.Add(CreateStreetInputBorder(i));
         }
+    }
+
+    private static Border CreateStreetInputBorder(int index)
+    {
+        StackPanel streetPanel = new StackPanel { Tag = index };
+        streetPanel.Children.Add(CreateStreetHeader(index));
+        streetPanel.Children.Add(CreateLabeledRow("Naziv:", $"StreetName{index}", 250));
+        streetPanel.Children.Add(CreateLabeledRow("Od broja:", $"StartNumber{index}", 80));
+        streetPanel.Children.Add(CreateLabeledRow("Do broja:", $"EndNumber{index}", 80));
+
+        return new Border
+        {
+            BorderBrush = System.Windows.Media.Brushes.LightGray,
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(8),
+            Margin = new Thickness(0, 0, 0, 5),
+            CornerRadius = new CornerRadius(3),
+            Child = streetPanel
+        };
+    }
+
+    private static TextBlock CreateStreetHeader(int index)
+    {
+        return new TextBlock
+        {
+            Text = $"Ulica {index}:",
+            FontWeight = FontWeights.SemiBold,
+            Margin = new Thickness(0, 0, 0, 4)
+        };
+    }
+
+    private static StackPanel CreateLabeledRow(string label, string textBoxName, double textBoxWidth)
+    {
+        StackPanel row = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Margin = new Thickness(0, 2, 0, 2)
+        };
+        row.Children.Add(new TextBlock { Text = label, Width = 80, VerticalAlignment = VerticalAlignment.Center });
+        row.Children.Add(new TextBox { Name = textBoxName, Width = textBoxWidth });
+        return row;
     }
 
     private void SelectImagesButton_Click(object sender, RoutedEventArgs e)
@@ -96,93 +102,130 @@ public partial class DistrictRegWindow : Window
     {
         ErrorTextBlock.Visibility = Visibility.Collapsed;
 
-        if (string.IsNullOrWhiteSpace(NameTextBox.Text) ||
-            string.IsNullOrWhiteSpace(DescriptionTextBox.Text) ||
-            string.IsNullOrWhiteSpace(CityTextBox.Text) ||
-            string.IsNullOrWhiteSpace(CountryTextBox.Text))
+        if (!ValidateBasicFields()) return;
+        if (!TryParseStreets(out List<DistrictStreet> streets)) return;
+        if (!ValidateImagesSelected()) return;
+
+        District district = BuildDistrict(streets);
+        TryPersistDistrict(district);
+    }
+
+    private bool ValidateBasicFields()
+    {
+        bool allFilled = !string.IsNullOrWhiteSpace(NameTextBox.Text)
+                         && !string.IsNullOrWhiteSpace(DescriptionTextBox.Text)
+                         && !string.IsNullOrWhiteSpace(CityTextBox.Text)
+                         && !string.IsNullOrWhiteSpace(CountryTextBox.Text);
+
+        if (!allFilled)
         {
             ShowError("Sva polja moraju biti popunjena.");
-            return;
+            return false;
         }
+        return true;
+    }
 
-        if (!int.TryParse(NumberOfStreetsTextBox.Text, out int numberOfStreets) || numberOfStreets <= 0)
+    private bool TryParseStreets(out List<DistrictStreet> streets)
+    {
+        streets = new List<DistrictStreet>();
+
+        if (!TryParsePositive(NumberOfStreetsTextBox.Text, out _))
         {
             ShowError("Broj ulica mora biti pozitivan broj.");
-            return;
+            return false;
         }
 
-        List<DistrictStreet> streets = new List<DistrictStreet>();
         foreach (Border border in StreetsPanel.Children)
         {
-            StackPanel streetPanel = (StackPanel)border.Child;
-
-            StackPanel nameRow = (StackPanel)streetPanel.Children[1];
-            TextBox nameBox = (TextBox)nameRow.Children[1];
-
-            StackPanel startRow = (StackPanel)streetPanel.Children[2];
-            TextBox startBox = (TextBox)startRow.Children[1];
-
-            StackPanel endRow = (StackPanel)streetPanel.Children[3];
-            TextBox endBox = (TextBox)endRow.Children[1];
-
-            string streetName = nameBox.Text.Trim();
-            if (string.IsNullOrWhiteSpace(streetName))
-            {
-                ShowError("Naziv ulice ne sme biti prazan.");
-                return;
-            }
-
-            if (!int.TryParse(startBox.Text.Trim(), out int startNumber) || startNumber <= 0)
-            {
-                ShowError($"Neispravan pocetni broj za ulicu '{streetName}'.");
-                return;
-            }
-
-            if (!int.TryParse(endBox.Text.Trim(), out int endNumber) || endNumber <= 0)
-            {
-                ShowError($"Neispravan krajnji broj za ulicu '{streetName}'.");
-                return;
-            }
-
-            if (endNumber < startNumber)
-            {
-                ShowError($"Krajnji broj mora biti veci ili jednak pocetnom za ulicu '{streetName}'.");
-                return;
-            }
-
-            streets.Add(new DistrictStreet(streetName, startNumber, endNumber));
+            if (!TryParseSingleStreet(border, out DistrictStreet? street))
+                return false;
+            streets.Add(street!);
         }
 
+        return true;
+    }
+
+    private bool TryParseSingleStreet(Border border, out DistrictStreet? street)
+    {
+        street = null;
+        (string name, TextBox startBox, TextBox endBox) = ExtractStreetInputs(border);
+
+        if (string.IsNullOrWhiteSpace(name))
+            return FailStreet("Naziv ulice ne sme biti prazan.");
+
+        if (!TryParsePositive(startBox.Text, out int startNumber))
+            return FailStreet($"Neispravan pocetni broj za ulicu '{name}'.");
+
+        if (!TryParsePositive(endBox.Text, out int endNumber))
+            return FailStreet($"Neispravan krajnji broj za ulicu '{name}'.");
+
+        if (endNumber < startNumber)
+            return FailStreet($"Krajnji broj mora biti veci ili jednak pocetnom za ulicu '{name}'.");
+
+        street = new DistrictStreet(name, startNumber, endNumber);
+        return true;
+    }
+
+    private static (string name, TextBox startBox, TextBox endBox) ExtractStreetInputs(Border border)
+    {
+        StackPanel streetPanel = (StackPanel)border.Child;
+        TextBox nameBox = (TextBox)((StackPanel)streetPanel.Children[1]).Children[1];
+        TextBox startBox = (TextBox)((StackPanel)streetPanel.Children[2]).Children[1];
+        TextBox endBox = (TextBox)((StackPanel)streetPanel.Children[3]).Children[1];
+        return (nameBox.Text.Trim(), startBox, endBox);
+    }
+
+    private static bool TryParsePositive(string text, out int value)
+    {
+        return int.TryParse(text.Trim(), out value) && value > 0;
+    }
+
+    private bool FailStreet(string message)
+    {
+        ShowError(message);
+        return false;
+    }
+
+    private bool ValidateImagesSelected()
+    {
         if (_selectedImagePaths.Count == 0)
         {
             ShowError("Morate odabrati bar jednu sliku.");
-            return;
+            return false;
         }
+        return true;
+    }
 
+    private District BuildDistrict(List<DistrictStreet> streets)
+    {
         Location location = new Location(CityTextBox.Text.Trim(), CountryTextBox.Text.Trim());
         User coordinator = new User(_coordinatorId, "", "", "", "", DateTime.MinValue, "DistrictCoordinator");
 
         District district = new District(
             NameTextBox.Text.Trim(),
             DescriptionTextBox.Text.Trim(),
-            location,
-            0,
-            coordinator);
+            location, 0, coordinator);
 
+        AttachStreetsAndImages(district, streets);
+        return district;
+    }
+
+    private void AttachStreetsAndImages(District district, List<DistrictStreet> streets)
+    {
         foreach (DistrictStreet street in streets)
-        {
             district.AddStreet(street);
-        }
 
         foreach (string path in _selectedImagePaths)
-        {
             district.AddImage(new DomainImage(path));
-        }
+    }
 
+    private void TryPersistDistrict(District district)
+    {
         try
         {
             _districtRepository.Create(district);
-            MessageBox.Show("Kvart je uspesno registrovan!", "Uspeh", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Kvart je uspesno registrovan!", "Uspeh",
+                MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
         }
         catch (Exception ex)

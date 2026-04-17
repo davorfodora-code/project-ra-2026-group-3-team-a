@@ -9,70 +9,84 @@ public class DistrictDbRepository
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
-        // 1. Upiši lokaciju
-        IDbCommand locationCmd = connection.CreateCommand();
-        locationCmd.CommandText = @"
+        long locationId = InsertLocation(connection, district.Location);
+        long districtId = InsertDistrict(connection, district, locationId);
+        InsertStreets(connection, district.Streets, districtId);
+        InsertImages(connection, district.Images, districtId);
+
+        Location newLocation = new Location(locationId, district.Location.City, district.Location.Country);
+        return new District(districtId, district.Name, district.Description, newLocation, district.Budget, district.Coordinator);
+    }
+
+    private long InsertLocation(IDbConnection connection, Location location)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
             INSERT INTO locations (city, country)
             VALUES (@city, @country)
             RETURNING id";
 
-        AddParameter(locationCmd, "@city", district.Location.City);
-        AddParameter(locationCmd, "@country", district.Location.Country);
-        long locationId = Convert.ToInt64(locationCmd.ExecuteScalar());
+        AddParameter(cmd, "@city", location.City);
+        AddParameter(cmd, "@country", location.Country);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
 
-        // 2. Upiši kvart
-        IDbCommand districtCmd = connection.CreateCommand();
-        districtCmd.CommandText = @"
+    private long InsertDistrict(IDbConnection connection, District district, long locationId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
             INSERT INTO districts (name, description, location_id, budget, coordinator_id)
             VALUES (@name, @description, @locationId, @budget, @coordinatorId)
             RETURNING id";
 
-        AddParameter(districtCmd, "@name", district.Name);
-        AddParameter(districtCmd, "@description", district.Description);
-        AddParameter(districtCmd, "@locationId", locationId);
-        AddParameter(districtCmd, "@budget", district.Budget);
-        AddParameter(districtCmd, "@coordinatorId", district.Coordinator.Id);
-        long districtId = Convert.ToInt64(districtCmd.ExecuteScalar());
+        AddParameter(cmd, "@name", district.Name);
+        AddParameter(cmd, "@description", district.Description);
+        AddParameter(cmd, "@locationId", locationId);
+        AddParameter(cmd, "@budget", district.Budget);
+        AddParameter(cmd, "@coordinatorId", district.Coordinator.Id);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
 
-        // 3. Upiši ulice
-        foreach (DistrictStreet street in district.Streets)
+    private void InsertStreets(IDbConnection connection, IEnumerable<DistrictStreet> streets, long districtId)
+    {
+        foreach (DistrictStreet street in streets)
         {
-            IDbCommand streetCmd = connection.CreateCommand();
-            streetCmd.CommandText = @"
-                INSERT INTO district_streets (district_id, street_name, start_number, end_number)
-                VALUES (@districtId, @streetName, @startNumber, @endNumber)
-                RETURNING id";
-
-            AddParameter(streetCmd, "@districtId", districtId);
-            AddParameter(streetCmd, "@streetName", street.StreetName);
-            AddParameter(streetCmd, "@startNumber", street.StartNumber);
-            AddParameter(streetCmd, "@endNumber", street.EndNumber);
-            streetCmd.ExecuteScalar();
+            InsertSingleStreet(connection, street, districtId);
         }
+    }
 
-        // 4. Upiši slike
-        foreach (Image image in district.Images)
+    private void InsertSingleStreet(IDbConnection connection, DistrictStreet street, long districtId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO district_streets (district_id, street_name, start_number, end_number)
+            VALUES (@districtId, @streetName, @startNumber, @endNumber)";
+
+        AddParameter(cmd, "@districtId", districtId);
+        AddParameter(cmd, "@streetName", street.StreetName);
+        AddParameter(cmd, "@startNumber", street.StartNumber);
+        AddParameter(cmd, "@endNumber", street.EndNumber);
+        cmd.ExecuteNonQuery();
+    }
+
+    private void InsertImages(IDbConnection connection, IEnumerable<Image> images, long districtId)
+    {
+        foreach (Image image in images)
         {
-            IDbCommand imageCmd = connection.CreateCommand();
-            imageCmd.CommandText = @"
-                INSERT INTO images (url, district_id)
-                VALUES (@url, @districtId)
-                RETURNING id";
-
-            AddParameter(imageCmd, "@url", image.Url);
-            AddParameter(imageCmd, "@districtId", districtId);
-            imageCmd.ExecuteScalar();
+            InsertSingleImage(connection, image, districtId);
         }
+    }
 
-        // Vrati District objekat sa dodeljenim Id-ovima
-        return new District(
-            districtId,
-            district.Name,
-            district.Description,
-            new Location(locationId, district.Location.City, district.Location.Country),
-            district.Budget,
-            district.Coordinator
-        );
+    private void InsertSingleImage(IDbConnection connection, Image image, long districtId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO images (url, district_id)
+            VALUES (@url, @districtId)";
+
+        AddParameter(cmd, "@url", image.Url);
+        AddParameter(cmd, "@districtId", districtId);
+        cmd.ExecuteNonQuery();
     }
 
     public List<District> GetAll()
