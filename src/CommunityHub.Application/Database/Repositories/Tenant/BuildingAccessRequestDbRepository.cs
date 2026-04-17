@@ -69,50 +69,61 @@ public class BuildingAccessRequestDbRepository
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            User tenant = new User(
-                reader.GetInt64(reader.GetOrdinal("tenant_id")),
-                reader.GetString(reader.GetOrdinal("username")),
-                reader.GetString(reader.GetOrdinal("password")),
-                reader.GetString(reader.GetOrdinal("name")),
-                reader.GetString(reader.GetOrdinal("surname")),
-                reader.GetDateTime(reader.GetOrdinal("birthday")),
-                reader.GetString(reader.GetOrdinal("role")));
-
-            Address address = new Address(
-                reader.GetInt64(reader.GetOrdinal("address_id")),
-                reader.GetString(reader.GetOrdinal("street")),
-                reader.GetString(reader.GetOrdinal("street_number")));
-
-            Location location = new Location(
-                reader.GetInt64(reader.GetOrdinal("location_id")),
-                reader.GetString(reader.GetOrdinal("city")),
-                reader.GetString(reader.GetOrdinal("country")));
-
-            Building building = new Building(
-                reader.GetInt64(reader.GetOrdinal("building_id")),
-                address,
-                reader.GetString(reader.GetOrdinal("neighborhood")),
-                location,
-                reader.GetInt32(reader.GetOrdinal("number_of_floors")),
-                reader.GetInt64(reader.GetOrdinal("manager_id")));
-
-            string? rejectionReason = reader.IsDBNull(reader.GetOrdinal("rejection_reason"))
-                ? null
-                : reader.GetString(reader.GetOrdinal("rejection_reason"));
-
-            BuildingAccessRequest request = new BuildingAccessRequest(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                tenant,
-                building,
-                reader.GetInt32(reader.GetOrdinal("apartment_number")),
-                reader.GetDateTime(reader.GetOrdinal("created_at")),
-                reader.GetString(reader.GetOrdinal("status")),
-                rejectionReason);
-
-            requests.Add(request);
+            requests.Add(MapRequest(reader));
         }
 
         return requests;
+    }
+
+    private static BuildingAccessRequest MapRequest(IDataReader reader)
+    {
+        User tenant = MapTenant(reader);
+        Building building = MapBuilding(reader);
+        string? rejectionReason = reader.IsDBNull(reader.GetOrdinal("rejection_reason"))
+            ? null
+            : reader.GetString(reader.GetOrdinal("rejection_reason"));
+
+        return new BuildingAccessRequest(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            tenant,
+            building,
+            reader.GetInt32(reader.GetOrdinal("apartment_number")),
+            reader.GetDateTime(reader.GetOrdinal("created_at")),
+            reader.GetString(reader.GetOrdinal("status")),
+            rejectionReason);
+    }
+
+    private static User MapTenant(IDataReader reader)
+    {
+        return new User(
+            reader.GetInt64(reader.GetOrdinal("tenant_id")),
+            reader.GetString(reader.GetOrdinal("username")),
+            reader.GetString(reader.GetOrdinal("password")),
+            reader.GetString(reader.GetOrdinal("name")),
+            reader.GetString(reader.GetOrdinal("surname")),
+            reader.GetDateTime(reader.GetOrdinal("birthday")),
+            reader.GetString(reader.GetOrdinal("role")));
+    }
+
+    private static Building MapBuilding(IDataReader reader)
+    {
+        Address address = new Address(
+            reader.GetInt64(reader.GetOrdinal("address_id")),
+            reader.GetString(reader.GetOrdinal("street")),
+            reader.GetString(reader.GetOrdinal("street_number")));
+
+        Location location = new Location(
+            reader.GetInt64(reader.GetOrdinal("location_id")),
+            reader.GetString(reader.GetOrdinal("city")),
+            reader.GetString(reader.GetOrdinal("country")));
+
+        return new Building(
+            reader.GetInt64(reader.GetOrdinal("building_id")),
+            address,
+            reader.GetString(reader.GetOrdinal("neighborhood")),
+            location,
+            reader.GetInt32(reader.GetOrdinal("number_of_floors")),
+            reader.GetInt64(reader.GetOrdinal("manager_id")));
     }
 
     public void Delete(long requestId)
