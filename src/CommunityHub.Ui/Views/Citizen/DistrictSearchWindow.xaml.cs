@@ -92,80 +92,119 @@ public partial class DistrictSearchWindow : Window
 
     private void AccessDistrictButton_Click(object sender, RoutedEventArgs e)
     {
-        if (DistrictsDataGrid.SelectedItem is not DistrictRowViewModel selectedVm)
+        if (!TryGetSelectedDistrict(out District district))
         {
-            MessageBox.Show("Morate selektovati kvart.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        District? district = FindDistrictById(selectedVm.DistrictId);
-        if (district == null)
+        if (TryHandleExistingMembership(district))
         {
-            MessageBox.Show("Selektovani kvart nije pronađen.", "Greška",
-                MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
-        if (_membershipRepository.HasMembership(_userId))
+        if (!TryGetResidenceStreetParts(out string streetName, out int streetNumber))
         {
-            long? existingDistrictId = _membershipRepository.GetMembershipDistrictId(_userId);
-            if (existingDistrictId == district.Id)
-            {
-                MessageBox.Show("Već ste član ovog kvarta.", "Informacija",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            MessageBox.Show("Već ste član nekog kvarta. Ne možete tražiti pristup drugom kvartu.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        string? rawAddress = _userProfileRepository.GetAddressByUserId(_userId);
-        if (string.IsNullOrWhiteSpace(rawAddress))
-        {
-            MessageBox.Show("Nije moguće pročitati adresu stanovanja iz profila.", "Greška",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
-
-        if (!TryParseResidenceStreetAndNumber(rawAddress, out string streetName, out int streetNumber))
-        {
-            MessageBox.Show(
-                "Adresa stanovanja nije u očekivanom formatu (npr. 'Zemunska 10, Novi Sad').",
-                "Greška",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
             return;
         }
 
         try
         {
-            if (IsAddressInDistrict(streetName, streetNumber, district))
-            {
-                _membershipRepository.Create(_userId, district.Id, DateTime.Now);
-                MessageBox.Show("Adresa se poklapa sa kvartom — automatski ste učlanjeni.", "Uspeh",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            if (_accessRequestRepository.ExistsPending(_userId, district.Id))
-            {
-                MessageBox.Show("Već imate aktivan zahtev za ovaj kvart.", "Upozorenje",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            _accessRequestRepository.Create(_userId, district.Id);
-            MessageBox.Show("Kreiran je zahtev za pristup kvartu (status: Pending).", "Uspeh",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            ProcessDistrictAccess(district, streetName, streetNumber);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Greška: {ex.Message}", "Greška",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowMessageBox($"Greška: {ex.Message}", "Greška", MessageBoxImage.Error);
         }
+    }
+
+    private bool TryGetSelectedDistrict(out District district)
+    {
+        district = null!;
+
+        if (DistrictsDataGrid.SelectedItem is not DistrictRowViewModel selectedVm)
+        {
+            ShowMessageBox("Morate selektovati kvart.", "Upozorenje", MessageBoxImage.Warning);
+            return false;
+        }
+
+        District? resolved = FindDistrictById(selectedVm.DistrictId);
+        if (resolved == null)
+        {
+            ShowMessageBox("Selektovani kvart nije pronađen.", "Greška", MessageBoxImage.Error);
+            return false;
+        }
+
+        district = resolved;
+        return true;
+    }
+
+    private bool TryHandleExistingMembership(District district)
+    {
+        if (!_membershipRepository.HasMembership(_userId))
+        {
+            return false;
+        }
+
+        long? existingDistrictId = _membershipRepository.GetMembershipDistrictId(_userId);
+        if (existingDistrictId == district.Id)
+        {
+            ShowMessageBox("Već ste član ovog kvarta.", "Informacija", MessageBoxImage.Information);
+            return true;
+        }
+
+        ShowMessageBox(
+            "Već ste član nekog kvarta. Ne možete tražiti pristup drugom kvartu.",
+            "Upozorenje",
+            MessageBoxImage.Warning);
+        return true;
+    }
+
+    private bool TryGetResidenceStreetParts(out string streetName, out int streetNumber)
+    {
+        streetName = string.Empty;
+        streetNumber = 0;
+
+        string? rawAddress = _userProfileRepository.GetAddressByUserId(_userId);
+        if (string.IsNullOrWhiteSpace(rawAddress))
+        {
+            ShowMessageBox("Nije moguće pročitati adresu stanovanja iz profila.", "Greška", MessageBoxImage.Error);
+            return false;
+        }
+
+        if (!TryParseResidenceStreetAndNumber(rawAddress, out streetName, out streetNumber))
+        {
+            ShowMessageBox(
+                "Adresa stanovanja nije u očekivanom formatu (npr. 'Zemunska 10, Novi Sad').",
+                "Greška",
+                MessageBoxImage.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ProcessDistrictAccess(District district, string streetName, int streetNumber)
+    {
+        if (IsAddressInDistrict(streetName, streetNumber, district))
+        {
+            _membershipRepository.Create(_userId, district.Id, DateTime.Now);
+            ShowMessageBox("Adresa se poklapa sa kvartom — automatski ste učlanjeni.", "Uspeh", MessageBoxImage.Information);
+            return;
+        }
+
+        if (_accessRequestRepository.ExistsPending(_userId, district.Id))
+        {
+            ShowMessageBox("Već imate aktivan zahtev za ovaj kvart.", "Upozorenje", MessageBoxImage.Warning);
+            return;
+        }
+
+        _accessRequestRepository.Create(_userId, district.Id);
+        ShowMessageBox("Kreiran je zahtev za pristup kvartu (status: Pending).", "Uspeh", MessageBoxImage.Information);
+    }
+
+    private static void ShowMessageBox(string text, string caption, MessageBoxImage image)
+    {
+        MessageBox.Show(text, caption, MessageBoxButton.OK, image);
     }
 
     private District? FindDistrictById(long districtId)
