@@ -81,75 +81,13 @@ public partial class BuildingRegistrationWindow : Window
     {
         ErrorTextBlock.Visibility = Visibility.Collapsed;
 
-        // Validacija osnovnih polja
-        if (string.IsNullOrWhiteSpace(StreetTextBox.Text) ||
-            string.IsNullOrWhiteSpace(StreetNumberTextBox.Text) ||
-            string.IsNullOrWhiteSpace(DistrictTextBox.Text) ||
-            string.IsNullOrWhiteSpace(CityTextBox.Text) ||
-            string.IsNullOrWhiteSpace(CountryTextBox.Text))
-        {
-            ShowError("Sva polja moraju biti popunjena.");
-            return;
-        }
+        if (!ValidateBasicFields()) return;
 
-        if (!int.TryParse(NumberOfFloorsTextBox.Text, out int numberOfFloors) || numberOfFloors <= 0)
-        {
-            ShowError("Broj spratova mora biti pozitivan broj.");
-            return;
-        }
+        List<Floor>? floors = ParseFloors();
+        if (floors == null) return;
 
-        // Validacija stanova po spratu
-        List<Floor> floors = new List<Floor>();
-        foreach (StackPanel floorPanel in FloorsPanel.Children)
-        {
-            TextBox textBox = (TextBox)floorPanel.Children[1];
-            int floorNumber = (int)textBox.Tag;
+        Building building = BuildBuilding(floors);
 
-            string[] apartmentParts = textBox.Text.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            if (apartmentParts.Length == 0)
-            {
-                ShowError($"Sprat {floorNumber} mora imati bar jedan stan.");
-                return;
-            }
-
-            Floor floor = new Floor(floorNumber);
-            foreach (string part in apartmentParts)
-            {
-                if (!int.TryParse(part.Trim(), out int aptNumber))
-                {
-                    ShowError($"Neispravan broj stana na spratu {floorNumber}: '{part.Trim()}'");
-                    return;
-                }
-                floor.AddApartment(new Apartment(aptNumber));
-            }
-            floors.Add(floor);
-        }
-
-        // Validacija slika
-        if (_selectedImagePaths.Count == 0)
-        {
-            ShowError("Morate odabrati bar jednu sliku.");
-            return;
-        }
-
-        // Kreiranje Building objekta — naselje je obican tekst, nije zaseban entitet
-        Address address = new Address(StreetTextBox.Text.Trim(), StreetNumberTextBox.Text.Trim());
-        string neighborhood = DistrictTextBox.Text.Trim();
-        Location location = new Location(CityTextBox.Text.Trim(), CountryTextBox.Text.Trim());
-
-        Building building = new Building(address, neighborhood, location, numberOfFloors, _managerId);
-
-        foreach (Floor floor in floors)
-        {
-            building.AddFloor(floor);
-        }
-
-        foreach (string path in _selectedImagePaths)
-        {
-            building.AddImage(new BuildingImage(path));
-        }
-
-        // Upis u bazu
         try
         {
             _buildingRepository.Create(building);
@@ -160,6 +98,87 @@ public partial class BuildingRegistrationWindow : Window
         {
             ShowError($"Greška prilikom registracije: {ex.Message}");
         }
+    }
+
+    // Proverava da li su sva osnovna polja popunjena i ispravna
+    private bool ValidateBasicFields()
+    {
+        if (string.IsNullOrWhiteSpace(StreetTextBox.Text) ||
+            string.IsNullOrWhiteSpace(StreetNumberTextBox.Text) ||
+            string.IsNullOrWhiteSpace(DistrictTextBox.Text) ||
+            string.IsNullOrWhiteSpace(CityTextBox.Text) ||
+            string.IsNullOrWhiteSpace(CountryTextBox.Text))
+        {
+            ShowError("Sva polja moraju biti popunjena.");
+            return false;
+        }
+
+        if (!int.TryParse(NumberOfFloorsTextBox.Text, out int numberOfFloors) || numberOfFloors <= 0)
+        {
+            ShowError("Broj spratova mora biti pozitivan broj.");
+            return false;
+        }
+
+        if (_selectedImagePaths.Count == 0)
+        {
+            ShowError("Morate odabrati bar jednu sliku.");
+            return false;
+        }
+
+        return true;
+    }
+
+    // Parsira stanove po spratovima iz dinamički generisanih polja; vraća null ako validacija ne prođe
+    private List<Floor>? ParseFloors()
+    {
+        List<Floor> floors = new List<Floor>();
+
+        foreach (StackPanel floorPanel in FloorsPanel.Children)
+        {
+            TextBox textBox = (TextBox)floorPanel.Children[1];
+            int floorNumber = (int)textBox.Tag;
+
+            string[] apartmentParts = textBox.Text.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            if (apartmentParts.Length == 0)
+            {
+                ShowError($"Sprat {floorNumber} mora imati bar jedan stan.");
+                return null;
+            }
+
+            Floor floor = new Floor(floorNumber);
+            foreach (string part in apartmentParts)
+            {
+                if (!int.TryParse(part.Trim(), out int aptNumber))
+                {
+                    ShowError($"Neispravan broj stana na spratu {floorNumber}: '{part.Trim()}'");
+                    return null;
+                }
+                floor.AddApartment(new Apartment(aptNumber));
+            }
+
+            floors.Add(floor);
+        }
+
+        return floors;
+    }
+
+    // Sastavlja Building objekat od unesenih podataka i spratova
+    private Building BuildBuilding(List<Floor> floors)
+    {
+        Address address = new Address(StreetTextBox.Text.Trim(), StreetNumberTextBox.Text.Trim());
+        string neighborhood = DistrictTextBox.Text.Trim();
+        Location location = new Location(CityTextBox.Text.Trim(), CountryTextBox.Text.Trim());
+        int numberOfFloors = int.Parse(NumberOfFloorsTextBox.Text);
+
+        Building building = new Building(address, neighborhood, location, numberOfFloors, _managerId);
+
+        foreach (Floor floor in floors)
+            building.AddFloor(floor);
+
+        foreach (string path in _selectedImagePaths)
+            building.AddImage(new BuildingImage(path));
+
+        return building;
     }
 
     private void CancelButton_Click(object sender, RoutedEventArgs e)

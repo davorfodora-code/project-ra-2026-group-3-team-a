@@ -9,84 +9,12 @@ public class BuildingDbRepository
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
-        // 1. Upiši lokaciju
-        IDbCommand locationCmd = connection.CreateCommand();
-        locationCmd.CommandText = @"
-            INSERT INTO locations (city, country)
-            VALUES (@city, @country)
-            RETURNING id";
+        long locationId = InsertLocation(connection, building.Location);
+        long addressId = InsertAddress(connection, building.Address);
+        long buildingId = InsertBuilding(connection, addressId, locationId, building);
+        InsertFloorsAndApartments(connection, buildingId, building.Floors);
+        InsertImages(connection, buildingId, building.Images);
 
-        AddParameter(locationCmd, "@city", building.Location.City);
-        AddParameter(locationCmd, "@country", building.Location.Country);
-        long locationId = Convert.ToInt64(locationCmd.ExecuteScalar());
-
-        // 2. Upiši adresu
-        IDbCommand addressCmd = connection.CreateCommand();
-        addressCmd.CommandText = @"
-            INSERT INTO addresses (street, street_number)
-            VALUES (@street, @streetNumber)
-            RETURNING id";
-
-        AddParameter(addressCmd, "@street", building.Address.Street);
-        AddParameter(addressCmd, "@streetNumber", building.Address.StreetNumber);
-        long addressId = Convert.ToInt64(addressCmd.ExecuteScalar());
-
-        // 3. Upiši zgradu (naselje se upisuje direktno kao tekst, nije zaseban entitet)
-        IDbCommand buildingCmd = connection.CreateCommand();
-        buildingCmd.CommandText = @"
-            INSERT INTO buildings (address_id, neighborhood, location_id, number_of_floors, manager_id)
-            VALUES (@addressId, @neighborhood, @locationId, @numberOfFloors, @managerId)
-            RETURNING id";
-
-        AddParameter(buildingCmd, "@addressId", addressId);
-        AddParameter(buildingCmd, "@neighborhood", building.Neighborhood);
-        AddParameter(buildingCmd, "@locationId", locationId);
-        AddParameter(buildingCmd, "@numberOfFloors", building.NumberOfFloors);
-        AddParameter(buildingCmd, "@managerId", building.ManagerId);
-        long buildingId = Convert.ToInt64(buildingCmd.ExecuteScalar());
-
-        // 4. Upiši spratove i stanove
-        foreach (Floor floor in building.Floors)
-        {
-            IDbCommand floorCmd = connection.CreateCommand();
-            floorCmd.CommandText = @"
-                INSERT INTO floors (building_id, floor_number)
-                VALUES (@buildingId, @floorNumber)
-                RETURNING id";
-
-            AddParameter(floorCmd, "@buildingId", buildingId);
-            AddParameter(floorCmd, "@floorNumber", floor.FloorNumber);
-            long floorId = Convert.ToInt64(floorCmd.ExecuteScalar());
-
-            foreach (Apartment apartment in floor.Apartments)
-            {
-                IDbCommand aptCmd = connection.CreateCommand();
-                aptCmd.CommandText = @"
-                    INSERT INTO apartments (floor_id, apartment_number)
-                    VALUES (@floorId, @apartmentNumber)
-                    RETURNING id";
-
-                AddParameter(aptCmd, "@floorId", floorId);
-                AddParameter(aptCmd, "@apartmentNumber", apartment.ApartmentNumber);
-                aptCmd.ExecuteScalar();
-            }
-        }
-
-        // 5. Upiši slike
-        foreach (BuildingImage image in building.Images)
-        {
-            IDbCommand imgCmd = connection.CreateCommand();
-            imgCmd.CommandText = @"
-                INSERT INTO building_images (building_id, image_path)
-                VALUES (@buildingId, @imagePath)
-                RETURNING id";
-
-            AddParameter(imgCmd, "@buildingId", buildingId);
-            AddParameter(imgCmd, "@imagePath", image.ImagePath);
-            imgCmd.ExecuteScalar();
-        }
-
-        // Vrati Building objekat sa dodeljenim Id-ovima
         return new Building(
             buildingId,
             new Address(addressId, building.Address.Street, building.Address.StreetNumber),
@@ -101,6 +29,121 @@ public class BuildingDbRepository
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
+        IDbCommand cmd = BuildSearchCommand(connection, address, neighborhood, city, country);
+        List<Building> buildings = new List<Building>();
+
+        using (IDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+                buildings.Add(ReadBuildingFromReader(reader));
+        }
+
+        LoadImagesForBuildings(connection, buildings);
+        return buildings;
+    }
+
+    // Upisuje lokaciju i vraća njen id
+    private long InsertLocation(IDbConnection connection, Location location)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO locations (city, country)
+            VALUES (@city, @country)
+            RETURNING id";
+
+        AddParameter(cmd, "@city", location.City);
+        AddParameter(cmd, "@country", location.Country);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
+
+    // Upisuje adresu i vraća njen id
+    private long InsertAddress(IDbConnection connection, Address address)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO addresses (street, street_number)
+            VALUES (@street, @streetNumber)
+            RETURNING id";
+
+        AddParameter(cmd, "@street", address.Street);
+        AddParameter(cmd, "@streetNumber", address.StreetNumber);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
+
+    // Upisuje zgradu i vraća njen id
+    private long InsertBuilding(IDbConnection connection, long addressId, long locationId, Building building)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO buildings (address_id, neighborhood, location_id, number_of_floors, manager_id)
+            VALUES (@addressId, @neighborhood, @locationId, @numberOfFloors, @managerId)
+            RETURNING id";
+
+        AddParameter(cmd, "@addressId", addressId);
+        AddParameter(cmd, "@neighborhood", building.Neighborhood);
+        AddParameter(cmd, "@locationId", locationId);
+        AddParameter(cmd, "@numberOfFloors", building.NumberOfFloors);
+        AddParameter(cmd, "@managerId", building.ManagerId);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
+
+    // Upisuje sve spratove i njihove stanove za datu zgradu
+    private void InsertFloorsAndApartments(IDbConnection connection, long buildingId, IEnumerable<Floor> floors)
+    {
+        foreach (Floor floor in floors)
+        {
+            long floorId = InsertFloor(connection, buildingId, floor.FloorNumber);
+            foreach (Apartment apartment in floor.Apartments)
+                InsertApartment(connection, floorId, apartment.ApartmentNumber);
+        }
+    }
+
+    // Upisuje jedan sprat i vraća njegov id
+    private long InsertFloor(IDbConnection connection, long buildingId, int floorNumber)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO floors (building_id, floor_number)
+            VALUES (@buildingId, @floorNumber)
+            RETURNING id";
+
+        AddParameter(cmd, "@buildingId", buildingId);
+        AddParameter(cmd, "@floorNumber", floorNumber);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
+
+    // Upisuje jedan stan
+    private void InsertApartment(IDbConnection connection, long floorId, int apartmentNumber)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO apartments (floor_id, apartment_number)
+            VALUES (@floorId, @apartmentNumber)";
+
+        AddParameter(cmd, "@floorId", floorId);
+        AddParameter(cmd, "@apartmentNumber", apartmentNumber);
+        cmd.ExecuteNonQuery();
+    }
+
+    // Upisuje sve slike za datu zgradu
+    private void InsertImages(IDbConnection connection, long buildingId, IEnumerable<BuildingImage> images)
+    {
+        foreach (BuildingImage image in images)
+        {
+            IDbCommand cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+                INSERT INTO building_images (building_id, image_path)
+                VALUES (@buildingId, @imagePath)";
+
+            AddParameter(cmd, "@buildingId", buildingId);
+            AddParameter(cmd, "@imagePath", image.ImagePath);
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    // Pravi SELECT upit za pretragu zgrada sa dinamičkim filterima
+    private IDbCommand BuildSearchCommand(IDbConnection connection, string? address, string? neighborhood, string? city, string? country)
+    {
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             SELECT b.id, b.neighborhood, b.number_of_floors, b.manager_id,
@@ -138,43 +181,44 @@ public class BuildingDbRepository
             AddParameter(cmd, "@country", "%" + country + "%");
         }
 
-        List<Building> buildings = new List<Building>();
+        return cmd;
+    }
 
-        using (IDataReader reader = cmd.ExecuteReader())
-        {
-            while (reader.Read())
-            {
-                Address addr = new Address(
-                    reader.GetInt64(reader.GetOrdinal("address_id")),
-                    reader.GetString(reader.GetOrdinal("street")),
-                    reader.GetString(reader.GetOrdinal("street_number")));
+    // Čita jedan Building objekat iz reader-a
+    private Building ReadBuildingFromReader(IDataReader reader)
+    {
+        Address addr = new Address(
+            reader.GetInt64(reader.GetOrdinal("address_id")),
+            reader.GetString(reader.GetOrdinal("street")),
+            reader.GetString(reader.GetOrdinal("street_number")));
 
-                Location loc = new Location(
-                    reader.GetInt64(reader.GetOrdinal("location_id")),
-                    reader.GetString(reader.GetOrdinal("city")),
-                    reader.GetString(reader.GetOrdinal("country")));
+        Location loc = new Location(
+            reader.GetInt64(reader.GetOrdinal("location_id")),
+            reader.GetString(reader.GetOrdinal("city")),
+            reader.GetString(reader.GetOrdinal("country")));
 
-                Building building = new Building(
-                    reader.GetInt64(reader.GetOrdinal("id")),
-                    addr,
-                    reader.GetString(reader.GetOrdinal("neighborhood")),
-                    loc,
-                    reader.GetInt32(reader.GetOrdinal("number_of_floors")),
-                    reader.GetInt64(reader.GetOrdinal("manager_id")));
+        Building building = new Building(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            addr,
+            reader.GetString(reader.GetOrdinal("neighborhood")),
+            loc,
+            reader.GetInt32(reader.GetOrdinal("number_of_floors")),
+            reader.GetInt64(reader.GetOrdinal("manager_id")));
 
-                building.TotalApartments = reader.GetInt32(reader.GetOrdinal("total_apartments"));
+        building.TotalApartments = reader.GetInt32(reader.GetOrdinal("total_apartments"));
+        return building;
+    }
 
-                buildings.Add(building);
-            }
-        }
-
+    // Učitava slike za svaku zgradu iz liste
+    private void LoadImagesForBuildings(IDbConnection connection, List<Building> buildings)
+    {
         foreach (Building building in buildings)
         {
-            IDbCommand imgCmd = connection.CreateCommand();
-            imgCmd.CommandText = "SELECT id, image_path FROM building_images WHERE building_id = @buildingId";
-            AddParameter(imgCmd, "@buildingId", building.Id);
+            IDbCommand cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT id, image_path FROM building_images WHERE building_id = @buildingId";
+            AddParameter(cmd, "@buildingId", building.Id);
 
-            using IDataReader imgReader = imgCmd.ExecuteReader();
+            using IDataReader imgReader = cmd.ExecuteReader();
             while (imgReader.Read())
             {
                 building.AddImage(new BuildingImage(
@@ -182,8 +226,6 @@ public class BuildingDbRepository
                     imgReader.GetString(imgReader.GetOrdinal("image_path"))));
             }
         }
-
-        return buildings;
     }
 
     // Pomoćna metoda za dodavanje parametara — smanjuje ponavljanje koda
