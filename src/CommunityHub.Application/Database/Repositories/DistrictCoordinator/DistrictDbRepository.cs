@@ -84,6 +84,25 @@ public class DistrictDbRepository
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
+        IDbCommand cmd = CreateDistrictSearchCommand(connection, name, address, city, country);
+        List<District> districts = ReadDistrictsFromSearchCommand(cmd);
+
+        foreach (District district in districts)
+        {
+            LoadDistrictStreets(connection, district);
+            LoadDistrictImages(connection, district);
+        }
+
+        return districts;
+    }
+
+    private IDbCommand CreateDistrictSearchCommand(
+        IDbConnection connection,
+        string? name,
+        string? address,
+        string? city,
+        string? country)
+    {
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             SELECT d.id, d.name, d.description, d.budget,
@@ -94,88 +113,114 @@ public class DistrictDbRepository
             JOIN users u ON u.id = d.coordinator_id
             WHERE 1=1";
 
-        if (!string.IsNullOrWhiteSpace(name))
+        AppendDistrictNameFilter(cmd, name);
+        AppendCityFilter(cmd, city);
+        AppendCountryFilter(cmd, country);
+        AppendAddressFilter(cmd, address);
+
+        return cmd;
+    }
+
+    private void AppendDistrictNameFilter(IDbCommand cmd, string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
         {
-            cmd.CommandText += " AND d.name ILIKE @name";
-            AddParameter(cmd, "@name", "%" + name.Trim() + "%");
+            return;
         }
 
-        if (!string.IsNullOrWhiteSpace(city))
+        cmd.CommandText += " AND d.name ILIKE @name";
+        AddParameter(cmd, "@name", "%" + name.Trim() + "%");
+    }
+
+    private void AppendCityFilter(IDbCommand cmd, string? city)
+    {
+        if (string.IsNullOrWhiteSpace(city))
         {
-            cmd.CommandText += " AND l.city ILIKE @city";
-            AddParameter(cmd, "@city", "%" + city.Trim() + "%");
+            return;
         }
 
-        if (!string.IsNullOrWhiteSpace(country))
+        cmd.CommandText += " AND l.city ILIKE @city";
+        AddParameter(cmd, "@city", "%" + city.Trim() + "%");
+    }
+
+    private void AppendCountryFilter(IDbCommand cmd, string? country)
+    {
+        if (string.IsNullOrWhiteSpace(country))
         {
-            cmd.CommandText += " AND l.country ILIKE @country";
-            AddParameter(cmd, "@country", "%" + country.Trim() + "%");
+            return;
         }
 
-        if (!string.IsNullOrWhiteSpace(address))
-        {
-            ParseAddressFilter(address, out string streetPart, out int? number);
+        cmd.CommandText += " AND l.country ILIKE @country";
+        AddParameter(cmd, "@country", "%" + country.Trim() + "%");
+    }
 
-            if (!string.IsNullOrWhiteSpace(streetPart))
-            {
-                cmd.CommandText += @"
+    private void AppendAddressFilter(IDbCommand cmd, string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return;
+        }
+
+        ParseAddressFilter(address, out string streetPart, out int? number);
+        if (string.IsNullOrWhiteSpace(streetPart))
+        {
+            return;
+        }
+
+        cmd.CommandText += @"
                     AND EXISTS (
                         SELECT 1
                         FROM district_streets ds
                         WHERE ds.district_id = d.id
                           AND ds.street_name ILIKE @street";
 
-                AddParameter(cmd, "@street", "%" + streetPart + "%");
+        AddParameter(cmd, "@street", "%" + streetPart + "%");
 
-                if (number.HasValue)
-                {
-                    cmd.CommandText += " AND @addressNumber BETWEEN ds.start_number AND ds.end_number";
-                    AddParameter(cmd, "@addressNumber", number.Value);
-                }
-
-                cmd.CommandText += ")";
-            }
+        if (number.HasValue)
+        {
+            cmd.CommandText += " AND @addressNumber BETWEEN ds.start_number AND ds.end_number";
+            AddParameter(cmd, "@addressNumber", number.Value);
         }
 
+        cmd.CommandText += ")";
+    }
+
+    private static List<District> ReadDistrictsFromSearchCommand(IDbCommand cmd)
+    {
         List<District> districts = new List<District>();
 
-        using (IDataReader reader = cmd.ExecuteReader())
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
         {
-            while (reader.Read())
-            {
-                Location location = new Location(
-                    reader.GetInt64(reader.GetOrdinal("location_id")),
-                    reader.GetString(reader.GetOrdinal("city")),
-                    reader.GetString(reader.GetOrdinal("country")));
-
-                User coordinator = new User(
-                    reader.GetInt64(reader.GetOrdinal("coordinator_id")),
-                    reader.GetString(reader.GetOrdinal("username")),
-                    reader.GetString(reader.GetOrdinal("password")),
-                    reader.GetString(reader.GetOrdinal("coordinator_name")),
-                    reader.GetString(reader.GetOrdinal("surname")),
-                    reader.GetDateTime(reader.GetOrdinal("birthday")),
-                    "DistrictCoordinator");
-
-                District district = new District(
-                    reader.GetInt64(reader.GetOrdinal("id")),
-                    reader.GetString(reader.GetOrdinal("name")),
-                    reader.GetString(reader.GetOrdinal("description")),
-                    location,
-                    reader.GetDecimal(reader.GetOrdinal("budget")),
-                    coordinator);
-
-                districts.Add(district);
-            }
-        }
-
-        foreach (District district in districts)
-        {
-            LoadDistrictStreets(connection, district);
-            LoadDistrictImages(connection, district);
+            districts.Add(MapDistrictSearchRow(reader));
         }
 
         return districts;
+    }
+
+    private static District MapDistrictSearchRow(IDataReader reader)
+    {
+        Location location = new Location(
+            reader.GetInt64(reader.GetOrdinal("location_id")),
+            reader.GetString(reader.GetOrdinal("city")),
+            reader.GetString(reader.GetOrdinal("country")));
+
+        User coordinator = new User(
+            reader.GetInt64(reader.GetOrdinal("coordinator_id")),
+            reader.GetString(reader.GetOrdinal("username")),
+            reader.GetString(reader.GetOrdinal("password")),
+            reader.GetString(reader.GetOrdinal("coordinator_name")),
+            reader.GetString(reader.GetOrdinal("surname")),
+            reader.GetDateTime(reader.GetOrdinal("birthday")),
+            "DistrictCoordinator");
+
+        return new District(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            reader.GetString(reader.GetOrdinal("name")),
+            reader.GetString(reader.GetOrdinal("description")),
+            location,
+            reader.GetDecimal(reader.GetOrdinal("budget")),
+            coordinator);
     }
 
     private void LoadDistrictStreets(IDbConnection connection, District district)
