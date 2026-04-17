@@ -36,14 +36,20 @@ public partial class DistrictSearchWindow : Window
 
     private void PerformSearch()
     {
+        DistrictSearchFilter filter = BuildSearchFilterFromInputs();
+        _currentDistricts = _districtRepository.Search(filter);
+        DistrictsDataGrid.ItemsSource = _currentDistricts.Select(d => new DistrictRowViewModel(d)).ToList();
+        ImagesBorder.Visibility = Visibility.Collapsed;
+    }
+
+    private DistrictSearchFilter BuildSearchFilterFromInputs()
+    {
         string? name = string.IsNullOrWhiteSpace(NameTextBox.Text) ? null : NameTextBox.Text.Trim();
         string? address = string.IsNullOrWhiteSpace(AddressTextBox.Text) ? null : AddressTextBox.Text.Trim();
         string? city = string.IsNullOrWhiteSpace(CityTextBox.Text) ? null : CityTextBox.Text.Trim();
         string? country = string.IsNullOrWhiteSpace(CountryTextBox.Text) ? null : CountryTextBox.Text.Trim();
 
-        _currentDistricts = _districtRepository.Search(name, address, city, country);
-        DistrictsDataGrid.ItemsSource = _currentDistricts.Select(d => new DistrictRowViewModel(d)).ToList();
-        ImagesBorder.Visibility = Visibility.Collapsed;
+        return new DistrictSearchFilter(name, address, city, country);
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -65,7 +71,12 @@ public partial class DistrictSearchWindow : Window
 
     private void DistrictsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (DistrictsDataGrid.SelectedItem is not DistrictRowViewModel selected)
+        UpdateDistrictPreview(DistrictsDataGrid.SelectedItem as DistrictRowViewModel);
+    }
+
+    private void UpdateDistrictPreview(DistrictRowViewModel? selected)
+    {
+        if (selected == null)
         {
             ImagesBorder.Visibility = Visibility.Collapsed;
             AccessDistrictButton.IsEnabled = false;
@@ -73,7 +84,6 @@ public partial class DistrictSearchWindow : Window
         }
 
         AccessDistrictButton.IsEnabled = true;
-
         ImagesBorder.Visibility = Visibility.Visible;
 
         if (selected.ImageUrls.Count > 0)
@@ -81,13 +91,12 @@ public partial class DistrictSearchWindow : Window
             ImagesListBox.ItemsSource = selected.ImageUrls;
             ImagesListBox.Visibility = Visibility.Visible;
             NoImagesText.Visibility = Visibility.Collapsed;
+            return;
         }
-        else
-        {
-            ImagesListBox.ItemsSource = null;
-            ImagesListBox.Visibility = Visibility.Collapsed;
-            NoImagesText.Visibility = Visibility.Visible;
-        }
+
+        ImagesListBox.ItemsSource = null;
+        ImagesListBox.Visibility = Visibility.Collapsed;
+        NoImagesText.Visibility = Visibility.Visible;
     }
 
     private void AccessDistrictButton_Click(object sender, RoutedEventArgs e)
@@ -214,32 +223,47 @@ public partial class DistrictSearchWindow : Window
 
     private static bool TryParseResidenceStreetAndNumber(string rawAddress, out string streetName, out int streetNumber)
     {
+        string streetLine = TakeStreetSegmentBeforeComma(rawAddress);
+        streetLine = NormalizeStreetLineEnd(streetLine);
+        return TryParseTrailingHouseNumber(streetLine, out streetName, out streetNumber);
+    }
+
+    private static string TakeStreetSegmentBeforeComma(string rawAddress)
+    {
         string trimmed = rawAddress.Trim();
         int commaIndex = trimmed.IndexOf(',');
         if (commaIndex > 0)
         {
-            trimmed = trimmed[..commaIndex].Trim();
+            return trimmed[..commaIndex].Trim();
         }
 
-        trimmed = trimmed.Trim().TrimEnd('.', ',', ';');
+        return trimmed;
+    }
 
-        int lastSpace = trimmed.LastIndexOf(' ');
+    private static string NormalizeStreetLineEnd(string line)
+    {
+        return line.Trim().TrimEnd('.', ',', ';');
+    }
+
+    private static bool TryParseTrailingHouseNumber(string line, out string streetName, out int streetNumber)
+    {
+        streetName = string.Empty;
+        streetNumber = 0;
+
+        int lastSpace = line.LastIndexOf(' ');
         if (lastSpace <= 0)
         {
-            streetName = string.Empty;
-            streetNumber = 0;
             return false;
         }
 
-        string lastToken = trimmed[(lastSpace + 1)..].Trim();
+        string lastToken = line[(lastSpace + 1)..].Trim();
         if (!int.TryParse(lastToken, out streetNumber) || streetNumber <= 0)
         {
-            streetName = string.Empty;
             streetNumber = 0;
             return false;
         }
 
-        streetName = trimmed[..lastSpace].Trim();
+        streetName = line[..lastSpace].Trim();
         return !string.IsNullOrWhiteSpace(streetName);
     }
 
