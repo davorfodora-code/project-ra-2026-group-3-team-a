@@ -27,27 +27,46 @@ public partial class MyDistrictRequestsWindow : Window
 
     private void ApplyFilters()
     {
-        IEnumerable<DistrictAccessRequest> filtered = _allRequests;
+        IEnumerable<DistrictAccessRequest> sequence = _allRequests;
+        sequence = ApplyStatusFilter(sequence);
+        sequence = ApplySortOrder(sequence);
 
-        if (StatusFilterComboBox.SelectedItem is ComboBoxItem statusItem)
+        RequestsDataGrid.ItemsSource = sequence
+            .Select(r => new DistrictAccessRequestRowViewModel(r))
+            .ToList();
+    }
+
+    private IEnumerable<DistrictAccessRequest> ApplyStatusFilter(IEnumerable<DistrictAccessRequest> requests)
+    {
+        if (StatusFilterComboBox.SelectedItem is not ComboBoxItem statusItem)
         {
-            string statusFilter = statusItem.Content.ToString() ?? "Svi";
-            if (statusFilter != "Svi")
-            {
-                DistrictAccessRequestStatus statusEnum = Enum.Parse<DistrictAccessRequestStatus>(statusFilter);
-                filtered = filtered.Where(r => r.Status == statusEnum);
-            }
+            return requests;
         }
 
-        if (SortComboBox.SelectedItem is ComboBoxItem sortItem)
+        string statusFilter = statusItem.Content?.ToString() ?? "Svi";
+        if (statusFilter == "Svi")
         {
-            string sortOption = sortItem.Content.ToString() ?? "Najnoviji prvo";
-            filtered = sortOption == "Najstariji prvo"
-                ? filtered.OrderBy(r => r.CreationDate)
-                : filtered.OrderByDescending(r => r.CreationDate);
+            return requests;
         }
 
-        RequestsDataGrid.ItemsSource = filtered.Select(r => new DistrictAccessRequestRowViewModel(r)).ToList();
+        DistrictAccessRequestStatus statusEnum = Enum.Parse<DistrictAccessRequestStatus>(statusFilter);
+        return requests.Where(r => r.Status == statusEnum);
+    }
+
+    private IEnumerable<DistrictAccessRequest> ApplySortOrder(IEnumerable<DistrictAccessRequest> requests)
+    {
+        if (SortComboBox.SelectedItem is not ComboBoxItem sortItem)
+        {
+            return requests;
+        }
+
+        string sortOption = sortItem.Content?.ToString() ?? "Najnoviji prvo";
+        if (sortOption == "Najstariji prvo")
+        {
+            return requests.OrderBy(r => r.CreationDate);
+        }
+
+        return requests.OrderByDescending(r => r.CreationDate);
     }
 
     private void StatusFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

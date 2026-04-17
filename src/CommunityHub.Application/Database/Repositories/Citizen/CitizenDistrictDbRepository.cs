@@ -17,8 +17,8 @@ public class CitizenDistrictDbRepository
         return _districtRepository.GetAll();
     }
 
-    public List<District> Search(string? name, string? address, string? city, string? country)
+    public List<District> Search(DistrictSearchFilter filter)
     {
-        return _districtRepository.Search(name, address, city, country);
+        return _districtRepository.Search(filter.Name, filter.Address, filter.City, filter.Country);
     }
 }
