@@ -96,8 +96,8 @@ public partial class AccessRequestsWindow : Window
         return true;
     }
 
-    // Odobrava selektovani zahtev
-    private void ApproveButton_Click(object sender, RoutedEventArgs e)
+    // Vraća selektovani zahtev ako je validan i ima status Pending, inače prikazuje grešku
+    private AccessRequestRow? GetValidatedPendingRequest()
     {
         AccessRequestRow? selected = RequestsDataGrid.SelectedItem as AccessRequestRow;
 
@@ -105,15 +105,24 @@ public partial class AccessRequestsWindow : Window
         {
             MessageBox.Show("Morate selektovati zahtev.", "Upozorenje",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
+            return null;
         }
 
         if (selected.Status != "Pending")
         {
-            MessageBox.Show("Možete odobriti samo zahteve sa statusom 'Pending'.", "Upozorenje",
+            MessageBox.Show("Akcija je moguća samo za zahteve sa statusom 'Pending'.", "Upozorenje",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
+            return null;
         }
+
+        return selected;
+    }
+
+    // Odobrava selektovani zahtev
+    private void ApproveButton_Click(object sender, RoutedEventArgs e)
+    {
+        AccessRequestRow? selected = GetValidatedPendingRequest();
+        if (selected == null) return;
 
         MessageBoxResult confirm = MessageBox.Show(
             $"Da li ste sigurni da želite da odobrite zahtev stanara {selected.TenantFullName} za stan {selected.ApartmentNumber}?",
@@ -139,23 +148,9 @@ public partial class AccessRequestsWindow : Window
     // Odbija selektovani zahtev sa opcionim obrazloženjem
     private void RejectButton_Click(object sender, RoutedEventArgs e)
     {
-        AccessRequestRow? selected = RequestsDataGrid.SelectedItem as AccessRequestRow;
+        AccessRequestRow? selected = GetValidatedPendingRequest();
+        if (selected == null) return;
 
-        if (selected == null)
-        {
-            MessageBox.Show("Morate selektovati zahtev.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        if (selected.Status != "Pending")
-        {
-            MessageBox.Show("Možete odbiti samo zahteve sa statusom 'Pending'.", "Upozorenje",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        // Dijalog za unos obrazloženja
         RejectReasonDialog dialog = new RejectReasonDialog();
         dialog.Owner = this;
 
