@@ -15,7 +15,8 @@ INSERT INTO users (id, username, password, name, surname, birthday, role, addres
 (-5, 'stefan', 'stefan123', 'Stefan', 'Stefanović', '2002-01-25', 'DistrictCoordinator',  'Terazije 22, Beograd'),
 (-6, 'milica', 'milica123', 'Milica', 'Milić',      '2000-07-08', 'DistrictCoordinator',  'Knez Mihailova 3, Beograd'),
 (-7, 'nikola', 'nikola123', 'Nikola', 'Nikolić',    '1997-12-18', 'Citizen',              'Zemunska 10, Beograd'),
-(-8, 'ivana',  'ivana123',  'Ivana',  'Ivanović',   '2001-09-05', 'Citizen',              'Gandijeva 25, Beograd');
+(-8, 'ivana',  'ivana123',  'Ivana',  'Ivanović',   '2001-09-05', 'Citizen',              'Gandijeva 25, Beograd'),
+(-9, 'boban',  'boban123',  'Boban',  'Bobanović',  '1999-04-10', 'Citizen',              'Zemunska 22, Beograd');
 
 
 -- ============================================================
