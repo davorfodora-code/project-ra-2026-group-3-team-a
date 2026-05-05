@@ -31,4 +31,24 @@ public class BuildingAccessRequest
         Status = status;
         RejectionReason = rejectionReason;
     }
+
+    // Proverava da li zahtev može biti obrađen (samo Pending zahtevi)
+    public bool CanBeProcessed() => Status == "Pending";
+
+    // Odobrava zahtev — prelazi u status Accepted
+    public void Approve()
+    {
+        if (!CanBeProcessed())
+            throw new InvalidOperationException("Zahtev može biti obrađen samo ako je u statusu 'Pending'.");
+        Status = "Accepted";
+    }
+
+    // Odbija zahtev sa opcionim obrazloženjem — prelazi u status Rejected
+    public void Reject(string? reason)
+    {
+        if (!CanBeProcessed())
+            throw new InvalidOperationException("Zahtev može biti obrađen samo ako je u statusu 'Pending'.");
+        Status = "Rejected";
+        RejectionReason = reason;
+    }
 }
