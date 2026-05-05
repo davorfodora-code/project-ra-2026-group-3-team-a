@@ -28,4 +28,7 @@ public class CommonRoom
         FloorNumber = floorNumber;
         IsMultiDay = isMultiDay;
     }
+
+    // Proverava da li je sprat zajedničke prostorije u validnom opsegu zgrade (0 = prizemlje)
+    public bool IsFloorValid(int numberOfFloors) => FloorNumber >= 0 && FloorNumber <= numberOfFloors;
 }
