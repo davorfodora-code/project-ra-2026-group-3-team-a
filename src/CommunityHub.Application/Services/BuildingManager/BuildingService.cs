@@ -1,0 +1,56 @@
+using CommunityHub.Application.Database.Repositories.BuildingManager;
+using CommunityHub.Application.Domain;
+using CommunityHub.Application.Dto.BuildingManager;
+
+namespace CommunityHub.Application.Services.BuildingManager;
+
+public class BuildingService
+{
+    private readonly BuildingDbRepository _repository;
+
+    public BuildingService()
+    {
+        _repository = new BuildingDbRepository();
+    }
+
+    public BuildingDto Create(CreateBuildingDto dto)
+    {
+        Address address = new Address(dto.Street, dto.StreetNumber);
+        Location location = new Location(dto.City, dto.Country);
+        Building building = new Building(address, dto.Neighborhood, location, dto.NumberOfFloors, dto.ManagerId);
+
+        foreach (FloorInputDto floorDto in dto.Floors)
+        {
+            Floor floor = new Floor(floorDto.FloorNumber);
+            foreach (int apartmentNumber in floorDto.ApartmentNumbers)
+                floor.AddApartment(new Apartment(apartmentNumber));
+            building.AddFloor(floor);
+        }
+
+        foreach (string imagePath in dto.ImagePaths)
+            building.AddImage(new BuildingImage(imagePath));
+
+        Building created = _repository.Create(building);
+        return MapToDto(created);
+    }
+
+    public List<BuildingDto> Search(string? address, string? neighborhood, string? city, string? country)
+    {
+        return _repository.Search(address, neighborhood, city, country)
+            .Select(MapToDto)
+            .ToList();
+    }
+
+    private BuildingDto MapToDto(Building b) => new BuildingDto
+    {
+        Id = b.Id,
+        Street = b.Address.Street,
+        StreetNumber = b.Address.StreetNumber,
+        Neighborhood = b.Neighborhood,
+        City = b.Location.City,
+        Country = b.Location.Country,
+        NumberOfFloors = b.NumberOfFloors,
+        TotalApartments = b.TotalApartments,
+        ImagePaths = b.Images.Select(i => i.ImagePath).ToList()
+    };
+}
