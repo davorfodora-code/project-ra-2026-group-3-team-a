@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Database.Repositories.Tenant;
+using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Ui.ViewModels.Tenant;
 
 namespace CommunityHub.Ui.Views.Tenant;
 
@@ -8,16 +9,14 @@ public partial class BuildingAccessRequestForm : Window
 {
     private readonly long _userId;
     private readonly long _buildingId;
-    private readonly BuildingMembershipDbRepository _membershipRepository;
-    private readonly BuildingAccessRequestDbRepository _requestRepository;
+    private readonly BuildingAccessRequestViewModel _viewModel;
 
     public BuildingAccessRequestForm(long userId, long buildingId)
     {
         InitializeComponent();
         _userId = userId;
         _buildingId = buildingId;
-        _membershipRepository = new BuildingMembershipDbRepository();
-        _requestRepository = new BuildingAccessRequestDbRepository();
+        _viewModel = new BuildingAccessRequestViewModel();
     }
 
     private void ApartmentNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -25,17 +24,11 @@ public partial class BuildingAccessRequestForm : Window
         WarningTextBlock.Visibility = Visibility.Collapsed;
         ErrorTextBlock.Visibility = Visibility.Collapsed;
 
-        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int apartmentNumber))
+        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int apartmentNumber) || apartmentNumber <= 0)
             return;
 
-        if (apartmentNumber <= 0)
-            return;
-
-        bool occupied = _membershipRepository.IsApartmentOccupied(_buildingId, apartmentNumber);
-        if (occupied)
-        {
+        if (_viewModel.IsApartmentOccupied(_buildingId, apartmentNumber))
             WarningTextBlock.Visibility = Visibility.Visible;
-        }
     }
 
     private void ConfirmButton_Click(object sender, RoutedEventArgs e)
@@ -49,14 +42,19 @@ public partial class BuildingAccessRequestForm : Window
             return;
         }
 
-        if (_requestRepository.ExistsPending(_userId, _buildingId))
+        if (_viewModel.HasPendingRequest(_userId, _buildingId))
         {
             ErrorTextBlock.Text = "Već imate aktivan zahtev za ovu zgradu.";
             ErrorTextBlock.Visibility = Visibility.Visible;
             return;
         }
 
-        _requestRepository.Create(_userId, _buildingId, apartmentNumber);
+        _viewModel.Create(new CreateBuildingAccessRequestDto
+        {
+            TenantId = _userId,
+            BuildingId = _buildingId,
+            ApartmentNumber = apartmentNumber
+        });
 
         MessageBox.Show("Zahtev za pristup zgradi je uspešno kreiran.", "Uspeh",
             MessageBoxButton.OK, MessageBoxImage.Information);
