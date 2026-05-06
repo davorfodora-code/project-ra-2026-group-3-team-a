@@ -12,6 +12,10 @@ public class BuildingDto
     public int TotalApartments { get; set; }
     public List<string> ImagePaths { get; set; } = new();
 
+    public string AddressDisplay => $"{Street} {StreetNumber}";
+    public string LocationDisplay => $"{City}, {Country}";
+    public int ImageCount => ImagePaths.Count;
+
     // Koristi se za prikaz u ComboBox-u (DisplayMemberPath="DisplayText")
     public string DisplayText => $"{Street} {StreetNumber}, {Neighborhood} — {City}";
 }

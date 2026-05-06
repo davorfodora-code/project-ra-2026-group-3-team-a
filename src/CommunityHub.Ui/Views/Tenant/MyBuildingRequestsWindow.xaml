@@ -55,14 +55,14 @@
                 <DataGridTextColumn Header="Naselje" Binding="{Binding Neighborhood}" Width="*"/>
                 <DataGridTextColumn Header="Lokacija" Binding="{Binding LocationDisplay}" Width="*"/>
                 <DataGridTextColumn Header="Broj stana" Binding="{Binding ApartmentNumber}" Width="Auto"/>
-                <DataGridTextColumn Header="Datum kreiranja" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy. HH:mm'}" Width="Auto"/>
+                <DataGridTextColumn Header="Datum kreiranja" Binding="{Binding CreatedAtFormatted}" Width="Auto"/>
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto"/>
                 <DataGridTemplateColumn Header="" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Otkaži" Click="CancelRequestButton_Click"
                                     Padding="10,4"
-                                    Visibility="{Binding CancelButtonVisibility}"/>
+                                    Visibility="{Binding CanCancel, Converter={StaticResource BoolToVisibility}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
