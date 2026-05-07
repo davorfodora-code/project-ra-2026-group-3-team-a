@@ -39,4 +39,11 @@ public partial class TenantHomeWindow : Window
         window.Show();
         this.Close();
     }
+
+    private void HelpBoardButton_Click(object sender, RoutedEventArgs e)
+    {
+        HelpBoardWindow window = new HelpBoardWindow(_userId);
+        window.Show();
+        this.Close();
+    }
 }
