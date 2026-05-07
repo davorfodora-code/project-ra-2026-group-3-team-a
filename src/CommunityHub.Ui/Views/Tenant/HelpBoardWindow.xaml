@@ -1,0 +1,71 @@
+<Window x:Class="CommunityHub.Ui.Views.Tenant.HelpBoardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Oglasna tabla za pomoć" Height="680" Width="1050"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#2C3E50" Padding="15">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Nazad"
+                        Click="BackButton_Click"
+                        Padding="15,8"
+                        FontSize="14"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" x:Name="BuildingSelectorPanel" Background="#D5E8D4" Padding="10,8">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Zgrada:" VerticalAlignment="Center"
+                           FontWeight="Bold" Margin="0,0,10,0"/>
+                <ComboBox x:Name="BuildingCombo"
+                          DisplayMemberPath="DisplayName"
+                          SelectionChanged="BuildingCombo_SelectionChanged"
+                          MinWidth="300" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Background="#ECF0F1" Padding="10,8">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Aktivni oglasi" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold" Margin="0,0,20,0"/>
+                <Button Content="Kreiraj oglas"
+                        Click="CreateAdButton_Click"
+                        Padding="12,6" FontSize="14"/>
+            </StackPanel>
+        </Border>
+
+        <DataGrid Grid.Row="3" x:Name="AdsDataGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  CanUserAddRows="False"
+                  Margin="10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Stanar" Binding="{Binding TenantName}" Width="140"/>
+                <DataGridTextColumn Header="Tip" Binding="{Binding TypeDisplay}" Width="100"/>
+                <DataGridTextColumn Header="Opseg datuma" Binding="{Binding DateRangeDisplay}" Width="190"/>
+                <DataGridTextColumn Header="Kategorija" Binding="{Binding Category}" Width="140"/>
+                <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
+                <DataGridTemplateColumn Header="" Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Arhiviraj"
+                                    Visibility="{Binding IsOwn, Converter={StaticResource BoolToVisibility}}"
+                                    Tag="{Binding Id}"
+                                    Click="ArchiveButton_Click"
+                                    Padding="6,3"
+                                    Margin="2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

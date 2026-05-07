@@ -1,0 +1,36 @@
+<Window x:Class="CommunityHub.Ui.Views.Tenant.MatchingAdsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Podudarni oglasi" Height="400" Width="780"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Oglas je kreiran uspešno! Pronađeni su sledeći podudarni oglasi:"
+                   FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <DataGrid Grid.Row="1" x:Name="MatchingGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Stanar" Binding="{Binding TenantName}" Width="140"/>
+                <DataGridTextColumn Header="Tip" Binding="{Binding TypeDisplay}" Width="100"/>
+                <DataGridTextColumn Header="Opseg datuma" Binding="{Binding DateRangeDisplay}" Width="190"/>
+                <DataGridTextColumn Header="Kategorija" Binding="{Binding Category}" Width="130"/>
+                <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="2" Content="Zatvori"
+                Click="CloseButton_Click"
+                HorizontalAlignment="Right"
+                Padding="15,8" Margin="0,10,0,0"/>
+    </Grid>
+</Window>

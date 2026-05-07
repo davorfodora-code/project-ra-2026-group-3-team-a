@@ -37,4 +37,8 @@ public class Advertisement
         Category = category;
         Status = status;
     }
+
+    public void Archive() => Status = "Arhiviran";
+    public bool IsExpired() => EndDate.Date < DateTime.Today;
+    public bool CanArchive(long tenantId) => Tenant.Id == tenantId && Status == "Aktivan";
 }

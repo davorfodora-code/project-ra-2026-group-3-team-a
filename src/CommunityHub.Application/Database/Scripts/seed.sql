@@ -150,4 +150,19 @@ INSERT INTO building_access_requests (id, tenant_id, building_id, apartment_numb
 --  Članstva u zgradama (za prethodno odobren zahtev -4)
 -- ============================================================
 INSERT INTO building_memberships (id, building_id, tenant_id, floor_number, apartment_number, joined_at) VALUES
-(-1, -1, -7, 3, 7, '2026-03-20 11:00:00');
+(-1, -1, -7, 3, 7, '2026-03-20 11:00:00'),
+(-2, -1, -3, 1, 1, '2026-04-05 10:00:00'),
+(-3, -1, -4, 2, 4, '2026-04-06 14:30:00'),
+(-4, -2, -3, 1, 2, '2026-04-10 10:00:00');
+
+
+-- ============================================================
+--  Oglasna tabla za pomoć (test podaci za funkcionalnost 2.3)
+-- ============================================================
+INSERT INTO bulletin_boards (id, building_id) VALUES
+(-1, -1),
+(-2, -2);
+
+INSERT INTO advertisements (id, bulletin_board_id, tenant_id, description, is_offering, start_date, end_date, category, status) VALUES
+(-1, -1, -3, 'Nudim pomoć pri selidbi, imam kombi i slobodne ruke.', TRUE,  '2026-05-10', '2026-05-15', 'Selidba', 'Aktivan'),
+(-2, -1, -4, 'Tražim nekoga ko može da mi pomogne sa selidbom.', FALSE, '2026-05-12', '2026-05-18', 'Selidba', 'Aktivan');
