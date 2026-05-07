@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
+using CommunityHub.Ui.Views.BuildingManager.Pages;
 using FontAwesome.Sharp;
 
 namespace CommunityHub.Ui.Views.BuildingManager;
@@ -29,6 +30,7 @@ public partial class BuildingManagerWindow : Window
         };
 
         SetActiveNav(0);
+        MainFrame.Navigate(new HomePage(this));
     }
 
     // Postavlja aktivnu stavku navigacije i osvežava boje
@@ -45,34 +47,33 @@ public partial class BuildingManagerWindow : Window
         }
     }
 
-    // Navigacija — Pages se dodaju u sledećem commitu
     private void NavPocetna_Click(object sender, RoutedEventArgs e)
     {
         SetActiveNav(0);
-        // MainFrame.Navigate(new Pages.HomePage(this));
+        MainFrame.Navigate(new HomePage(this));
     }
 
     private void NavZgrade_Click(object sender, RoutedEventArgs e)
     {
         SetActiveNav(1);
-        // MainFrame.Navigate(new Pages.BuildingsPage(this));
+        MainFrame.Navigate(new BuildingsPage(this));
     }
 
     private void NavZahtevi_Click(object sender, RoutedEventArgs e)
     {
         SetActiveNav(2);
-        // MainFrame.Navigate(new Pages.RequestsPage(this));
+        MainFrame.Navigate(new RequestsPage(this));
     }
 
     private void NavSkupstine_Click(object sender, RoutedEventArgs e)
     {
         SetActiveNav(3);
-        // MainFrame.Navigate(new Pages.AssembliesPage(this));
+        MainFrame.Navigate(new AssembliesPage(this));
     }
 
     private void NavVise_Click(object sender, RoutedEventArgs e)
     {
         SetActiveNav(4);
-        // MainFrame.Navigate(new Pages.MorePage(this));
+        MainFrame.Navigate(new MorePage(this));
     }
 }
