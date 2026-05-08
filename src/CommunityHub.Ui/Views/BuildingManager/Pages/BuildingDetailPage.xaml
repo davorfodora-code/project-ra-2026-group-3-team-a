@@ -1,0 +1,85 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.BuildingDetailPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Detalji zgrade" Background="#F5F5F5">
+
+    <Page.Resources>
+        <!-- Tab dugme sa podvlakom kad je aktivno -->
+        <Style x:Key="TabBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="10,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje sa dugmetom nazad -->
+        <Border Grid.Row="0" Background="White" Padding="12,12"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="Detalji zgrade" FontSize="18" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Adresa zgrade -->
+        <Border Grid.Row="1" Background="White" Padding="16,12,16,14"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <StackPanel>
+                <TextBlock x:Name="AddressText" FontSize="16" FontWeight="Bold"/>
+                <TextBlock x:Name="LocationText" FontSize="13" Foreground="#888888"
+                           Margin="0,3,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Tab traka -->
+        <Border Grid.Row="2" Background="White"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="BtnInfo" Style="{StaticResource TabBtnStyle}"
+                        Content="Info" Click="Tab_Click" Tag="0"/>
+                <Button x:Name="BtnClanovi" Style="{StaticResource TabBtnStyle}"
+                        Content="Clanovi" Click="Tab_Click" Tag="1"/>
+                <Button x:Name="BtnProstorije" Style="{StaticResource TabBtnStyle}"
+                        Content="Prostorije" Click="Tab_Click" Tag="2"/>
+                <Button x:Name="BtnProblemi" Style="{StaticResource TabBtnStyle}"
+                        Content="Problemi" Click="Tab_Click" Tag="3"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Sadrzaj taba -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="TabContent" Margin="16,16,16,16"/>
+        </ScrollViewer>
+
+    </Grid>
+</Page>
