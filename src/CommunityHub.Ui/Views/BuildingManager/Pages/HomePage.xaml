@@ -1,0 +1,121 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Pocetna" Background="#F5F5F5">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16,14,16,16">
+
+            <!-- Zaglavlje -->
+            <Grid Margin="0,0,0,14">
+                <TextBlock Text="Pocetna" FontSize="22" FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+
+            <!-- Predstojeća skupština — baner -->
+            <Button Style="{StaticResource CardButtonStyle}" Margin="0,0,0,14"
+                    Click="SkupstineLink_Click">
+                <Grid>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="0,4,0,20">
+                        <TextBlock Text="Predstojeća skupština"
+                                   FontSize="16" FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center" Margin="0,0,0,6"/>
+                        <TextBlock x:Name="BanerZgrada"
+                                   Text="Zgrada u Dunavskoj 4"
+                                   FontSize="13" Foreground="#666666"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   Margin="0,0,0,3"/>
+                        <TextBlock x:Name="BanerDatum"
+                                   Text="20. 04. 2026. - 19:00"
+                                   FontSize="13" Foreground="#666666"
+                                   HorizontalAlignment="Center" TextAlignment="Center"/>
+                    </StackPanel>
+                    <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
+                                  HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                </Grid>
+            </Button>
+
+            <!-- 2x2 plocice -->
+            <UniformGrid Columns="2">
+
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
+                        Margin="0,0,5,5" Click="ZahteviPristup_Click">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock x:Name="CountPristup" Text="3"
+                                       FontSize="42" FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Zahtevi za pristup" FontSize="12"
+                                       Foreground="#666666" TextWrapping="Wrap"
+                                       TextAlignment="Center" HorizontalAlignment="Center"
+                                       MaxWidth="100" MinHeight="44"/>
+                        </StackPanel>
+                        <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
+                                      HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
+                        Margin="5,0,0,5" Click="ZahteviIznajmljivanje_Click">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock x:Name="CountIznajmljivanje" Text="1"
+                                       FontSize="42" FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Zahtevi za iznajmljivanje" FontSize="12"
+                                       Foreground="#666666" TextWrapping="Wrap"
+                                       TextAlignment="Center" HorizontalAlignment="Center"
+                                       MaxWidth="100" MinHeight="44"/>
+                        </StackPanel>
+                        <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
+                                      HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
+                        Margin="0,5,5,0" Click="NeresenoProblemi_Click">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock x:Name="CountProblemi" Text="0"
+                                       FontSize="42" FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Nereseni problemi" FontSize="12"
+                                       Foreground="#666666" TextWrapping="Wrap"
+                                       TextAlignment="Center" HorizontalAlignment="Center"
+                                       MaxWidth="100" MinHeight="44"/>
+                        </StackPanel>
+                        <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
+                                      HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
+                        Margin="5,5,0,0" Click="AktivniOglasi_Click">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock x:Name="CountOglasi" Text="12"
+                                       FontSize="42" FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Aktivni oglasi" FontSize="12"
+                                       Foreground="#666666" TextWrapping="Wrap"
+                                       TextAlignment="Center" HorizontalAlignment="Center"
+                                       MaxWidth="100" MinHeight="44"/>
+                        </StackPanel>
+                        <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
+                                      HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </Grid>
+                </Button>
+
+            </UniformGrid>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

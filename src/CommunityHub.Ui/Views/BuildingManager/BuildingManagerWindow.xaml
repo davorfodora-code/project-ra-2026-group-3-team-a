@@ -1,0 +1,115 @@
+<Window x:Class="CommunityHub.Ui.Views.BuildingManager.BuildingManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+        Title="CommunityHub" Height="760" Width="400"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!-- Flat dugme bez vizuelnih efekata, za nav bar -->
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" Padding="4,6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Glavni sadržaj — stranice se učitavaju ovde -->
+        <Frame x:Name="MainFrame" Grid.Row="0"
+               NavigationUIVisibility="Hidden"/>
+
+        <!-- Bottom navigation bar -->
+        <Border Grid.Row="1"
+                BorderThickness="0,1,0,0"
+                BorderBrush="#E0E0E0"
+                Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Početna -->
+                <Button Grid.Column="0" x:Name="NavPocetna"
+                        Click="NavPocetna_Click"
+                        Style="{StaticResource NavButtonStyle}">
+                    <StackPanel>
+                        <fa:IconBlock x:Name="IconPocetna" Icon="House"
+                                      FontSize="22" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TextPocetna" Text="Početna"
+                                   FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Zgrade -->
+                <Button Grid.Column="1" x:Name="NavZgrade"
+                        Click="NavZgrade_Click"
+                        Style="{StaticResource NavButtonStyle}">
+                    <StackPanel>
+                        <fa:IconBlock x:Name="IconZgrade" Icon="Building"
+                                      FontSize="22" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TextZgrade" Text="Zgrade"
+                                   FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Zahtevi -->
+                <Button Grid.Column="2" x:Name="NavZahtevi"
+                        Click="NavZahtevi_Click"
+                        Style="{StaticResource NavButtonStyle}">
+                    <StackPanel>
+                        <fa:IconBlock x:Name="IconZahtevi" Icon="FileLines"
+                                      FontSize="22" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TextZahtevi" Text="Zahtevi"
+                                   FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Skupštine -->
+                <Button Grid.Column="3" x:Name="NavSkupstine"
+                        Click="NavSkupstine_Click"
+                        Style="{StaticResource NavButtonStyle}">
+                    <StackPanel>
+                        <fa:IconBlock x:Name="IconSkupstine" Icon="UsersGear"
+                                      FontSize="22" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TextSkupstine" Text="Skupštine"
+                                   FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Više -->
+                <Button Grid.Column="4" x:Name="NavVise"
+                        Click="NavVise_Click"
+                        Style="{StaticResource NavButtonStyle}">
+                    <StackPanel>
+                        <fa:IconBlock x:Name="IconVise" Icon="EllipsisH"
+                                      FontSize="22" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TextVise" Text="Više"
+                                   FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

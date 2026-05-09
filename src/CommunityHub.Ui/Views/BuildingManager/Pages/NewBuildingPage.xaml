@@ -1,0 +1,177 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.NewBuildingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Nova zgrada" Background="#F5F5F5">
+
+    <Page.Resources>
+        <!-- Stil za chip dugmic (x) unutar kartice -->
+        <Style x:Key="ChipRemoveStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="2,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#555555"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#CC0000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stil za dugme dodavanja -->
+        <Style x:Key="AddChipStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="8,3"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#555555"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F0F0F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Dugme za podnosenje forme -->
+        <Style x:Key="SubmitStyle" TargetType="Button">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0,14"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#333333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje sa dugmetom nazad -->
+        <Border Grid.Row="0" Background="White" Padding="12,12"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="Nova zgrada" FontSize="18" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Forma -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16,16,16,24">
+
+                <!-- Adresa -->
+                <TextBlock Text="Adresa:" FontSize="13" FontWeight="SemiBold" Margin="2,0,0,4"/>
+                <TextBox x:Name="AddressBox" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Tag="npr. Bulevar kralja Aleksandra 75"
+                         GotFocus="Placeholder_GotFocus" LostFocus="Placeholder_LostFocus"
+                         Margin="0,0,0,3"/>
+                <TextBlock Text="(ulica + broj, npr. Jevrejska 22)"
+                           FontSize="11" Foreground="#999999" Margin="2,0,0,12"/>
+
+                <!-- Naselje -->
+                <TextBlock Text="Naselje:" FontSize="13" FontWeight="SemiBold" Margin="2,0,0,4"/>
+                <TextBox x:Name="NeighborhoodBox" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Margin="0,0,0,3"/>
+                <TextBlock Text="(deo grada, npr. Detelinara)"
+                           FontSize="11" Foreground="#999999" Margin="2,0,0,12"/>
+
+                <!-- Grad -->
+                <TextBlock Text="Grad" FontSize="12" Foreground="#888888" Margin="2,0,0,4"/>
+                <TextBox x:Name="CityBox" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Margin="0,0,0,12"/>
+
+                <!-- Drzava -->
+                <TextBlock Text="Drzava" FontSize="12" Foreground="#888888" Margin="2,0,0,4"/>
+                <TextBox x:Name="CountryBox" Text="Srbija" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Margin="0,0,0,16"/>
+
+                <!-- Broj spratova -->
+                <TextBlock Text="Broj spratova" FontSize="12" Foreground="#888888" Margin="2,0,0,4"/>
+                <TextBox x:Name="FloorsBox" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         TextChanged="FloorsBox_TextChanged" Margin="0,0,0,16"/>
+
+                <!-- Dinamicki panel za stanove -->
+                <StackPanel x:Name="FloorsContainer"/>
+
+                <!-- Slike -->
+                <TextBlock Text="Slike zgrade" FontSize="12" Foreground="#888888"
+                           Margin="2,4,0,8"/>
+                <WrapPanel x:Name="ImagesPanel" Margin="0,0,0,8"/>
+                <Button Style="{StaticResource AddChipStyle}" HorizontalAlignment="Left"
+                        Click="AddImages_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconBlock Icon="Plus" FontSize="11" Margin="0,0,4,0"/>
+                        <TextBlock Text="Dodaj slike"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Greska -->
+                <TextBlock x:Name="ErrorText" Foreground="#CC0000" FontSize="13"
+                           TextWrapping="Wrap" Visibility="Collapsed" Margin="0,12,0,0"/>
+
+                <!-- Submit -->
+                <Button Style="{StaticResource SubmitStyle}"
+                        HorizontalAlignment="Stretch" Margin="0,16,0,0"
+                        Click="Submit_Click">
+                    Registruj zgradu
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

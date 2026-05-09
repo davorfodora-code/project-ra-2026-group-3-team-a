@@ -34,6 +34,28 @@ public class BuildingService
         return MapToDto(created);
     }
 
+    // Vraća punu zgradu sa spratovima, stanovima i slikama
+    public BuildingDto? GetById(long buildingId)
+    {
+        Building? building = _repository.GetById(buildingId);
+        if (building == null) return null;
+
+        BuildingDto dto = MapToDto(building);
+
+        foreach (Floor floor in building.Floors)
+        {
+            dto.Floors.Add(new FloorSummaryDto
+            {
+                FloorNumber = floor.FloorNumber,
+                ApartmentNumbers = floor.Apartments
+                    .Select(a => a.ApartmentNumber)
+                    .ToList()
+            });
+        }
+
+        return dto;
+    }
+
     public List<BuildingDto> Search(string? address, string? neighborhood, string? city, string? country)
     {
         return _repository.Search(address, neighborhood, city, country)

@@ -12,4 +12,8 @@
     <ProjectReference Include="..\CommunityHub.Application\CommunityHub.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FontAwesome.Sharp" Version="6.3.0" />
+  </ItemGroup>
+
 </Project>
