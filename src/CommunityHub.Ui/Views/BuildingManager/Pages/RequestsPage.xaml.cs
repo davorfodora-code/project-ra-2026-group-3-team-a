@@ -250,6 +250,7 @@ public partial class RequestsPage : Page
 
     private void Filter_Changed(object sender, SelectionChangedEventArgs e)
     {
+        if (RequestsPanel == null) return;
         if (_activeTab == 0) RenderPristupRequests();
     }
 

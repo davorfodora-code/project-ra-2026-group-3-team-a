@@ -46,7 +46,7 @@
             <!-- 2x2 plocice -->
             <UniformGrid Columns="2">
 
-                <Button Style="{StaticResource TileButtonStyle}" Height="170"
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
                         Margin="0,0,5,5" Click="ZahteviPristup_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -56,14 +56,14 @@
                             <TextBlock Text="Zahtevi za pristup" FontSize="12"
                                        Foreground="#666666" TextWrapping="Wrap"
                                        TextAlignment="Center" HorizontalAlignment="Center"
-                                       MaxWidth="100"/>
+                                       MaxWidth="100" MinHeight="44"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     </Grid>
                 </Button>
 
-                <Button Style="{StaticResource TileButtonStyle}" Height="170"
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
                         Margin="5,0,0,5" Click="ZahteviIznajmljivanje_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -73,14 +73,14 @@
                             <TextBlock Text="Zahtevi za iznajmljivanje" FontSize="12"
                                        Foreground="#666666" TextWrapping="Wrap"
                                        TextAlignment="Center" HorizontalAlignment="Center"
-                                       MaxWidth="100"/>
+                                       MaxWidth="100" MinHeight="44"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     </Grid>
                 </Button>
 
-                <Button Style="{StaticResource TileButtonStyle}" Height="170"
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
                         Margin="0,5,5,0" Click="NeresenoProblemi_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -90,14 +90,14 @@
                             <TextBlock Text="Nereseni problemi" FontSize="12"
                                        Foreground="#666666" TextWrapping="Wrap"
                                        TextAlignment="Center" HorizontalAlignment="Center"
-                                       MaxWidth="100"/>
+                                       MaxWidth="100" MinHeight="44"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     </Grid>
                 </Button>
 
-                <Button Style="{StaticResource TileButtonStyle}" Height="170"
+                <Button Style="{StaticResource TileButtonStyle}" Height="200"
                         Margin="5,5,0,0" Click="AktivniOglasi_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -107,7 +107,7 @@
                             <TextBlock Text="Aktivni oglasi" FontSize="12"
                                        Foreground="#666666" TextWrapping="Wrap"
                                        TextAlignment="Center" HorizontalAlignment="Center"
-                                       MaxWidth="100"/>
+                                       MaxWidth="100" MinHeight="44"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="13" Foreground="#BBBBBB"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"/>

@@ -276,8 +276,8 @@ public partial class BuildingDetailPage : Page
     {
         TextBlock tb = new TextBlock
         {
-            FontSize = 13,
-            Margin = new Thickness(0, 0, 0, 5),
+            FontSize = 14,
+            Margin = new Thickness(0, 0, 0, 6),
             TextWrapping = TextWrapping.Wrap
         };
         tb.Inlines.Add(new System.Windows.Documents.Run(label + ": ")
@@ -291,8 +291,8 @@ public partial class BuildingDetailPage : Page
         new TextBlock
         {
             Text = text,
-            FontSize = 13, FontWeight = FontWeights.SemiBold,
-            Margin = new Thickness(0, 10, 0, 4)
+            FontSize = 14, FontWeight = FontWeights.SemiBold,
+            Margin = new Thickness(0, 10, 0, 6)
         };
 
     private static UIElement MakePlaceholder(string text) =>

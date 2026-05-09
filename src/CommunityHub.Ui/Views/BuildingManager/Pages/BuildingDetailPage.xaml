@@ -55,8 +55,8 @@
         <Border Grid.Row="1" Background="White" Padding="16,12,16,14"
                 BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
             <StackPanel>
-                <TextBlock x:Name="AddressText" FontSize="16" FontWeight="Bold"/>
-                <TextBlock x:Name="LocationText" FontSize="13" Foreground="#888888"
+                <TextBlock x:Name="AddressText" FontSize="18" FontWeight="Bold"/>
+                <TextBlock x:Name="LocationText" FontSize="14" Foreground="#888888"
                            Margin="0,3,0,0"/>
             </StackPanel>
         </Border>
@@ -64,16 +64,35 @@
         <!-- Tab traka -->
         <Border Grid.Row="2" Background="White"
                 BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="BtnInfo" Style="{StaticResource TabBtnStyle}"
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="BtnInfo" Grid.Column="0"
+                        Style="{StaticResource TabBtnStyle}"
                         Content="Info" Click="Tab_Click" Tag="0"/>
-                <Button x:Name="BtnClanovi" Style="{StaticResource TabBtnStyle}"
+                <TextBlock Grid.Column="1" Text="|" Foreground="#CCCCCC"
+                           VerticalAlignment="Center"/>
+                <Button x:Name="BtnClanovi" Grid.Column="2"
+                        Style="{StaticResource TabBtnStyle}"
                         Content="Clanovi" Click="Tab_Click" Tag="1"/>
-                <Button x:Name="BtnProstorije" Style="{StaticResource TabBtnStyle}"
+                <TextBlock Grid.Column="3" Text="|" Foreground="#CCCCCC"
+                           VerticalAlignment="Center"/>
+                <Button x:Name="BtnProstorije" Grid.Column="4"
+                        Style="{StaticResource TabBtnStyle}"
                         Content="Prostorije" Click="Tab_Click" Tag="2"/>
-                <Button x:Name="BtnProblemi" Style="{StaticResource TabBtnStyle}"
+                <TextBlock Grid.Column="5" Text="|" Foreground="#CCCCCC"
+                           VerticalAlignment="Center"/>
+                <Button x:Name="BtnProblemi" Grid.Column="6"
+                        Style="{StaticResource TabBtnStyle}"
                         Content="Problemi" Click="Tab_Click" Tag="3"/>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Sadrzaj taba -->
