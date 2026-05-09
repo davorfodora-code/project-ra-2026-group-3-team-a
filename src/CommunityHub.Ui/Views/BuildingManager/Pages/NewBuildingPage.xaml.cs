@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using CommunityHub.Application.Dto.BuildingManager;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 using Microsoft.Win32;
@@ -244,33 +246,49 @@ public partial class NewBuildingPage : Page
 
         foreach (string path in _imagePaths)
         {
-            string filename = System.IO.Path.GetFileName(path);
-
-            Border chip = new Border
-            {
-                Background = new SolidColorBrush(Color.FromRgb(0xF0, 0xF0, 0xF0)),
-                CornerRadius = new CornerRadius(10),
-                Padding = new Thickness(10, 4, 6, 4),
-                Margin = new Thickness(0, 0, 6, 6)
-            };
-
-            StackPanel sp = new StackPanel { Orientation = Orientation.Horizontal };
-
-            TextBlock name = new TextBlock
-            {
-                Text = filename,
-                FontSize = 12,
-                MaxWidth = 120,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 4, 0)
-            };
-
             string capturedPath = path;
+
+            // Kartica slike: thumbnail + x dugme
+            Border card = new Border
+            {
+                Width = 70, Height = 70,
+                CornerRadius = new CornerRadius(8),
+                Background = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE)),
+                Margin = new Thickness(0, 0, 8, 8),
+                ClipToBounds = true
+            };
+
+            Grid cardGrid = new Grid();
+
+            // Thumbnail
+            Image thumb = new Image { Stretch = Stretch.UniformToFill };
+            if (File.Exists(path))
+            {
+                try
+                {
+                    BitmapImage bmp = new BitmapImage();
+                    bmp.BeginInit();
+                    bmp.UriSource = new Uri(path, UriKind.Absolute);
+                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bmp.DecodePixelWidth = 140;
+                    bmp.EndInit();
+                    thumb.Source = bmp;
+                }
+                catch { /* fallback: prazan grid */ }
+            }
+
+            // X dugme u gornjem desnom uglu
             Button removeBtn = new Button
             {
                 Content = "×",
-                Style = (Style)FindResource("ChipRemoveStyle")
+                Width = 20, Height = 20,
+                FontSize = 12,
+                Background = new SolidColorBrush(Color.FromArgb(0xCC, 0x00, 0x00, 0x00)),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+                Cursor = System.Windows.Input.Cursors.Hand
             };
             removeBtn.Click += (s, e) =>
             {
@@ -278,10 +296,10 @@ public partial class NewBuildingPage : Page
                 RenderImageChips();
             };
 
-            sp.Children.Add(name);
-            sp.Children.Add(removeBtn);
-            chip.Child = sp;
-            ImagesPanel.Children.Add(chip);
+            cardGrid.Children.Add(thumb);
+            cardGrid.Children.Add(removeBtn);
+            card.Child = cardGrid;
+            ImagesPanel.Children.Add(card);
         }
     }
 

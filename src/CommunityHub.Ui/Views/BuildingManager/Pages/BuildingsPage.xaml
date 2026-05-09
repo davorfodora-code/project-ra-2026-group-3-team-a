@@ -46,30 +46,45 @@
                                         Click="BuildingCard_Click">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0">
+
+                                        <!-- Slika / fallback ikona -->
+                                        <Grid Grid.Column="0" Width="72" Height="72"
+                                              Margin="0,0,12,0">
+                                            <Border Background="#F0F0F0" CornerRadius="8">
+                                                <fa:IconBlock Icon="Building" FontSize="36"
+                                                              Foreground="#CCCCCC"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"/>
+                                            </Border>
+                                            <Border CornerRadius="8">
+                                                <Border.Background>
+                                                    <ImageBrush
+                                                        ImageSource="{Binding FirstImagePath,
+                                                            Converter={StaticResource ImagePathConverter}}"
+                                                        Stretch="UniformToFill"/>
+                                                </Border.Background>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Tekst -->
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center">
                                             <TextBlock Text="{Binding AddressDisplay}"
                                                        FontSize="15" FontWeight="SemiBold"
-                                                       Margin="0,0,0,4"/>
-                                            <TextBlock FontSize="13" Foreground="#888888"
-                                                       Margin="0,0,0,4">
-                                                <Run Text="{Binding Neighborhood}"/>
-                                                <Run Text=", "/>
-                                                <Run Text="{Binding City}"/>
-                                            </TextBlock>
-                                            <TextBlock FontSize="12" Foreground="#AAAAAA">
+                                                       Margin="0,0,0,3"/>
+                                            <TextBlock Text="{Binding Neighborhood}"
+                                                       FontSize="13" Foreground="#888888"/>
+                                            <TextBlock Text="{Binding City}"
+                                                       FontSize="13" Foreground="#888888"/>
+                                            <TextBlock FontSize="12" Foreground="#AAAAAA"
+                                                       Margin="0,3,0,0">
+                                                <Run Text="Broj spratova: "/>
                                                 <Run Text="{Binding NumberOfFloors}"/>
-                                                <Run Text=" spratova / "/>
-                                                <Run Text="{Binding TotalApartments}"/>
-                                                <Run Text=" stanova"/>
                                             </TextBlock>
                                         </StackPanel>
-                                        <fa:IconBlock Grid.Column="1"
-                                                      Icon="AngleRight" FontSize="16"
-                                                      Foreground="#CCCCCC"
-                                                      VerticalAlignment="Center"/>
                                     </Grid>
                                 </Button>
                             </DataTemplate>

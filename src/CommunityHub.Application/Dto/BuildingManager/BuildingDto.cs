@@ -11,8 +11,11 @@ public class BuildingDto
     public int NumberOfFloors { get; set; }
     public int TotalApartments { get; set; }
     public List<string> ImagePaths { get; set; } = new();
+    public List<FloorSummaryDto> Floors { get; set; } = new();
 
     public string AddressDisplay => $"{Street} {StreetNumber}";
+    // Putanja prve slike — null ako nema slika
+    public string? FirstImagePath => ImagePaths.Count > 0 ? ImagePaths[0] : null;
     public string LocationDisplay => $"{City}, {Country}";
     public int ImageCount => ImagePaths.Count;
 

@@ -25,6 +25,39 @@ public class BuildingDbRepository
         );
     }
 
+    // Učitava jednu zgradu sa spratovima, stanovima i slikama
+    public Building? GetById(long buildingId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT b.id, b.neighborhood, b.number_of_floors, b.manager_id,
+                   a.id AS address_id, a.street, a.street_number,
+                   l.id AS location_id, l.city, l.country,
+                   (SELECT COUNT(*) FROM floors f
+                    JOIN apartments ap ON ap.floor_id = f.id
+                    WHERE f.building_id = b.id) AS total_apartments
+            FROM buildings b
+            JOIN addresses a ON a.id = b.address_id
+            JOIN locations l ON l.id = b.location_id
+            WHERE b.id = @buildingId";
+        AddParameter(cmd, "@buildingId", buildingId);
+
+        Building? building = null;
+        using (IDataReader reader = cmd.ExecuteReader())
+        {
+            if (reader.Read())
+                building = ReadBuildingFromReader(reader);
+        }
+
+        if (building == null) return null;
+
+        LoadFloorsForBuilding(connection, building);
+        LoadImagesForBuildings(connection, new List<Building> { building });
+        return building;
+    }
+
     public List<Building> Search(string? address, string? neighborhood, string? city, string? country)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
@@ -207,6 +240,35 @@ public class BuildingDbRepository
 
         building.TotalApartments = reader.GetInt32(reader.GetOrdinal("total_apartments"));
         return building;
+    }
+
+    // Učitava spratove i stanove za datu zgradu i dodaje ih na Building objekat
+    private void LoadFloorsForBuilding(IDbConnection connection, Building building)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT f.floor_number, a.apartment_number
+            FROM floors f
+            JOIN apartments a ON a.floor_id = f.id
+            WHERE f.building_id = @buildingId
+            ORDER BY f.floor_number, a.apartment_number";
+        AddParameter(cmd, "@buildingId", building.Id);
+
+        Dictionary<int, Floor> floorMap = new();
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            int floorNum = reader.GetInt32(reader.GetOrdinal("floor_number"));
+            int aptNum   = reader.GetInt32(reader.GetOrdinal("apartment_number"));
+
+            if (!floorMap.TryGetValue(floorNum, out Floor? floor))
+            {
+                floor = new Floor(floorNum);
+                floorMap[floorNum] = floor;
+                building.AddFloor(floor);
+            }
+            floor.AddApartment(new Apartment(aptNum));
+        }
     }
 
     // Učitava slike za svaku zgradu iz liste
