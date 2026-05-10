@@ -21,6 +21,7 @@ public partial class BuildingDetailPage : Page
     private readonly CommonRoomsViewModel _commonRoomsVm;
 
     private Button[] _tabButtons = null!;
+    private int _activeTabIndex = 0;
 
     // Karusel slika
     private int _imageIndex = 0;
@@ -65,6 +66,8 @@ public partial class BuildingDetailPage : Page
 
     private void SetActiveTab(int index)
     {
+        _activeTabIndex = index;
+
         for (int i = 0; i < _tabButtons.Length; i++)
         {
             bool active = i == index;
@@ -75,14 +78,20 @@ public partial class BuildingDetailPage : Page
 
         TabContent.Children.Clear();
         _imageIndex = 0;
+        FabAdd.Visibility = index == 2 ? Visibility.Visible : Visibility.Collapsed;
 
         switch (index)
         {
-            case 0: RenderInfoTab();      break;
-            case 1: RenderClanoviTab();   break;
-            case 2: RenderProstorijeTab();break;
-            case 3: RenderProblemiTab();  break;
+            case 0: RenderInfoTab();       break;
+            case 1: RenderClanoviTab();    break;
+            case 2: RenderProstorijeTab(); break;
+            case 3: RenderProblemiTab();   break;
         }
+    }
+
+    private void FabAdd_Click(object sender, RoutedEventArgs e)
+    {
+        NavigationService?.Navigate(new NewCommonRoomPage(_shell, _building, () => SetActiveTab(_activeTabIndex)));
     }
 
     // --- Info tab ---

@@ -16,4 +16,9 @@ public class CommonRoomsViewModel
     {
         return _service.GetByBuildingId(buildingId);
     }
+
+    public void Add(CreateCommonRoomDto dto)
+    {
+        _service.Add(dto);
+    }
 }
