@@ -18,8 +18,10 @@ public partial class BuildingDetailPage : Page
 
     private readonly BuildingService _buildingService;
     private readonly BuildingMembershipsViewModel _membershipsVm;
+    private readonly CommonRoomsViewModel _commonRoomsVm;
 
     private Button[] _tabButtons = null!;
+    private int _activeTabIndex = 0;
 
     // Karusel slika
     private int _imageIndex = 0;
@@ -33,6 +35,7 @@ public partial class BuildingDetailPage : Page
         _shell = shell;
         _buildingService = new BuildingService();
         _membershipsVm = new BuildingMembershipsViewModel(shell.UserId);
+        _commonRoomsVm = new CommonRoomsViewModel();
 
         // Učitaj punu zgradu sa spratovima i stanovima
         _building = _buildingService.GetById(building.Id) ?? building;
@@ -63,6 +66,8 @@ public partial class BuildingDetailPage : Page
 
     private void SetActiveTab(int index)
     {
+        _activeTabIndex = index;
+
         for (int i = 0; i < _tabButtons.Length; i++)
         {
             bool active = i == index;
@@ -73,14 +78,20 @@ public partial class BuildingDetailPage : Page
 
         TabContent.Children.Clear();
         _imageIndex = 0;
+        FabAdd.Visibility = index == 2 ? Visibility.Visible : Visibility.Collapsed;
 
         switch (index)
         {
-            case 0: RenderInfoTab();      break;
-            case 1: RenderClanoviTab();   break;
-            case 2: RenderProstorijeTab();break;
-            case 3: RenderProblemiTab();  break;
+            case 0: RenderInfoTab();       break;
+            case 1: RenderClanoviTab();    break;
+            case 2: RenderProstorijeTab(); break;
+            case 3: RenderProblemiTab();   break;
         }
+    }
+
+    private void FabAdd_Click(object sender, RoutedEventArgs e)
+    {
+        NavigationService?.Navigate(new NewCommonRoomPage(_shell, _building, () => SetActiveTab(_activeTabIndex)));
     }
 
     // --- Info tab ---
@@ -264,8 +275,68 @@ public partial class BuildingDetailPage : Page
 
     // --- Stub tabovi ---
 
-    private void RenderProstorijeTab() =>
-        TabContent.Children.Add(MakePlaceholder("Lista zajednickih prostorija dolazi uskoro."));
+    private void RenderProstorijeTab()
+    {
+        List<CommonRoomDto> rooms;
+        try { rooms = _commonRoomsVm.GetByBuildingId(_building.Id); }
+        catch { rooms = new List<CommonRoomDto>(); }
+
+        if (rooms.Count == 0)
+        {
+            TabContent.Children.Add(MakePlaceholder("Nema unetih zajednickih prostorija."));
+            return;
+        }
+
+        foreach (CommonRoomDto room in rooms)
+            TabContent.Children.Add(CreateRoomCard(room));
+    }
+
+    private static UIElement CreateRoomCard(CommonRoomDto room)
+    {
+        Border card = new Border
+        {
+            BorderBrush = new SolidColorBrush(Color.FromRgb(0xDD, 0xDD, 0xDD)),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(12, 10, 12, 10),
+            Margin = new Thickness(0, 0, 0, 10)
+        };
+
+        StackPanel sp = new StackPanel();
+
+        sp.Children.Add(new TextBlock
+        {
+            Text = room.Name,
+            FontSize = 14, FontWeight = FontWeights.SemiBold,
+            Margin = new Thickness(0, 0, 0, 3)
+        });
+        sp.Children.Add(new TextBlock
+        {
+            Text = room.FloorDisplay,
+            FontSize = 13,
+            Foreground = new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x55)),
+            Margin = new Thickness(0, 0, 0, 3)
+        });
+        if (!string.IsNullOrWhiteSpace(room.Description))
+            sp.Children.Add(new TextBlock
+            {
+                Text = room.Description,
+                FontSize = 12,
+                Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88)),
+                TextWrapping = TextWrapping.Wrap
+            });
+        if (room.IsMultiDay)
+            sp.Children.Add(new TextBlock
+            {
+                Text = "Vise-dnevno iznajmljivanje",
+                FontSize = 12,
+                Foreground = new SolidColorBrush(Color.FromRgb(0x1A, 0x73, 0xE8)),
+                Margin = new Thickness(0, 4, 0, 0)
+            });
+
+        card.Child = sp;
+        return card;
+    }
 
     private void RenderProblemiTab() =>
         TabContent.Children.Add(MakePlaceholder("Lista problema dolazi uskoro."));

@@ -100,5 +100,15 @@
             <StackPanel x:Name="TabContent" Margin="16,16,16,16"/>
         </ScrollViewer>
 
+        <!-- FAB dugme za dodavanje prostorije (vidljivo samo na Prostorije tabu) -->
+        <Button x:Name="FabAdd" Grid.Row="3"
+                Style="{StaticResource FabButtonStyle}"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,16,16"
+                Visibility="Collapsed"
+                Click="FabAdd_Click">
+            <fa:IconBlock Icon="Plus" FontSize="22"/>
+        </Button>
+
     </Grid>
 </Page>

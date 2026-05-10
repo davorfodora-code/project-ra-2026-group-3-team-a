@@ -1,0 +1,116 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.NewCommonRoomPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Nova prostorija" Background="#F5F5F5">
+
+    <Page.Resources>
+        <Style x:Key="OutlineSubmitStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#1A1A1A"/>
+            <Setter Property="BorderBrush" Value="#1A1A1A"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0,14"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje -->
+        <Border Grid.Row="0" Background="White" Padding="12,12"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="Nova prostorija" FontSize="18" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Forma -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16,16,16,24">
+
+                <!-- Naziv zgrade -->
+                <TextBlock x:Name="BuildingLabel" FontSize="14" FontWeight="SemiBold"
+                           Margin="0,0,0,16"/>
+
+                <!-- Naziv prostorije -->
+                <TextBlock Text="Naziv:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <TextBox x:Name="NameBox" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Margin="0,0,0,16"/>
+
+                <!-- Opis -->
+                <TextBlock Text="Opis:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <TextBox x:Name="DescriptionBox" FontSize="14" Padding="12,10"
+                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         TextWrapping="Wrap" AcceptsReturn="True" Height="90"
+                         VerticalContentAlignment="Top" Margin="0,0,0,16"/>
+
+                <!-- Sprat -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="Sprat:" FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox x:Name="FloorCombo" FontSize="13" MinWidth="70"/>
+                    <TextBlock x:Name="FloorHint" FontSize="12" Foreground="#888888"
+                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+                <TextBlock Margin="0,0,0,16"/>
+
+                <!-- Iznajmljivanje -->
+                <TextBlock Text="Iznajmljivanje:" FontSize="13" FontWeight="SemiBold"
+                           Margin="0,0,0,8"/>
+                <RadioButton x:Name="SingleDayRadio" Content="Na 1 dan"
+                             FontSize="13" IsChecked="True" Margin="0,0,0,6"/>
+                <RadioButton x:Name="MultiDayRadio" Content="Na vise dana"
+                             FontSize="13" Margin="0,0,0,24"/>
+
+                <!-- Greska -->
+                <TextBlock x:Name="ErrorText" Foreground="#CC0000" FontSize="13"
+                           TextWrapping="Wrap" Visibility="Collapsed" Margin="0,0,0,12"/>
+
+                <!-- Submit -->
+                <Button Style="{StaticResource OutlineSubmitStyle}"
+                        HorizontalAlignment="Stretch"
+                        Click="Submit_Click">
+                    Kreiraj
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
