@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using CommunityHub.Application.Domain;
 
@@ -208,7 +209,7 @@ public class DistrictAccessRequestDbRepository
 
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
-            SELECT m.id, m.join_date,
+            SELECT m.id, m.join_date, m.trust_level,
                    u.id AS user_id, u.username, u.password, u.name, u.surname, u.birthday, u.role, u.address
             FROM district_memberships m
             JOIN users u ON u.id = m.user_id
@@ -229,11 +230,14 @@ public class DistrictAccessRequestDbRepository
     private static DistrictMembership MapMembership(IDataReader reader)
     {
         User user = MapUserFromReader(reader);
+        CitizenTrustLevel trustLevel = Enum.Parse<CitizenTrustLevel>(
+            reader.GetString(reader.GetOrdinal("trust_level")));
         return new DistrictMembership(
             reader.GetInt64(reader.GetOrdinal("id")),
             null!,
             user,
-            reader.GetDateTime(reader.GetOrdinal("join_date")));
+            reader.GetDateTime(reader.GetOrdinal("join_date")),
+            trustLevel);
     }
 
     public List<District> GetDistrictsByCoordinatorId(long coordinatorId)
