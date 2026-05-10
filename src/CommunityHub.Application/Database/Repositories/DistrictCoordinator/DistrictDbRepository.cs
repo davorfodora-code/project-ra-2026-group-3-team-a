@@ -94,6 +94,32 @@ public class DistrictDbRepository
         return Search(null, null, null, null);
     }
 
+    public List<District> GetByCoordinatorId(long coordinatorId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT d.id, d.name, d.description, d.budget,
+                   l.id AS location_id, l.city, l.country,
+                   u.id AS coordinator_id, u.username, u.password, u.name AS coordinator_name, u.surname, u.birthday
+            FROM districts d
+            JOIN locations l ON l.id = d.location_id
+            JOIN users u ON u.id = d.coordinator_id
+            WHERE d.coordinator_id = @coordinatorId
+            ORDER BY d.name";
+
+        AddParameter(cmd, "@coordinatorId", coordinatorId);
+
+        List<District> districts = ReadDistrictsFromSearchCommand(cmd);
+        foreach (District district in districts)
+        {
+            LoadDistrictStreets(connection, district);
+            LoadDistrictImages(connection, district);
+        }
+        return districts;
+    }
+
     public List<District> Search(string? name, string? address, string? city, string? country)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
