@@ -10,7 +10,6 @@
         <conv:ActiveFilterToBackgroundConverter x:Key="FilterBg"/>
         <conv:ActiveFilterToForegroundConverter x:Key="FilterFg"/>
 
-        <!-- Stil koji koriste sva filter dugmad: pozadina/tekst se računa iz aktivnog filtera. -->
         <Style x:Key="FilterButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="14,6"/>
             <Setter Property="Margin" Value="0,0,6,0"/>
@@ -26,12 +25,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Zaglavlje -->
         <Border Grid.Row="0" Background="#2C3E50" Padding="16,12">
             <TextBlock Text="Zahtevi" Foreground="White" FontSize="17" FontWeight="Bold"/>
         </Border>
 
-        <!-- Sadržaj -->
         <Grid Grid.Row="1" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -43,11 +40,9 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- ══ ZAHTEVI ZA PRISTUP ══ -->
             <TextBlock Grid.Row="0" Text="Zahtevi za pristup"
                        FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
 
-            <!-- Filter dugmad (boja računata iz bindinga, klik preko Command) -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
                 <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
                         Command="{Binding SetRequestFilterCommand}" CommandParameter="Svi"
@@ -67,7 +62,6 @@
                         Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Rejected}"/>
             </StackPanel>
 
-            <!-- Tabela zahteva. ItemsSource je bindan na ObservableCollection u VM-u. -->
             <DataGrid Grid.Row="2" ItemsSource="{Binding Requests}"
                       AutoGenerateColumns="False" IsReadOnly="True"
                       CanUserAddRows="False" SelectionMode="Single"
@@ -85,7 +79,6 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <!-- Bindanje na Command u VM-u; CommandParameter je sam DTO red. -->
                                     <Button Content="Prihvati"
                                             Command="{Binding DataContext.ShowApproveOverlayCommand,
                                                               RelativeSource={RelativeSource AncestorType=Window}}"
@@ -111,13 +104,11 @@
 
             <Separator Grid.Row="3" Margin="0,14,0,14" Background="#DDDDDD" Height="1"/>
 
-            <!-- ══ ČLANSTVA ══ -->
             <DockPanel Grid.Row="4" Margin="0,0,0,10" LastChildFill="False">
                 <TextBlock DockPanel.Dock="Left" Text="Članstva"
                            FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                     <TextBlock Text="Kvart:" VerticalAlignment="Center" FontSize="13" Margin="0,0,8,0"/>
-                    <!-- TwoWay binding: korisnik mijenja odabir, VM reagira u setteru. -->
                     <ComboBox Width="260" Height="30" FontSize="13"
                               ItemsSource="{Binding Districts}"
                               SelectedItem="{Binding SelectedDistrict, Mode=TwoWay}"
@@ -125,7 +116,6 @@
                 </StackPanel>
             </DockPanel>
 
-            <!-- Trust level filteri -->
             <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,0,0,10">
                 <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
                         Command="{Binding SetTrustFilterCommand}" CommandParameter="Svi"
@@ -149,7 +139,6 @@
                         Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Istaknuti}"/>
             </StackPanel>
 
-            <!-- Tabela članstava -->
             <DataGrid Grid.Row="6" ItemsSource="{Binding Memberships}"
                       AutoGenerateColumns="False" IsReadOnly="True"
                       CanUserAddRows="False" HeadersVisibility="Column"
@@ -166,8 +155,6 @@
             </DataGrid>
         </Grid>
 
-        <!-- ══ OVERLAY PANEL ══ -->
-        <!-- Vidljivost preko bindinga, sav sadržaj kroz {Binding PendingRequest.*}. -->
         <Grid Grid.Row="1" Panel.ZIndex="20" Background="#99000000"
               Visibility="{Binding IsOverlayVisible, Converter={StaticResource BoolToVis}}">
             <Border Background="White" CornerRadius="8" Padding="28,22"
@@ -178,7 +165,6 @@
                                FontSize="16" FontWeight="Bold" Margin="0,0,0,16"
                                Foreground="#2C3E50"/>
 
-                    <!-- Detalji građanina: ulazi direktno iz PendingRequest -->
                     <Grid Margin="0,0,0,16" DataContext="{Binding PendingRequest}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -212,7 +198,6 @@
                                    VerticalAlignment="Center"/>
                     </Grid>
 
-                    <!-- Razlog odbijanja: vidi se samo kad nije Approve. TwoWay binding. -->
                     <StackPanel Margin="0,0,0,16"
                                 Visibility="{Binding IsRejectAction, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="Razlog odbijanja:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4"/>
@@ -223,7 +208,6 @@
                                  FontSize="13" Padding="6,4"/>
                     </StackPanel>
 
-                    <!-- Napomena (samo kod odobravanja) -->
                     <TextBlock Visibility="{Binding IsApproveAction, Converter={StaticResource BoolToVis}}"
                                Text="Prilikom odobravanja, sistem automatski kreira članstvo za datog građanina."
                                FontSize="11" Foreground="#666" Margin="0,0,0,16" TextWrapping="Wrap"/>
