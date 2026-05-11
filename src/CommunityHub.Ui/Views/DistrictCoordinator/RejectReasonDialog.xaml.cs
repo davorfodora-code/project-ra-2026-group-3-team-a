@@ -1,24 +1,22 @@
-﻿using System.Windows;
+using System.Windows;
+using CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 namespace CommunityHub.Ui.Views.DistrictCoordinator;
 
 public partial class RejectReasonDialog : Window
 {
-    public string? Reason { get; private set; }
+    private readonly RejectReasonDialogViewModel _vm;
+
+    public string? Reason => string.IsNullOrWhiteSpace(_vm.Reason) ? null : _vm.Reason.Trim();
 
     public RejectReasonDialog()
     {
         InitializeComponent();
-    }
-
-    private void ConfirmButton_Click(object sender, RoutedEventArgs e)
-    {
-        Reason = ReasonTextBox.Text.Trim();
-        DialogResult = true;
-    }
-
-    private void CancelButton_Click(object sender, RoutedEventArgs e)
-    {
-        DialogResult = false;
+        _vm = new RejectReasonDialogViewModel();
+        _vm.CloseRequested += confirmed =>
+        {
+            DialogResult = confirmed;
+        };
+        DataContext = _vm;
     }
 }
