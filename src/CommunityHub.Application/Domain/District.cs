@@ -73,4 +73,45 @@ public class District
         Images.Add(image);
         image.District = this;
     }
+
+    public bool ContainsAddress(string streetName, int streetNumber)
+    {
+        string normalizedResidenceStreet = streetName.Trim();
+
+        foreach (DistrictStreet street in Streets)
+        {
+            if (!IsSameStreetName(street.StreetName, normalizedResidenceStreet))
+            {
+                continue;
+            }
+
+            if (streetNumber >= street.StartNumber && streetNumber <= street.EndNumber)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsSameStreetName(string districtStreetName, string residenceStreetName)
+    {
+        string a = NormalizeStreetToken(districtStreetName);
+        string b = NormalizeStreetToken(residenceStreetName);
+
+        if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return a.Contains(b, StringComparison.OrdinalIgnoreCase)
+               || b.Contains(a, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeStreetToken(string value)
+    {
+        return value.Trim()
+            .Replace("  ", " ", StringComparison.Ordinal)
+            .TrimEnd('.', ',', ';');
+    }
 }

@@ -1,4 +1,5 @@
 using System.Windows;
+using CommunityHub.Application.Dto.Citizen;
 using CommunityHub.Application.Domain;
 
 namespace CommunityHub.Ui.Views.Citizen;
@@ -11,6 +12,17 @@ public class DistrictAccessRequestRowViewModel
     public string CreatedAtFormatted => CreatedAt.ToString("dd.MM.yyyy. HH:mm");
     public string Status { get; }
     public Visibility DeleteButtonVisibility { get; }
+
+    public DistrictAccessRequestRowViewModel(DistrictAccessRequestDto request)
+    {
+        RequestId = request.RequestId;
+        DistrictName = request.DistrictName;
+        CreatedAt = request.CreatedAt;
+        Status = request.Status.ToString();
+        DeleteButtonVisibility = request.CanDelete
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
 
     public DistrictAccessRequestRowViewModel(DistrictAccessRequest request)
     {

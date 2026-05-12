@@ -41,4 +41,9 @@ public class DistrictAccessRequest
         Status = DistrictAccessRequestStatus.Rejected;
         RejectionReason = reason;
     }
+
+    public bool CanBeCancelledByCitizen()
+    {
+        return Status == DistrictAccessRequestStatus.Pending;
+    }
 }

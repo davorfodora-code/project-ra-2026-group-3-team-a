@@ -1,34 +1,35 @@
 using System.Windows;
+using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
 public partial class CitizenHomeWindow : Window
 {
-    private readonly long _userId;
+    private readonly CitizenHomeViewModel _viewModel;
 
     public CitizenHomeWindow(long userId)
     {
         InitializeComponent();
-        _userId = userId;
+        _viewModel = new CitizenHomeViewModel(userId);
     }
 
     private void DistrictSearchButton_Click(object sender, RoutedEventArgs e)
     {
-        DistrictSearchWindow window = new DistrictSearchWindow(_userId);
+        DistrictSearchWindow window = new DistrictSearchWindow(_viewModel.UserId);
         window.Show();
         Close();
     }
 
     private void MyDistrictRequestsButton_Click(object sender, RoutedEventArgs e)
     {
-        MyDistrictRequestsWindow window = new MyDistrictRequestsWindow(_userId);
+        MyDistrictRequestsWindow window = new MyDistrictRequestsWindow(_viewModel.UserId);
         window.Show();
         Close();
     }
 
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        ProfileWindow profileWindow = new ProfileWindow(_userId);
+        ProfileWindow profileWindow = new ProfileWindow(_viewModel.UserId);
         profileWindow.Show();
         Close();
     }

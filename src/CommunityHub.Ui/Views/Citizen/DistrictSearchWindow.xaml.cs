@@ -1,55 +1,46 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Database.Repositories.Citizen;
-using CommunityHub.Application.Domain;
+using CommunityHub.Application.Dto.Citizen;
+using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
 public partial class DistrictSearchWindow : Window
 {
     private readonly long _userId;
-    private readonly CitizenDistrictDbRepository _districtRepository;
-    private readonly CitizenUserProfileDbRepository _userProfileRepository;
-    private readonly CitizenDistrictMembershipDbRepository _membershipRepository;
-    private readonly CitizenDistrictAccessRequestDbRepository _accessRequestRepository;
-    private List<District> _currentDistricts;
+    private readonly DistrictSearchViewModel _viewModel;
 
     public DistrictSearchWindow(long userId)
     {
         InitializeComponent();
         _userId = userId;
-        _districtRepository = new CitizenDistrictDbRepository();
-        _userProfileRepository = new CitizenUserProfileDbRepository();
-        _membershipRepository = new CitizenDistrictMembershipDbRepository();
-        _accessRequestRepository = new CitizenDistrictAccessRequestDbRepository();
-        _currentDistricts = new List<District>();
+        _viewModel = new DistrictSearchViewModel(userId);
 
         LoadAllDistricts();
     }
 
     private void LoadAllDistricts()
     {
-        _currentDistricts = _districtRepository.GetAll();
-        DistrictsDataGrid.ItemsSource = _currentDistricts.Select(d => new DistrictRowViewModel(d)).ToList();
+        DistrictsDataGrid.ItemsSource = _viewModel.LoadAllDistricts();
         ImagesBorder.Visibility = Visibility.Collapsed;
     }
 
     private void PerformSearch()
     {
-        DistrictSearchFilter filter = BuildSearchFilterFromInputs();
-        _currentDistricts = _districtRepository.Search(filter);
-        DistrictsDataGrid.ItemsSource = _currentDistricts.Select(d => new DistrictRowViewModel(d)).ToList();
+        DistrictSearchFilterDto filter = BuildSearchFilterFromInputs();
+        DistrictsDataGrid.ItemsSource = _viewModel.Search(filter);
         ImagesBorder.Visibility = Visibility.Collapsed;
     }
 
-    private DistrictSearchFilter BuildSearchFilterFromInputs()
+    private DistrictSearchFilterDto BuildSearchFilterFromInputs()
     {
-        string? name = string.IsNullOrWhiteSpace(NameTextBox.Text) ? null : NameTextBox.Text.Trim();
-        string? address = string.IsNullOrWhiteSpace(AddressTextBox.Text) ? null : AddressTextBox.Text.Trim();
-        string? city = string.IsNullOrWhiteSpace(CityTextBox.Text) ? null : CityTextBox.Text.Trim();
-        string? country = string.IsNullOrWhiteSpace(CountryTextBox.Text) ? null : CountryTextBox.Text.Trim();
-
-        return new DistrictSearchFilter(name, address, city, country);
+        return new DistrictSearchFilterDto
+        {
+            Name = string.IsNullOrWhiteSpace(NameTextBox.Text) ? null : NameTextBox.Text.Trim(),
+            Address = string.IsNullOrWhiteSpace(AddressTextBox.Text) ? null : AddressTextBox.Text.Trim(),
+            City = string.IsNullOrWhiteSpace(CityTextBox.Text) ? null : CityTextBox.Text.Trim(),
+            Country = string.IsNullOrWhiteSpace(CountryTextBox.Text) ? null : CountryTextBox.Text.Trim()
+        };
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -101,24 +92,15 @@ public partial class DistrictSearchWindow : Window
 
     private void AccessDistrictButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!TryGetSelectedDistrict(out District district))
-        {
-            return;
-        }
-
-        if (TryHandleExistingMembership(district))
-        {
-            return;
-        }
-
-        if (!TryGetResidenceStreetParts(out string streetName, out int streetNumber))
+        if (!TryGetSelectedDistrict(out DistrictRowViewModel selectedDistrict))
         {
             return;
         }
 
         try
         {
-            ProcessDistrictAccess(district, streetName, streetNumber);
+            AccessResultDto result = _viewModel.RequestDistrictAccess(selectedDistrict.DistrictId);
+            ShowResult(result);
         }
         catch (Exception ex)
         {
@@ -126,9 +108,9 @@ public partial class DistrictSearchWindow : Window
         }
     }
 
-    private bool TryGetSelectedDistrict(out District district)
+    private bool TryGetSelectedDistrict(out DistrictRowViewModel selectedDistrict)
     {
-        district = null!;
+        selectedDistrict = null!;
 
         if (DistrictsDataGrid.SelectedItem is not DistrictRowViewModel selectedVm)
         {
@@ -136,79 +118,27 @@ public partial class DistrictSearchWindow : Window
             return false;
         }
 
-        District? resolved = FindDistrictById(selectedVm.DistrictId);
-        if (resolved == null)
-        {
-            ShowMessageBox("Selektovani kvart nije pronađen.", "Greška", MessageBoxImage.Error);
-            return false;
-        }
-
-        district = resolved;
+        selectedDistrict = selectedVm;
         return true;
     }
 
-    private bool TryHandleExistingMembership(District district)
+    private void ShowResult(AccessResultDto result)
     {
-        if (!_membershipRepository.HasMembership(_userId))
+        MessageBoxImage image = result.Type switch
         {
-            return false;
-        }
+            AccessResultType.Success => MessageBoxImage.Information,
+            AccessResultType.Warning => MessageBoxImage.Warning,
+            _ => MessageBoxImage.Error
+        };
 
-        long? existingDistrictId = _membershipRepository.GetMembershipDistrictId(_userId);
-        if (existingDistrictId == district.Id)
+        string caption = result.Type switch
         {
-            ShowMessageBox("Već ste član ovog kvarta.", "Informacija", MessageBoxImage.Information);
-            return true;
-        }
+            AccessResultType.Success => "Uspeh",
+            AccessResultType.Warning => "Upozorenje",
+            _ => "Greška"
+        };
 
-        ShowMessageBox(
-            "Već ste član nekog kvarta. Ne možete tražiti pristup drugom kvartu.",
-            "Upozorenje",
-            MessageBoxImage.Warning);
-        return true;
-    }
-
-    private bool TryGetResidenceStreetParts(out string streetName, out int streetNumber)
-    {
-        streetName = string.Empty;
-        streetNumber = 0;
-
-        string? rawAddress = _userProfileRepository.GetAddressByUserId(_userId);
-        if (string.IsNullOrWhiteSpace(rawAddress))
-        {
-            ShowMessageBox("Nije moguće pročitati adresu stanovanja iz profila.", "Greška", MessageBoxImage.Error);
-            return false;
-        }
-
-        if (!TryParseResidenceStreetAndNumber(rawAddress, out streetName, out streetNumber))
-        {
-            ShowMessageBox(
-                "Adresa stanovanja nije u očekivanom formatu (npr. 'Zemunska 10, Novi Sad').",
-                "Greška",
-                MessageBoxImage.Error);
-            return false;
-        }
-
-        return true;
-    }
-
-    private void ProcessDistrictAccess(District district, string streetName, int streetNumber)
-    {
-        if (IsAddressInDistrict(streetName, streetNumber, district))
-        {
-            _membershipRepository.Create(_userId, district.Id, DateTime.Now);
-            ShowMessageBox("Adresa se poklapa sa kvartom — automatski ste učlanjeni.", "Uspeh", MessageBoxImage.Information);
-            return;
-        }
-
-        if (_accessRequestRepository.ExistsPending(_userId, district.Id))
-        {
-            ShowMessageBox("Već imate aktivan zahtev za ovaj kvart.", "Upozorenje", MessageBoxImage.Warning);
-            return;
-        }
-
-        _accessRequestRepository.Create(_userId, district.Id);
-        ShowMessageBox("Kreiran je zahtev za pristup kvartu (status: Pending).", "Uspeh", MessageBoxImage.Information);
+        ShowMessageBox(result.Message, caption, image);
     }
 
     private static void ShowMessageBox(string text, string caption, MessageBoxImage image)
@@ -216,101 +146,5 @@ public partial class DistrictSearchWindow : Window
         MessageBox.Show(text, caption, MessageBoxButton.OK, image);
     }
 
-    private District? FindDistrictById(long districtId)
-    {
-        return _currentDistricts.FirstOrDefault(d => d.Id == districtId);
-    }
-
-    private static bool TryParseResidenceStreetAndNumber(string rawAddress, out string streetName, out int streetNumber)
-    {
-        string streetLine = TakeStreetSegmentBeforeComma(rawAddress);
-        streetLine = NormalizeStreetLineEnd(streetLine);
-        return TryParseTrailingHouseNumber(streetLine, out streetName, out streetNumber);
-    }
-
-    private static string TakeStreetSegmentBeforeComma(string rawAddress)
-    {
-        string trimmed = rawAddress.Trim();
-        int commaIndex = trimmed.IndexOf(',');
-        if (commaIndex > 0)
-        {
-            return trimmed[..commaIndex].Trim();
-        }
-
-        return trimmed;
-    }
-
-    private static string NormalizeStreetLineEnd(string line)
-    {
-        return line.Trim().TrimEnd('.', ',', ';');
-    }
-
-    private static bool TryParseTrailingHouseNumber(string line, out string streetName, out int streetNumber)
-    {
-        streetName = string.Empty;
-        streetNumber = 0;
-
-        int lastSpace = line.LastIndexOf(' ');
-        if (lastSpace <= 0)
-        {
-            return false;
-        }
-
-        string lastToken = line[(lastSpace + 1)..].Trim();
-        if (!int.TryParse(lastToken, out streetNumber) || streetNumber <= 0)
-        {
-            streetNumber = 0;
-            return false;
-        }
-
-        streetName = line[..lastSpace].Trim();
-        return !string.IsNullOrWhiteSpace(streetName);
-    }
-
-    private static bool IsAddressInDistrict(string residenceStreetName, int residenceStreetNumber, District district)
-    {
-        string normalizedResidenceStreet = residenceStreetName.Trim();
-
-        foreach (DistrictStreet street in district.Streets)
-        {
-            if (!IsSameStreetName(street.StreetName, normalizedResidenceStreet))
-            {
-                continue;
-            }
-
-            if (residenceStreetNumber >= street.StartNumber && residenceStreetNumber <= street.EndNumber)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool IsSameStreetName(string districtStreetName, string residenceStreetName)
-    {
-        string a = NormalizeStreetToken(districtStreetName);
-        string b = NormalizeStreetToken(residenceStreetName);
-
-        if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        // Tolerancija za male varijacije u formatu (npr. "Bulevar ..." vs "...")
-        if (a.Contains(b, StringComparison.OrdinalIgnoreCase) || b.Contains(a, StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static string NormalizeStreetToken(string value)
-    {
-        return value.Trim()
-            .Replace("  ", " ", StringComparison.Ordinal)
-            .TrimEnd('.', ',', ';');
-    }
 }
 
