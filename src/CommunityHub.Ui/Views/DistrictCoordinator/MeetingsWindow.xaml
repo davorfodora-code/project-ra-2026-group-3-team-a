@@ -1,0 +1,62 @@
+<Window x:Class="CommunityHub.Ui.Views.DistrictCoordinator.MeetingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sastanci"
+        Width="720" Height="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Zakazani sastanci" FontSize="17"
+                   FontWeight="Bold" Margin="0,0,0,8"/>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding ScheduledMeetings}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  HeadersVisibility="Column" Margin="0,0,0,20"
+                  MaxHeight="200" CanUserResizeRows="False"
+                  GridLinesVisibility="Horizontal" BorderBrush="#DDD" BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Kvart"  Binding="{Binding DistrictName}"         Width="*"/>
+                <DataGridTextColumn Header="Tema"   Binding="{Binding MeetingTypeDisplay}"   Width="120"/>
+                <DataGridTextColumn Header="Vreme"  Binding="{Binding MeetingTimeDisplay}"   Width="80"/>
+                <DataGridTextColumn Header="Datum"  Binding="{Binding ScheduledDateDisplay}" Width="110"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="3" Text="U pripremi i otkazani" FontSize="17"
+                   FontWeight="Bold" Margin="0,0,0,8"/>
+
+        <DataGrid Grid.Row="4" ItemsSource="{Binding InPreparationMeetings}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  HeadersVisibility="Column" Margin="0,0,0,12"
+                  MaxHeight="200" CanUserResizeRows="False"
+                  GridLinesVisibility="Horizontal" BorderBrush="#DDD" BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Kvart"       Binding="{Binding DistrictName}"       Width="*"/>
+                <DataGridTextColumn Header="Tema"        Binding="{Binding MeetingTypeDisplay}" Width="120"/>
+                <DataGridTextColumn Header="Vreme"       Binding="{Binding MeetingTimeDisplay}" Width="80"/>
+                <DataGridTextColumn Header="Opseg"       Binding="{Binding DateRangeDisplay}"   Width="160"/>
+                <DataGridTextColumn Header="Status"      Binding="{Binding StatusDisplay}"      Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Button Content="Zakaži novi sastanak"
+                    Command="{Binding ScheduleNewCommand}"
+                    Padding="14,8" FontSize="13" Margin="0,8,8,0"
+                    Background="#1A1A1A" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+            <Button Content="Proveri glasanje (24h)"
+                    Command="{Binding ResolveVotesCommand}"
+                    Padding="14,8" FontSize="13" Margin="0,8,0,0"
+                    Background="#E65C00" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>
