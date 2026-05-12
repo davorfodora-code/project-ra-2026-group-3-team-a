@@ -83,6 +83,27 @@ INSERT INTO district_access_requests (id, user_id, district_id, creation_date, s
 INSERT INTO district_memberships (id, district_id, user_id, join_date) VALUES
 (-1, -2, -8, '2025-03-12 16:45:00');
 
+-- Dogadjaji gradjana (4.3)
+INSERT INTO district_events (id, district_id, organizer_id, name, description, event_date, start_time, duration_minutes, min_volunteers, status, created_at) VALUES
+(-1, -1, -7, 'Ciscenje parka', 'Akcija ciscenja centralnog parka u kvartu.', '2026-06-20', '09:00', 180, 2, 'UPripremi', '2026-06-01 10:00:00'),
+(-2, -2, -8, 'Uredjenje igralista', 'Farbanje klupa i sredjivanje igralista.', '2026-06-22', '10:00', 120, 2, 'Zakazan', '2026-06-02 12:00:00');
+
+INSERT INTO district_event_required_items (id, event_id, item_name, assigned_volunteer_id) VALUES
+(-1, -1, 'Rukavice', -7),
+(-2, -1, 'Vrece za smece', NULL),
+(-3, -2, 'Farba', -8),
+(-4, -2, 'Cetke', -9);
+
+INSERT INTO district_event_applications (id, event_id, citizen_id, applied_at) VALUES
+(-1, -1, -7, '2026-06-05 09:30:00'),
+(-2, -2, -8, '2026-06-06 08:00:00'),
+(-3, -2, -9, '2026-06-06 08:10:00');
+
+INSERT INTO district_event_application_items (id, application_id, required_item_id) VALUES
+(-1, -1, -1),
+(-2, -2, -3),
+(-3, -3, -4);
+
 
 -- ============================================================
 --  Adrese
