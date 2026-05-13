@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Application.Database.Repositories.BuildingManager;
 
-public class CommonRoomDbRepository
+public class CommonRoomDbRepository : ICommonRoomRepository
 {
     // Vraća sve zajednicke prostorije za datu zgradu
     public List<CommonRoom> GetByBuildingId(long buildingId)

@@ -1,4 +1,4 @@
-namespace CommunityHub.Application.Dto.BuildingManager;
+namespace CommunityHub.Application.Services.BuildingManager.Dto;
 
 public class BuildingMembershipDto
 {
@@ -7,4 +7,7 @@ public class BuildingMembershipDto
     public int ApartmentNumber { get; set; }
     public DateTime JoinedAt { get; set; }
     public string JoinedAtFormatted => JoinedAt.ToString("dd.MM.yyyy.");
+
+    public string FloorApartmentDisplay => $"Sprat {FloorNumber}, stan {ApartmentNumber}";
+    public string JoinedDisplay => $"Datum uclanjenja: {JoinedAtFormatted}";
 }

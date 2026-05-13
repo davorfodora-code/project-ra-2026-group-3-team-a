@@ -1,15 +1,18 @@
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
-public class CommonRoomsViewModel
+public class CommonRoomsViewModel : BaseViewModel
 {
     private readonly CommonRoomService _service;
 
     public CommonRoomsViewModel()
     {
-        _service = new CommonRoomService();
+        _service = new CommonRoomService(
+            Injector.Get<ICommonRoomRepository>(),
+            Injector.Get<IBuildingRepository>());
     }
 
     public List<CommonRoomDto> GetByBuildingId(long buildingId)

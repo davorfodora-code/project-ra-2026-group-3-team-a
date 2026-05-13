@@ -1,6 +1,6 @@
 using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 
 namespace CommunityHub.Application.Services.Tenant;
 

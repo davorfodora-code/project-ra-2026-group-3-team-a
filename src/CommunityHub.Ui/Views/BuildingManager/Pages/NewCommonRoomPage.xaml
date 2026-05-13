@@ -64,46 +64,46 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="16,16,16,24">
 
-                <!-- Naziv zgrade -->
-                <TextBlock x:Name="BuildingLabel" FontSize="14" FontWeight="SemiBold"
+                <TextBlock Text="{Binding BuildingLabel}" FontSize="14" FontWeight="SemiBold"
                            Margin="0,0,0,16"/>
 
-                <!-- Naziv prostorije -->
                 <TextBlock Text="Naziv:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <TextBox x:Name="NameBox" FontSize="14" Padding="12,10"
+                <TextBox FontSize="14" Padding="12,10"
                          Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,0,16"/>
 
-                <!-- Opis -->
                 <TextBlock Text="Opis:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <TextBox x:Name="DescriptionBox" FontSize="14" Padding="12,10"
+                <TextBox FontSize="14" Padding="12,10"
                          Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
                          TextWrapping="Wrap" AcceptsReturn="True" Height="90"
-                         VerticalContentAlignment="Top" Margin="0,0,0,16"/>
+                         VerticalContentAlignment="Top"
+                         Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,16"/>
 
-                <!-- Sprat -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                     <TextBlock Text="Sprat:" FontSize="13" FontWeight="SemiBold"
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <ComboBox x:Name="FloorCombo" FontSize="13" MinWidth="70"/>
-                    <TextBlock x:Name="FloorHint" FontSize="12" Foreground="#888888"
+                    <ComboBox FontSize="13" MinWidth="70"
+                              ItemsSource="{Binding AvailableFloors}"
+                              SelectedItem="{Binding SelectedFloor, Mode=TwoWay}"/>
+                    <TextBlock Text="{Binding FloorHint}" FontSize="12" Foreground="#888888"
                                VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
                 <TextBlock Margin="0,0,0,16"/>
 
-                <!-- Iznajmljivanje -->
                 <TextBlock Text="Iznajmljivanje:" FontSize="13" FontWeight="SemiBold"
                            Margin="0,0,0,8"/>
-                <RadioButton x:Name="SingleDayRadio" Content="Na 1 dan"
-                             FontSize="13" IsChecked="True" Margin="0,0,0,6"/>
-                <RadioButton x:Name="MultiDayRadio" Content="Na vise dana"
-                             FontSize="13" Margin="0,0,0,24"/>
+                <RadioButton Content="Na 1 dan" FontSize="13"
+                             IsChecked="True" Margin="0,0,0,6"/>
+                <RadioButton Content="Na vise dana" FontSize="13"
+                             IsChecked="{Binding IsMultiDay, Mode=TwoWay}"
+                             Margin="0,0,0,24"/>
 
-                <!-- Greska -->
-                <TextBlock x:Name="ErrorText" Foreground="#CC0000" FontSize="13"
-                           TextWrapping="Wrap" Visibility="Collapsed" Margin="0,0,0,12"/>
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#CC0000" FontSize="13"
+                           TextWrapping="Wrap" Margin="0,0,0,12"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}"/>
 
-                <!-- Submit -->
                 <Button Style="{StaticResource OutlineSubmitStyle}"
                         HorizontalAlignment="Stretch"
                         Click="Submit_Click">

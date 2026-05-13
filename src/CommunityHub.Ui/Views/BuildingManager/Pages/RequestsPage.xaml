@@ -42,6 +42,21 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Stil za status liniju — boja zavisi od Status vrednosti na ItemVM-u -->
+        <Style x:Key="StatusLineStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#E65C00"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Accepted">
+                    <Setter Property="Foreground" Value="#2E7D32"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Rejected">
+                    <Setter Property="Foreground" Value="#C62828"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -70,17 +85,40 @@
         <Border Grid.Row="1" Background="White"
                 BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="BtnZaPristup" Style="{StaticResource TabBtnStyle}"
-                        Content="Za pristup" Click="Tab_Click" Tag="0"/>
+                <Button Content="Za pristup" Click="Tab_Click" Tag="0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAccessTabActive}" Value="True">
+                                    <Setter Property="Foreground" Value="#1A1A1A"/>
+                                    <Setter Property="BorderBrush" Value="#1A1A1A"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <TextBlock Text="|" Foreground="#CCCCCC"
                            VerticalAlignment="Center" Margin="0,10"/>
-                <Button x:Name="BtnZaIznajmljivanje" Style="{StaticResource TabBtnStyle}"
-                        Content="Za iznajmljivanje" Click="Tab_Click" Tag="1"/>
+                <Button Content="Za iznajmljivanje" Click="Tab_Click" Tag="1">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsRentalTabActive}" Value="True">
+                                    <Setter Property="Foreground" Value="#1A1A1A"/>
+                                    <Setter Property="BorderBrush" Value="#1A1A1A"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
         </Border>
 
-        <!-- Filter traka -->
-        <Grid Grid.Row="2" Margin="16,10,16,6">
+        <!-- Filter traka (samo za "Za pristup" tab) -->
+        <Grid Grid.Row="2" Margin="16,10,16,6"
+              Visibility="{Binding IsAccessTabActive, Converter={StaticResource BoolToVisibility}}">
             <ComboBox x:Name="FilterCombo" Width="140" HorizontalAlignment="Left"
                       FontSize="13" SelectionChanged="Filter_Changed">
                 <ComboBoxItem Content="Svi" Tag="Svi" IsSelected="True"/>
@@ -95,9 +133,116 @@
             </Button>
         </Grid>
 
-        <!-- Lista zahteva -->
+        <!-- Sadrzaj -->
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="RequestsPanel" Margin="16,4,16,16"/>
+            <Grid Margin="16,4,16,16">
+
+                <!-- ===== Za pristup tab ===== -->
+                <StackPanel Visibility="{Binding IsAccessTabActive, Converter={StaticResource BoolToVisibility}}">
+
+                    <TextBlock Text="Nema zahteva za prikaz." FontSize="14"
+                               Foreground="#AAAAAA"
+                               HorizontalAlignment="Center" Margin="0,40,0,0"
+                               Visibility="{Binding HasNoRequests, Converter={StaticResource BoolToVisibility}}"/>
+
+                    <ItemsControl ItemsSource="{Binding FilteredRequests}"
+                                  Visibility="{Binding HasRequests, Converter={StaticResource BoolToVisibility}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="#DDDDDD"
+                                        BorderThickness="1" CornerRadius="8"
+                                        Margin="0,0,0,10" Padding="14,12">
+                                    <StackPanel>
+                                        <!-- Ime stanara -->
+                                        <TextBlock Text="{Binding TenantFullName}"
+                                                   FontSize="15" FontWeight="SemiBold"
+                                                   Margin="0,0,0,4"/>
+
+                                        <!-- Lokacija + stan -->
+                                        <TextBlock Text="{Binding LocationLine}"
+                                                   FontSize="12" Foreground="#555555"
+                                                   Margin="0,0,0,2" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding ApartmentLine}"
+                                                   FontSize="12" Foreground="#555555"
+                                                   Margin="0,0,0,2"/>
+
+                                        <!-- Datum + status + dugmad -->
+                                        <Grid Margin="0,6,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding DateLine}"
+                                                           FontSize="12" Foreground="#555555"
+                                                           Margin="0,0,0,2"/>
+                                                <TextBlock Text="{Binding StatusLine}"
+                                                           Style="{StaticResource StatusLineStyle}"/>
+                                            </StackPanel>
+
+                                            <!-- Dugmad Odobri/Odbij — samo ako je Pending i panel zatvoren -->
+                                            <StackPanel Grid.Column="1"
+                                                        VerticalAlignment="Top"
+                                                        Margin="8,0,0,0"
+                                                        Visibility="{Binding IsPending, Converter={StaticResource BoolToVisibility}}">
+                                                <Button Content="Odobri"
+                                                        Style="{StaticResource ApproveStyle}"
+                                                        Margin="0,0,0,4"
+                                                        Click="Approve_Click"/>
+                                                <Button Content="Odbij"
+                                                        Click="RejectOpen_Click">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource RejectStyle}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsRejectPanelOpen}" Value="True">
+                                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Panel za obrazlozenje (vidljiv kad IsRejectPanelOpen) -->
+                                        <StackPanel Margin="0,8,0,0"
+                                                    Visibility="{Binding IsRejectPanelOpen, Converter={StaticResource BoolToVisibility}}">
+                                            <TextBlock Text="Obrazlozenje za odbijanje:"
+                                                       FontSize="12" Foreground="#555555"
+                                                       Margin="0,0,0,4"/>
+                                            <TextBox Height="60" FontSize="12"
+                                                     TextWrapping="Wrap" AcceptsReturn="True"
+                                                     Padding="6"
+                                                     Text="{Binding RejectReason, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="0,6,0,0">
+                                                <Button Content="Potvrdi"
+                                                        Style="{StaticResource SmallBtnStyle}"
+                                                        Margin="0,0,6,0"
+                                                        Click="RejectConfirm_Click"/>
+                                                <Button Content="Otkazi"
+                                                        Style="{StaticResource SmallBtnStyle}"
+                                                        Click="RejectCancel_Click"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- ===== Za iznajmljivanje tab (stub — Feature 4) ===== -->
+                <StackPanel Visibility="{Binding IsRentalTabActive, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="Zahtevi za iznajmljivanje prostorija dolaze uskoro."
+                               FontSize="14" Foreground="#AAAAAA"
+                               HorizontalAlignment="Center" TextAlignment="Center"
+                               TextWrapping="Wrap" Margin="16,40,16,0"/>
+                </StackPanel>
+
+            </Grid>
         </ScrollViewer>
     </Grid>
 </Page>

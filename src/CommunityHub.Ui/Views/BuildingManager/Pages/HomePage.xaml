@@ -28,13 +28,11 @@
                                    FontSize="16" FontWeight="Bold"
                                    HorizontalAlignment="Center"
                                    TextAlignment="Center" Margin="0,0,0,6"/>
-                        <TextBlock x:Name="BanerZgrada"
-                                   Text="Zgrada u Dunavskoj 4"
+                        <TextBlock Text="{Binding BannerBuildingName}"
                                    FontSize="13" Foreground="#666666"
                                    HorizontalAlignment="Center" TextAlignment="Center"
                                    Margin="0,0,0,3"/>
-                        <TextBlock x:Name="BanerDatum"
-                                   Text="20. 04. 2026. - 19:00"
+                        <TextBlock Text="{Binding BannerDate}"
                                    FontSize="13" Foreground="#666666"
                                    HorizontalAlignment="Center" TextAlignment="Center"/>
                     </StackPanel>
@@ -50,7 +48,7 @@
                         Margin="0,0,5,5" Click="ZahteviPristup_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock x:Name="CountPristup" Text="3"
+                            <TextBlock Text="{Binding PendingAccessRequestsCount}"
                                        FontSize="42" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
                             <TextBlock Text="Zahtevi za pristup" FontSize="12"
@@ -67,7 +65,7 @@
                         Margin="5,0,0,5" Click="ZahteviIznajmljivanje_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock x:Name="CountIznajmljivanje" Text="1"
+                            <TextBlock Text="{Binding RentalRequestsCount}"
                                        FontSize="42" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
                             <TextBlock Text="Zahtevi za iznajmljivanje" FontSize="12"
@@ -84,7 +82,7 @@
                         Margin="0,5,5,0" Click="NeresenoProblemi_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock x:Name="CountProblemi" Text="0"
+                            <TextBlock Text="{Binding UnresolvedProblemsCount}"
                                        FontSize="42" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
                             <TextBlock Text="Nereseni problemi" FontSize="12"
@@ -101,7 +99,7 @@
                         Margin="5,5,0,0" Click="AktivniOglasi_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock x:Name="CountOglasi" Text="12"
+                            <TextBlock Text="{Binding ActiveAdsCount}"
                                        FontSize="42" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
                             <TextBlock Text="Aktivni oglasi" FontSize="12"

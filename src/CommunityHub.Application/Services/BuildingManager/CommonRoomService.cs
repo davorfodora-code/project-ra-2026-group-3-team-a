@@ -1,18 +1,17 @@
-using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 
 namespace CommunityHub.Application.Services.BuildingManager;
 
 public class CommonRoomService
 {
-    private readonly CommonRoomDbRepository _repository;
-    private readonly BuildingDbRepository _buildingRepository;
+    private readonly ICommonRoomRepository _repository;
+    private readonly IBuildingRepository _buildingRepository;
 
-    public CommonRoomService()
+    public CommonRoomService(ICommonRoomRepository repository, IBuildingRepository buildingRepository)
     {
-        _repository = new CommonRoomDbRepository();
-        _buildingRepository = new BuildingDbRepository();
+        _repository = repository;
+        _buildingRepository = buildingRepository;
     }
 
     public List<CommonRoomDto> GetByBuildingId(long buildingId)
