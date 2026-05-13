@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Application;
 using CommunityHub.Application.Dto.BuildingManager;
 using CommunityHub.Application.Services.BuildingManager;
 
@@ -14,7 +15,7 @@ public partial class BuildingsPage : Page
     {
         InitializeComponent();
         _shell = shell;
-        _service = new BuildingService();
+        _service = new BuildingService(Injector.Get<IBuildingRepository>());
         LoadBuildings();
     }
 

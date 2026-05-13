@@ -1,3 +1,4 @@
+using CommunityHub.Application;
 using CommunityHub.Application.Dto.BuildingManager;
 using CommunityHub.Application.Services.BuildingManager;
 
@@ -9,7 +10,7 @@ public class BuildingRegistrationViewModel
 
     public BuildingRegistrationViewModel()
     {
-        _service = new BuildingService();
+        _service = new BuildingService(Injector.Get<IBuildingRepository>());
     }
 
     public BuildingDto RegisterBuilding(CreateBuildingDto dto)

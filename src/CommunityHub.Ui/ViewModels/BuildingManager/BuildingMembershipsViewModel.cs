@@ -1,3 +1,4 @@
+using CommunityHub.Application;
 using CommunityHub.Application.Dto.BuildingManager;
 using CommunityHub.Application.Services.BuildingManager;
 
@@ -11,7 +12,7 @@ public class BuildingMembershipsViewModel
     public BuildingMembershipsViewModel(long managerId)
     {
         _managerId = managerId;
-        _service = new BuildingAccessRequestService();
+        _service = new BuildingAccessRequestService(Injector.Get<IBuildingAccessRequestRepository>());
     }
 
     public List<BuildingDto> GetBuildingsByManagerId()

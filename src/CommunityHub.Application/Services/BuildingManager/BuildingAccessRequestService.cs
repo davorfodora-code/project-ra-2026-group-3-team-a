@@ -1,4 +1,3 @@
-using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Dto.BuildingManager;
 
@@ -6,11 +5,11 @@ namespace CommunityHub.Application.Services.BuildingManager;
 
 public class BuildingAccessRequestService
 {
-    private readonly BuildingAccessRequestDbRepository _repository;
+    private readonly IBuildingAccessRequestRepository _repository;
 
-    public BuildingAccessRequestService()
+    public BuildingAccessRequestService(IBuildingAccessRequestRepository repository)
     {
-        _repository = new BuildingAccessRequestDbRepository();
+        _repository = repository;
     }
 
     public List<BuildingAccessRequestDto> GetByManagerId(long managerId)
