@@ -127,24 +127,34 @@ public class CitizenDistrictEventService
 
         RefreshAndPersistStatus(districtEvent);
 
-        if (_applicationRepository.ExistsByEventAndCitizen(dto.EventId, citizenId))
+        bool alreadyApplied = _applicationRepository.ExistsByEventAndCitizen(dto.EventId, citizenId);
+        if (alreadyApplied && (dto.SelectedItemIds == null || dto.SelectedItemIds.Count == 0))
         {
-            return Failure("Vec ste prijavljeni kao volonter na ovom dogadjaju.");
+            return Failure("Vec ste prijavljeni kao volonter. Izaberite bar jednu slobodnu stavku za dopunu prijave.");
         }
 
         try
         {
             DistrictEventStatus previousStatus = districtEvent.Status;
-            districtEvent.RegisterVolunteer(CreateCitizenStub(citizenId), DateTime.Now, dto.SelectedItemIds);
-
-            _applicationRepository.CreateApplication(dto.EventId, citizenId, DateTime.Now, dto.SelectedItemIds);
+            if (alreadyApplied)
+            {
+                districtEvent.AddItemsForExistingVolunteer(citizenId, DateTime.Now, dto.SelectedItemIds);
+                _applicationRepository.AddItemsToExistingApplication(dto.EventId, citizenId, dto.SelectedItemIds);
+            }
+            else
+            {
+                districtEvent.RegisterVolunteer(CreateCitizenStub(citizenId), DateTime.Now, dto.SelectedItemIds);
+                _applicationRepository.CreateApplication(dto.EventId, citizenId, DateTime.Now, dto.SelectedItemIds);
+            }
 
             if (districtEvent.Status != previousStatus)
             {
                 _eventRepository.UpdateStatus(dto.EventId, districtEvent.Status);
             }
 
-            return Success("Uspesno ste prijavljeni kao volonter.");
+            return Success(alreadyApplied
+                ? "Uspesno ste dopunili stavke koje donosite."
+                : "Uspesno ste prijavljeni kao volonter.");
         }
         catch (InvalidOperationException ex)
         {

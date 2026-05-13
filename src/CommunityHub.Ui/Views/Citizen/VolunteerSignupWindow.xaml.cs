@@ -58,5 +58,6 @@ public partial class VolunteerSignupWindow : Window
         public bool IsCovered { get; set; }
         public string Status { get; set; } = string.Empty;
         public bool IsSelected { get; set; }
+        public bool CanSelect => !IsCovered;
     }
 }

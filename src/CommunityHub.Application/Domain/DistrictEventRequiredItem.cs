@@ -24,7 +24,7 @@ public class DistrictEventRequiredItem
 
     public void AssignToVolunteer(long volunteerId)
     {
-        if (volunteerId <= 0)
+        if (volunteerId == 0)
             throw new InvalidOperationException("Neispravan identifikator volontera.");
         if (IsCovered)
             throw new InvalidOperationException("Stavka je vec preuzeta od strane drugog volontera.");

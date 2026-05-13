@@ -22,4 +22,15 @@ public class DistrictEventVolunteerApplication
         AppliedAt = appliedAt;
         SelectedItemIds = selectedItemIds?.Distinct().ToList() ?? new List<long>();
     }
+
+    public void AddSelectedItems(IEnumerable<long> itemIds)
+    {
+        foreach (long itemId in itemIds.Distinct())
+        {
+            if (!SelectedItemIds.Contains(itemId))
+            {
+                SelectedItemIds.Add(itemId);
+            }
+        }
+    }
 }

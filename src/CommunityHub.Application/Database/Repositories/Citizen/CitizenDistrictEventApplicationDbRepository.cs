@@ -82,6 +82,72 @@ public class CitizenDistrictEventApplicationDbRepository
         }
     }
 
+    public void AddItemsToExistingApplication(long eventId, long citizenId, IEnumerable<long>? selectedItemIds)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        using IDbTransaction transaction = connection.BeginTransaction();
+
+        try
+        {
+            IDbCommand getAppCmd = connection.CreateCommand();
+            getAppCmd.Transaction = transaction;
+            getAppCmd.CommandText = @"
+                SELECT id
+                FROM district_event_applications
+                WHERE event_id = @eventId
+                  AND citizen_id = @citizenId
+                LIMIT 1";
+            AddParameter(getAppCmd, "@eventId", eventId);
+            AddParameter(getAppCmd, "@citizenId", citizenId);
+
+            object? appIdObj = getAppCmd.ExecuteScalar();
+            if (appIdObj == null || appIdObj == DBNull.Value)
+            {
+                throw new InvalidOperationException("Prijava volontera nije pronadjena.");
+            }
+
+            long applicationId = Convert.ToInt64(appIdObj);
+
+            foreach (long itemId in selectedItemIds?.Distinct() ?? Enumerable.Empty<long>())
+            {
+                IDbCommand updateItemCmd = connection.CreateCommand();
+                updateItemCmd.Transaction = transaction;
+                updateItemCmd.CommandText = @"
+                    UPDATE district_event_required_items
+                    SET assigned_volunteer_id = @citizenId
+                    WHERE id = @itemId
+                      AND event_id = @eventId
+                      AND (assigned_volunteer_id IS NULL OR assigned_volunteer_id = @citizenId)";
+                AddParameter(updateItemCmd, "@citizenId", citizenId);
+                AddParameter(updateItemCmd, "@itemId", itemId);
+                AddParameter(updateItemCmd, "@eventId", eventId);
+
+                int affectedRows = updateItemCmd.ExecuteNonQuery();
+                if (affectedRows == 0)
+                {
+                    throw new InvalidOperationException("Nije moguce preuzeti stavku jer je vec preuzeta ili ne postoji.");
+                }
+
+                IDbCommand linkCmd = connection.CreateCommand();
+                linkCmd.Transaction = transaction;
+                linkCmd.CommandText = @"
+                    INSERT INTO district_event_application_items (application_id, required_item_id)
+                    VALUES (@applicationId, @requiredItemId)
+                    ON CONFLICT DO NOTHING";
+                AddParameter(linkCmd, "@applicationId", applicationId);
+                AddParameter(linkCmd, "@requiredItemId", itemId);
+                linkCmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+        }
+        catch
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
+
     public void UpsertAttendance(long eventId, long volunteerId, bool attended, DateTime markedAt)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();

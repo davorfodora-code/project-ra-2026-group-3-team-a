@@ -25,7 +25,16 @@
                   SelectionMode="Extended"
                   IsReadOnly="False">
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Header="Nosim" Binding="{Binding IsSelected}" Width="70"/>
+                <DataGridTemplateColumn Header="Nosim" Width="70">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding CanSelect}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Stavka" Binding="{Binding Name}" Width="*"/>
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="140"/>
             </DataGrid.Columns>

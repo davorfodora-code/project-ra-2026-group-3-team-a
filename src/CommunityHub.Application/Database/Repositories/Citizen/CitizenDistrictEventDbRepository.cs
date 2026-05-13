@@ -106,10 +106,12 @@ public class CitizenDistrictEventDbRepository
     {
         List<DistrictEvent> events = new List<DistrictEvent>();
 
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        using (IDataReader reader = cmd.ExecuteReader())
         {
-            events.Add(MapEventShell(reader));
+            while (reader.Read())
+            {
+                events.Add(MapEventShell(reader));
+            }
         }
 
         foreach (DistrictEvent districtEvent in events)
@@ -191,14 +193,16 @@ public class CitizenDistrictEventDbRepository
         AddParameter(cmd, "@eventId", eventId);
 
         List<DistrictEventRequiredItem> items = new List<DistrictEventRequiredItem>();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        using (IDataReader reader = cmd.ExecuteReader())
         {
-            long? assignedVolunteerId = ReadNullableInt64(reader, "assigned_volunteer_id");
-            items.Add(new DistrictEventRequiredItem(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                reader.GetString(reader.GetOrdinal("item_name")),
-                assignedVolunteerId));
+            while (reader.Read())
+            {
+                long? assignedVolunteerId = ReadNullableInt64(reader, "assigned_volunteer_id");
+                items.Add(new DistrictEventRequiredItem(
+                    reader.GetInt64(reader.GetOrdinal("id")),
+                    reader.GetString(reader.GetOrdinal("item_name")),
+                    assignedVolunteerId));
+            }
         }
 
         return items;
@@ -225,27 +229,38 @@ public class CitizenDistrictEventDbRepository
             ORDER BY a.applied_at";
         AddParameter(cmd, "@eventId", eventId);
 
-        List<DistrictEventVolunteerApplication> applications = new List<DistrictEventVolunteerApplication>();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        List<VolunteerApplicationShell> shells = new List<VolunteerApplicationShell>();
+        using (IDataReader reader = cmd.ExecuteReader())
         {
-            User citizen = new User(
-                reader.GetInt64(reader.GetOrdinal("citizen_id")),
-                reader.GetString(reader.GetOrdinal("username")),
-                reader.GetString(reader.GetOrdinal("password")),
-                reader.GetString(reader.GetOrdinal("name")),
-                reader.GetString(reader.GetOrdinal("surname")),
-                reader.GetDateTime(reader.GetOrdinal("birthday")),
-                reader.GetString(reader.GetOrdinal("role")),
-                ReadNullableString(reader, "address"));
+            while (reader.Read())
+            {
+                User citizen = new User(
+                    reader.GetInt64(reader.GetOrdinal("citizen_id")),
+                    reader.GetString(reader.GetOrdinal("username")),
+                    reader.GetString(reader.GetOrdinal("password")),
+                    reader.GetString(reader.GetOrdinal("name")),
+                    reader.GetString(reader.GetOrdinal("surname")),
+                    reader.GetDateTime(reader.GetOrdinal("birthday")),
+                    reader.GetString(reader.GetOrdinal("role")),
+                    ReadNullableString(reader, "address"));
 
-            long applicationId = reader.GetInt64(reader.GetOrdinal("id"));
-            List<long> selectedItemIds = GetSelectedItemIds(connection, applicationId);
+                shells.Add(new VolunteerApplicationShell(
+                    reader.GetInt64(reader.GetOrdinal("id")),
+                    citizen,
+                    reader.GetDateTime(reader.GetOrdinal("applied_at"))));
+            }
+        }
 
+        // Vazno: selected item ids ucitavamo tek nakon zatvaranja reader-a iznad
+        // da ne bismo imali paralelno otvorena dva reader-a na istoj konekciji.
+        List<DistrictEventVolunteerApplication> applications = new List<DistrictEventVolunteerApplication>();
+        foreach (VolunteerApplicationShell shell in shells)
+        {
+            List<long> selectedItemIds = GetSelectedItemIds(connection, shell.ApplicationId);
             applications.Add(new DistrictEventVolunteerApplication(
-                applicationId,
-                citizen,
-                reader.GetDateTime(reader.GetOrdinal("applied_at")),
+                shell.ApplicationId,
+                shell.Citizen,
+                shell.AppliedAt,
                 selectedItemIds));
         }
 
@@ -263,10 +278,12 @@ public class CitizenDistrictEventDbRepository
         AddParameter(cmd, "@applicationId", applicationId);
 
         List<long> selectedItemIds = new List<long>();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        using (IDataReader reader = cmd.ExecuteReader())
         {
-            selectedItemIds.Add(reader.GetInt64(reader.GetOrdinal("required_item_id")));
+            while (reader.Read())
+            {
+                selectedItemIds.Add(reader.GetInt64(reader.GetOrdinal("required_item_id")));
+            }
         }
 
         return selectedItemIds;
@@ -294,23 +311,25 @@ public class CitizenDistrictEventDbRepository
         AddParameter(cmd, "@eventId", eventId);
 
         List<DistrictEventVolunteerAttendance> attendances = new List<DistrictEventVolunteerAttendance>();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+        using (IDataReader reader = cmd.ExecuteReader())
         {
-            User volunteer = new User(
-                reader.GetInt64(reader.GetOrdinal("volunteer_id")),
-                reader.GetString(reader.GetOrdinal("username")),
-                reader.GetString(reader.GetOrdinal("password")),
-                reader.GetString(reader.GetOrdinal("name")),
-                reader.GetString(reader.GetOrdinal("surname")),
-                reader.GetDateTime(reader.GetOrdinal("birthday")),
-                reader.GetString(reader.GetOrdinal("role")),
-                ReadNullableString(reader, "address"));
+            while (reader.Read())
+            {
+                User volunteer = new User(
+                    reader.GetInt64(reader.GetOrdinal("volunteer_id")),
+                    reader.GetString(reader.GetOrdinal("username")),
+                    reader.GetString(reader.GetOrdinal("password")),
+                    reader.GetString(reader.GetOrdinal("name")),
+                    reader.GetString(reader.GetOrdinal("surname")),
+                    reader.GetDateTime(reader.GetOrdinal("birthday")),
+                    reader.GetString(reader.GetOrdinal("role")),
+                    ReadNullableString(reader, "address"));
 
-            attendances.Add(new DistrictEventVolunteerAttendance(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                volunteer,
-                reader.GetBoolean(reader.GetOrdinal("attended"))));
+                attendances.Add(new DistrictEventVolunteerAttendance(
+                    reader.GetInt64(reader.GetOrdinal("id")),
+                    volunteer,
+                    reader.GetBoolean(reader.GetOrdinal("attended"))));
+            }
         }
 
         return attendances;
@@ -350,5 +369,19 @@ public class CitizenDistrictEventDbRepository
         param.ParameterName = name;
         param.Value = value;
         command.Parameters.Add(param);
+    }
+
+    private sealed class VolunteerApplicationShell
+    {
+        public long ApplicationId { get; }
+        public User Citizen { get; }
+        public DateTime AppliedAt { get; }
+
+        public VolunteerApplicationShell(long applicationId, User citizen, DateTime appliedAt)
+        {
+            ApplicationId = applicationId;
+            Citizen = citizen;
+            AppliedAt = appliedAt;
+        }
     }
 }

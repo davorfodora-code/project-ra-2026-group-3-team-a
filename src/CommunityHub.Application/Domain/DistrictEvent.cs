@@ -44,8 +44,7 @@ public class DistrictEvent
         RequiredItems = requiredItems.ToList();
         VolunteerApplications = volunteerApplications?.ToList() ?? new List<DistrictEventVolunteerApplication>();
         VolunteerAttendances = volunteerAttendances?.ToList() ?? new List<DistrictEventVolunteerAttendance>();
-
-        EnsureValidCreationData();
+        EnsureValidBaseData();
     }
 
     public DistrictEvent(
@@ -113,6 +112,36 @@ public class DistrictEvent
         }
 
         VolunteerApplications.Add(new DistrictEventVolunteerApplication(citizen, now, chosenIds));
+        TryScheduleIfReady();
+    }
+
+    public void AddItemsForExistingVolunteer(long citizenId, DateTime now, IEnumerable<long>? selectedItemIds)
+    {
+        if (!CanAcceptVolunteerApplications(now))
+            throw new InvalidOperationException("Dopuna stavki nije dozvoljena jer dogadjaj nije u pripremi.");
+
+        DistrictEventVolunteerApplication application = VolunteerApplications
+            .FirstOrDefault(a => a.Citizen.Id == citizenId)
+            ?? throw new InvalidOperationException("Gradjanin nije prijavljen kao volonter.");
+
+        List<long> chosenIds = selectedItemIds?.Distinct().ToList() ?? new List<long>();
+        if (chosenIds.Count == 0)
+            throw new InvalidOperationException("Izaberite bar jednu slobodnu stavku za dopunu prijave.");
+
+        foreach (long itemId in chosenIds)
+        {
+            DistrictEventRequiredItem item = RequiredItems.FirstOrDefault(i => i.Id == itemId)
+                ?? throw new InvalidOperationException("Odabrana stavka ne postoji.");
+
+            if (item.AssignedVolunteerId == citizenId)
+            {
+                continue;
+            }
+
+            item.AssignToVolunteer(citizenId);
+        }
+
+        application.AddSelectedItems(chosenIds);
         TryScheduleIfReady();
     }
 
@@ -188,15 +217,21 @@ public class DistrictEvent
 
     private void EnsureValidCreationData()
     {
+        EnsureValidBaseData();
+
+        if (RequiredItems.Count == 0)
+            throw new InvalidOperationException("Spisak potrebnih stvari ne sme biti prazan.");
+        if (RequiredItems.Any(i => string.IsNullOrWhiteSpace(i.Name)))
+            throw new InvalidOperationException("Naziv svake potrebne stvari je obavezan.");
+    }
+
+    private void EnsureValidBaseData()
+    {
         if (string.IsNullOrWhiteSpace(Name))
             throw new InvalidOperationException("Naziv dogadjaja je obavezan.");
         if (MinVolunteers <= 0)
             throw new InvalidOperationException("Minimalan broj volontera mora biti veci od 0.");
         if (Duration <= TimeSpan.Zero)
             throw new InvalidOperationException("Trajanje dogadjaja mora biti vece od 0.");
-        if (RequiredItems.Count == 0)
-            throw new InvalidOperationException("Spisak potrebnih stvari ne sme biti prazan.");
-        if (RequiredItems.Any(i => string.IsNullOrWhiteSpace(i.Name)))
-            throw new InvalidOperationException("Naziv svake potrebne stvari je obavezan.");
     }
 }
