@@ -1,3 +1,4 @@
+using CommunityHub.Application;
 using CommunityHub.Application.Dto.BuildingManager;
 using CommunityHub.Application.Services.BuildingManager;
 
@@ -12,7 +13,7 @@ public class AccessRequestsViewModel
     public AccessRequestsViewModel(long managerId)
     {
         _managerId = managerId;
-        _service = new BuildingAccessRequestService();
+        _service = new BuildingAccessRequestService(Injector.Get<IBuildingAccessRequestRepository>());
         _allRequests = new List<BuildingAccessRequestDto>();
     }
 

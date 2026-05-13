@@ -1,4 +1,3 @@
-using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Dto.BuildingManager;
 
@@ -6,11 +5,11 @@ namespace CommunityHub.Application.Services.BuildingManager;
 
 public class BuildingService
 {
-    private readonly BuildingDbRepository _repository;
+    private readonly IBuildingRepository _repository;
 
-    public BuildingService()
+    public BuildingService(IBuildingRepository repository)
     {
-        _repository = new BuildingDbRepository();
+        _repository = repository;
     }
 
     public BuildingDto Create(CreateBuildingDto dto)

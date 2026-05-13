@@ -1,3 +1,4 @@
+using CommunityHub.Application;
 using CommunityHub.Application.Dto.BuildingManager;
 using CommunityHub.Application.Services.BuildingManager;
 
@@ -9,7 +10,9 @@ public class CommonRoomsViewModel
 
     public CommonRoomsViewModel()
     {
-        _service = new CommonRoomService();
+        _service = new CommonRoomService(
+            Injector.Get<ICommonRoomRepository>(),
+            Injector.Get<IBuildingRepository>());
     }
 
     public List<CommonRoomDto> GetByBuildingId(long buildingId)

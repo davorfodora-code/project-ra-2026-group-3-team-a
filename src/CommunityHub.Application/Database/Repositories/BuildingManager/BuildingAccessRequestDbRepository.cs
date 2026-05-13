@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Application.Database.Repositories.BuildingManager;
 
-public class BuildingAccessRequestDbRepository
+public class BuildingAccessRequestDbRepository : IBuildingAccessRequestRepository
 {
     // Vraća sve zahteve za pristup zgradama kojima upravlja dati upravnik
     public List<BuildingAccessRequest> GetByManagerId(long managerId)
