@@ -27,6 +27,13 @@ public partial class CitizenHomeWindow : Window
         Close();
     }
 
+    private void DistrictEventsButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenEventsWindow window = new CitizenEventsWindow(_viewModel.UserId);
+        window.Show();
+        Close();
+    }
+
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
         ProfileWindow profileWindow = new ProfileWindow(_viewModel.UserId);

@@ -1,0 +1,61 @@
+<Window x:Class="CommunityHub.Ui.Views.Citizen.CreateDistrictEventWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Novi dogadjaj" Height="560" Width="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Naziv:" VerticalAlignment="Center" Margin="0,8"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="NameTextBox" Margin="0,8"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Opis:" VerticalAlignment="Top" Margin="0,8"/>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="DescriptionTextBox"
+                 Height="70" Margin="0,8" TextWrapping="Wrap" AcceptsReturn="True"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Datum:" VerticalAlignment="Center" Margin="0,8"/>
+        <DatePicker Grid.Row="2" Grid.Column="1" x:Name="EventDatePicker" Margin="0,8"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Vreme pocetka (HH:mm):" VerticalAlignment="Center" Margin="0,8"/>
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="StartTimeTextBox" Margin="0,8" Text="09:00"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Trajanje (min):" VerticalAlignment="Center" Margin="0,8"/>
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="DurationTextBox" Margin="0,8" Text="120"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Min volontera:" VerticalAlignment="Center" Margin="0,8"/>
+        <TextBox Grid.Row="5" Grid.Column="1" x:Name="MinVolunteersTextBox" Margin="0,8" Text="2"/>
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Potrebne stvari:" VerticalAlignment="Top" Margin="0,8"/>
+        <TextBlock Grid.Row="6" Grid.Column="1" Text="Unesite po jednu stvar u svaki red."
+                   Foreground="Gray" Margin="0,8"/>
+
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="RequiredItemsTextBox"
+                 Margin="0,8" TextWrapping="Wrap" AcceptsReturn="True"
+                 VerticalScrollBarVisibility="Auto"/>
+
+        <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ErrorTextBlock"
+                   Foreground="Red" Margin="0,6,0,10" TextWrapping="Wrap"/>
+
+        <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button Content="Sacuvaj" Click="SaveButton_Click" Padding="14,8" Margin="0,0,8,0"/>
+            <Button Content="Otkazi" Click="CancelButton_Click" Padding="14,8"/>
+        </StackPanel>
+    </Grid>
+</Window>

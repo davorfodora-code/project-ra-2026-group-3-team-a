@@ -19,6 +19,11 @@ public class CitizenDistrictEventService
         _districtRepository = new CitizenDistrictDbRepository();
     }
 
+    public long? GetCitizenDistrictId(long citizenId)
+    {
+        return _membershipRepository.GetMembershipDistrictId(citizenId);
+    }
+
     public EventActionResultDto CreateEvent(long citizenId, CreateDistrictEventDto dto)
     {
         long? membershipDistrictId = _membershipRepository.GetMembershipDistrictId(citizenId);
