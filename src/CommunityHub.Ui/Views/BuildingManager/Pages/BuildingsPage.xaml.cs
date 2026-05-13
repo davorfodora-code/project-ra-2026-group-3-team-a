@@ -27,7 +27,7 @@ public partial class BuildingsPage : Page
 
     private void AddBuilding_Click(object sender, RoutedEventArgs e)
     {
-        _shell.MainFrame.Navigate(new NewBuildingPage(_shell));
+        _shell.MainFrame.Navigate(new NewBuildingPage(_shell, _vm.Load));
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
