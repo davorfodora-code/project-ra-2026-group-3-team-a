@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
 using CommunityHub.Application;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Application.Services.BuildingManager;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 

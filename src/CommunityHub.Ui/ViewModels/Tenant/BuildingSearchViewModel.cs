@@ -1,4 +1,4 @@
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Ui.ViewModels.Tenant;

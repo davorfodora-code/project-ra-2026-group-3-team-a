@@ -1,4 +1,4 @@
-namespace CommunityHub.Application.Dto.BuildingManager;
+namespace CommunityHub.Application.Services.BuildingManager.Dto;
 
 public class CreateCommonRoomDto
 {

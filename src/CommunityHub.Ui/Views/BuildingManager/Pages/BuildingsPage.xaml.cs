@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;

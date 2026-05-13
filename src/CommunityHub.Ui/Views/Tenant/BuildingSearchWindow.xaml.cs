@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Ui.ViewModels.Tenant;
 
 namespace CommunityHub.Ui.Views.Tenant;
