@@ -37,6 +37,37 @@ public class UserDbRepository
         return null;
     }
 
+    // Vraća osnovne podatke korisnika bez objava (lakša verzija od GetWithPosts).
+    public User? GetById(long userId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand command = connection.CreateCommand();
+        command.CommandText = @"
+            SELECT id, username, password, name, surname, birthday, role, address
+            FROM users
+            WHERE id = @userId";
+
+        IDbDataParameter userIdParam = command.CreateParameter();
+        userIdParam.ParameterName = "@userId";
+        userIdParam.Value = userId;
+        command.Parameters.Add(userIdParam);
+
+        using IDataReader reader = command.ExecuteReader();
+        if (!reader.Read()) return null;
+
+        long id = reader.GetInt64(0);
+        string username = reader.GetString(1);
+        string password = reader.GetString(2);
+        string name = reader.GetString(3);
+        string surname = reader.GetString(4);
+        DateTime birthday = reader.GetDateTime(5);
+        string role = reader.GetString(6);
+        string? address = reader.IsDBNull(7) ? null : reader.GetString(7);
+
+        return new User(id, username, password, name, surname, birthday, role, address);
+    }
+
     public User? GetWithPosts(long userId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();

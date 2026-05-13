@@ -15,8 +15,6 @@ public class CitizenTrustStatisticDto
 
     public int TotalCount => NovCount + NeaktivanCount + AktivanCount + IstaknutiCount + OdPoverenjaCount;
 
-    // Preporučeni tip sastanka na osnovu najvećeg broja građana po nivou
-    // null ako nema jasne preporuke (nema članova)
     public MeetingType? Recommendation
     {
         get
@@ -29,7 +27,6 @@ public class CitizenTrustStatisticDto
             if (NovCount > NeaktivanCount) return MeetingType.Dobrodoslica;
             if (NeaktivanCount > NovCount) return MeetingType.Motivacija;
 
-            // Izjednačeno — nema jasne preporuke
             return null;
         }
     }
