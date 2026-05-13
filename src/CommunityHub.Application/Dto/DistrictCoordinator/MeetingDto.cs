@@ -40,7 +40,6 @@ public class MeetingDto
     public string ScheduledDateDisplay =>
         ScheduledDate.HasValue ? ScheduledDate.Value.ToString("dd.MM.yyyy.") : "-";
 
-    // Prikaz datuma i vremena — ako je zakazan prikazujemo zakazani datum, inače opseg
     public string DateTimeDisplay => IsScheduled
         ? $"{ScheduledDate!.Value:dd.MM.yyyy.} {MeetingTimeDisplay}"
         : $"{DateRangeDisplay} {MeetingTimeDisplay}";
@@ -48,7 +47,6 @@ public class MeetingDto
     public bool IsScheduled => Status == MeetingStatus.Zakazan;
     public bool IsInPreparation => Status == MeetingStatus.UPripremi;
 
-    // Da li je 24h pred početni datum (vreme za resolving glasova)
     public bool IsReadyForResolve =>
         Status == MeetingStatus.UPripremi &&
         DateTime.Now >= DateRangeStart.AddDays(-1) &&
