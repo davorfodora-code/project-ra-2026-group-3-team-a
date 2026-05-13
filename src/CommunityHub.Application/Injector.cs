@@ -5,20 +5,20 @@ namespace CommunityHub.Application;
 
 public class Injector
 {
-    private static readonly Dictionary<Type, Type> _bindings = new()
+    private static readonly Dictionary<Type, object> _implementations = new()
     {
         // BuildingManager
-        { typeof(IBuildingRepository),              typeof(BuildingDbRepository) },
-        { typeof(IBuildingAccessRequestRepository), typeof(BuildingAccessRequestDbRepository) },
-        { typeof(ICommonRoomRepository),            typeof(CommonRoomDbRepository) },
+        { typeof(IBuildingRepository),              new BuildingDbRepository() },
+        { typeof(IBuildingAccessRequestRepository), new BuildingAccessRequestDbRepository() },
+        { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
     };
 
     public static T Get<T>()
     {
-        Type interfaceType = typeof(T);
-        if (!_bindings.TryGetValue(interfaceType, out Type? implType))
-            throw new InvalidOperationException($"Nije registrovan binding za {interfaceType.Name}.");
+        Type type = typeof(T);
+        if (_implementations.TryGetValue(type, out object? implementation))
+            return (T)implementation;
 
-        return (T)Activator.CreateInstance(implType)!;
+        throw new ArgumentException($"No implementation found for type {type}");
     }
 }
