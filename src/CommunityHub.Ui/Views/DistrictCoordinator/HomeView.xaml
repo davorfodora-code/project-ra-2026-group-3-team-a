@@ -1,0 +1,139 @@
+<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="DistrictCardStyle" TargetType="Border">
+            <Setter Property="Margin"          Value="10"/>
+            <Setter Property="CornerRadius"    Value="6"/>
+            <Setter Property="Padding"         Value="16"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background"      Value="White"/>
+            <Setter Property="BorderBrush"     Value="#BDC3C7"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background"  Value="#ECEFF1"/>
+                    <Setter Property="BorderBrush" Value="#2C3E50"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="30,20,30,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="{Binding DistrictCountSummary}"
+                       FontSize="16" FontWeight="SemiBold" Foreground="#2C3E50"/>
+            <TextBlock Text="Kliknite na kvart ili dugme za detalje o kvartu"
+                       FontSize="11" Foreground="#888" Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding DistrictCards}"
+                      VerticalAlignment="Top">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource DistrictCardStyle}">
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick"
+                                          Command="{Binding DataContext.SelectDistrictCommand,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding}"/>
+                        </Border.InputBindings>
+                        <StackPanel>
+                            <TextBlock FontSize="11" Foreground="#666"
+                                       HorizontalAlignment="Right" Margin="0,0,0,6">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Kvart"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Text" Value="Izbran"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <TextBlock Text="{Binding Name}" FontSize="22" FontWeight="Bold"
+                                       Foreground="#2C3E50" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding LocationDisplay}" FontSize="12"
+                                       Foreground="#555" HorizontalAlignment="Center"
+                                       Margin="0,0,0,16"/>
+
+                            <Grid Margin="0,0,0,16">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Ukupan budžet"
+                                           FontSize="12" Foreground="#444" Margin="0,2"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding BudgetDisplay}"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="#2C3E50" Margin="0,2"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Broj članova"
+                                           FontSize="12" Foreground="#444" Margin="0,2"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MembersCount}"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="#2C3E50" Margin="0,2"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Broj ulica"
+                                           FontSize="12" Foreground="#444" Margin="0,2"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding StreetsCount}"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="#2C3E50" Margin="0,2"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Zahtevi na čekanju"
+                                           FontSize="12" Foreground="#444" Margin="0,2"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding PendingRequestsCount}"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="#2C3E50" Margin="0,2"/>
+                            </Grid>
+
+                            <Button Content="Otvori finansije"
+                                    Command="{Binding DataContext.OpenFinancesCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Padding="10,6" FontSize="12"
+                                    Background="White" Foreground="#2C3E50"
+                                    BorderBrush="#2C3E50" Cursor="Hand"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
+                    Margin="0,20,0,0">
+            <Border Width="32" Height="32" BorderBrush="#2C3E50" BorderThickness="1"
+                    CornerRadius="16" Margin="0,0,8,0">
+                <TextBlock Text="+" FontSize="18" FontWeight="Bold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="#2C3E50"/>
+            </Border>
+            <Button Content="Registruj novi kvart"
+                    Command="{Binding RegisterDistrictCommand}"
+                    Padding="20,8" FontSize="14"
+                    Background="White" Foreground="#2C3E50"
+                    BorderBrush="#2C3E50" Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Threading;
+using CommunityHub.Ui.ViewModels.DistrictCoordinator;
 using CommunityHub.Ui.Views.DistrictCoordinator;
 
 namespace CommunityHub.Ui;
@@ -20,11 +21,13 @@ public partial class App
 
     private void OnMeetingTimerTick(object? sender, System.EventArgs e)
     {
+
         foreach (Window window in Current.Windows)
         {
-            if (window is StatisticsWindow statsWindow)
+            if (window is CoordinatorHomeWindow shell &&
+                shell.DataContext is CoordinatorShellViewModel vm)
             {
-                statsWindow.CheckAndResolveExpiredMeetings();
+                vm.Stats.RunResolveCycle();
             }
         }
     }

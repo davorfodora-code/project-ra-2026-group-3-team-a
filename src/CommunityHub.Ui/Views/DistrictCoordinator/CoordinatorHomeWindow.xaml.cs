@@ -3,27 +3,30 @@ using CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 namespace CommunityHub.Ui.Views.DistrictCoordinator;
 
-
 public partial class CoordinatorHomeWindow : Window
 {
-    private readonly CoordinatorHomeViewModel _vm;
+    private readonly CoordinatorShellViewModel _vm;
 
     public CoordinatorHomeWindow(long userId)
     {
         InitializeComponent();
-        _vm = new CoordinatorHomeViewModel(userId);
 
-        _vm.NavigateToRegisterDistrict += () => new DistrictRegWindow(_vm.CoordinatorId).Show();
-        _vm.NavigateToAccessRequests   += () => new AccessRequestsWindow(_vm.CoordinatorId).Show();
-        _vm.NavigateToStatistics       += () => new StatisticsWindow(_vm.CoordinatorId).Show();
-        _vm.LogoutRequested            += OnLogout;
+        _vm = new CoordinatorShellViewModel(userId);
+        _vm.LogoutRequested       += OnLogout;
+        _vm.NotificationRequested += OnNotification;
 
         DataContext = _vm;
+        Loaded += (_, _) => _vm.Initialize();
     }
 
     private void OnLogout()
     {
         new LogInForm().Show();
         Close();
+    }
+
+    private void OnNotification(string message)
+    {
+        MessageBox.Show(message, "Obavijest", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
