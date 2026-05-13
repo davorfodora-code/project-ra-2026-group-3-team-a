@@ -4,7 +4,7 @@ using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
-public class CommonRoomsViewModel
+public class CommonRoomsViewModel : BaseViewModel
 {
     private readonly CommonRoomService _service;
 

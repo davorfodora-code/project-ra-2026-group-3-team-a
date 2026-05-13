@@ -3,7 +3,7 @@ using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Ui.ViewModels.Tenant;
 
-public class BuildingSearchViewModel
+public class BuildingSearchViewModel : BaseViewModel
 {
     private readonly BuildingSearchService _service;
 

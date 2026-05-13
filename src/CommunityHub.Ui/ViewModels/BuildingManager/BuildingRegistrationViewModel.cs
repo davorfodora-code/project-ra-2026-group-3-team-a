@@ -4,7 +4,7 @@ using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
-public class BuildingRegistrationViewModel
+public class BuildingRegistrationViewModel : BaseViewModel
 {
     private readonly BuildingService _service;
 
