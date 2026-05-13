@@ -154,19 +154,19 @@
 
                     <TextBlock FontSize="14" Margin="0,0,0,6" TextWrapping="Wrap">
                         <Run Text="Adresa: " Foreground="#888888"/>
-                        <Run Text="{Binding AddressText}" FontWeight="SemiBold"/>
+                        <Run Text="{Binding AddressText, Mode=OneWay}" FontWeight="SemiBold"/>
                     </TextBlock>
                     <TextBlock FontSize="14" Margin="0,0,0,6" TextWrapping="Wrap">
                         <Run Text="Naselje: " Foreground="#888888"/>
-                        <Run Text="{Binding Building.Neighborhood}" FontWeight="SemiBold"/>
+                        <Run Text="{Binding Building.Neighborhood, Mode=OneWay}" FontWeight="SemiBold"/>
                     </TextBlock>
                     <TextBlock FontSize="14" Margin="0,0,0,6" TextWrapping="Wrap">
                         <Run Text="Lokacija: " Foreground="#888888"/>
-                        <Run Text="{Binding LocationFullText}" FontWeight="SemiBold"/>
+                        <Run Text="{Binding LocationFullText, Mode=OneWay}" FontWeight="SemiBold"/>
                     </TextBlock>
                     <TextBlock FontSize="14" Margin="0,0,0,6" TextWrapping="Wrap">
                         <Run Text="Broj spratova: " Foreground="#888888"/>
-                        <Run Text="{Binding NumberOfFloorsText}" FontWeight="SemiBold"/>
+                        <Run Text="{Binding NumberOfFloorsText, Mode=OneWay}" FontWeight="SemiBold"/>
                     </TextBlock>
 
                     <!-- Stanovi po spratovima -->
