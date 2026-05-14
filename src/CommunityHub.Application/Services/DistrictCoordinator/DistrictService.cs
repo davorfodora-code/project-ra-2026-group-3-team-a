@@ -1,20 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
-using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 namespace CommunityHub.Application.Services.DistrictCoordinator;
 
 public class DistrictService
 {
-    private readonly DistrictDbRepository _repository;
-    private readonly DistrictAccessRequestDbRepository _accessRequestRepository;
+    private readonly IDistrictRepository _repository;
+    private readonly IDistrictAccessRequestRepository _accessRequestRepository;
 
-    public DistrictService()
+    public DistrictService(IDistrictRepository repository, IDistrictAccessRequestRepository accessRequestRepository)
     {
-        _repository = new DistrictDbRepository();
-        _accessRequestRepository = new DistrictAccessRequestDbRepository();
+        _repository = repository;
+        _accessRequestRepository = accessRequestRepository;
     }
 
     public DistrictDto Create(CreateDistrictDto dto)

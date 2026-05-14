@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 namespace CommunityHub.Application.Services.DistrictCoordinator;
 
@@ -17,13 +16,11 @@ public class ResolveResult
 
 public class DistrictMeetingService
 {
-    private readonly DistrictMeetingDbRepository _repository;
-    private readonly DistrictDbRepository _districtRepository;
+    private readonly IDistrictMeetingRepository _repository;
 
-    public DistrictMeetingService()
+    public DistrictMeetingService(IDistrictMeetingRepository repository)
     {
-        _repository = new DistrictMeetingDbRepository();
-        _districtRepository = new DistrictDbRepository();
+        _repository = repository;
     }
 
     public MeetingDto ScheduleMeeting(CreateMeetingDto dto)
@@ -45,11 +42,7 @@ public class DistrictMeetingService
             .ToList();
     }
 
-    // Pokušava da razreši sastanak (poziva se 24h pre početnog datuma opsega).
-    // Vraća ResolveResult koji opisuje šta se desilo:
-    //   - Nema glasova       → sastanak se automatski otkazuje
-    //   - Ima jasnog pobednika → sastanak se zakazuje na taj datum
-    //   - Izjednačen broj   → koordinator mora ručno odabrati datum
+   
     public ResolveResult ResolveMeeting(long meetingId)
     {
         Dictionary<DateTime, int> votes = _repository.GetVoteResults(meetingId);
@@ -73,11 +66,9 @@ public class DistrictMeetingService
             return new ResolveResult { HasVotes = true, IsTie = false, WinnerDate = winner };
         }
 
-        // Izjednačenje — koordinator bira
         return new ResolveResult { HasVotes = true, IsTie = true, TiedDates = topDates };
     }
 
-    // Koordinator ručno bira datum (slučaj izjednačenja)
     public void ConfirmMeetingDate(long meetingId, DateTime chosenDate)
     {
         _repository.UpdateStatus(meetingId, MeetingStatus.Zakazan, chosenDate);

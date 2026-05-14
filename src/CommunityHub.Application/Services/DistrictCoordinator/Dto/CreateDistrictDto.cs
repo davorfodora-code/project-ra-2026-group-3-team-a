@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CommunityHub.Application.Dto.DistrictCoordinator;
+namespace CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 public class StreetInputDto
 {

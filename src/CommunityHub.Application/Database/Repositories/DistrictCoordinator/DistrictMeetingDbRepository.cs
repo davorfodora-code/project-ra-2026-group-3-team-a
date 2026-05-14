@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.DistrictCoordinator;
 
 namespace CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 
-public class DistrictMeetingDbRepository
+public class DistrictMeetingDbRepository : IDistrictMeetingRepository
 {
     public DistrictMeeting Create(DistrictMeeting meeting)
     {

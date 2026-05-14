@@ -2,8 +2,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application;
 using CommunityHub.Application.Services.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -17,7 +18,9 @@ public class HomeContentViewModel : ViewModelBase
     public HomeContentViewModel(long coordinatorId)
     {
         CoordinatorId    = coordinatorId;
-        _districtService = new DistrictService();
+        _districtService = new DistrictService(
+            Injector.Get<IDistrictRepository>(),
+            Injector.Get<IDistrictAccessRequestRepository>());
         DistrictCards    = new ObservableCollection<DistrictHomeCardViewModel>();
 
         RegisterDistrictCommand = new RelayCommand(_ => RegisterDistrictRequested?.Invoke());

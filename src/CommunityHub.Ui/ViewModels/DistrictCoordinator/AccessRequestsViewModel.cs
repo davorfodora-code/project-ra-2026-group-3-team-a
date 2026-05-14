@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application;
 using CommunityHub.Application.Services.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -31,7 +32,9 @@ public class AccessRequestsViewModel : ViewModelBase
     public AccessRequestsViewModel(long coordinatorId)
     {
         _coordinatorId = coordinatorId;
-        _service       = new DistrictAccessRequestService();
+        _service       = new DistrictAccessRequestService(
+            Injector.Get<IDistrictAccessRequestRepository>(),
+            Injector.Get<IDistrictRepository>());
 
         Requests    = new ObservableCollection<DistrictAccessRequestDto>();
         Districts   = new ObservableCollection<DistrictDto>();
@@ -140,7 +143,7 @@ public class AccessRequestsViewModel : ViewModelBase
     public ICommand CancelOverlayCommand       { get; }
 
 
-    public event Action<string, bool>? NotificationRequested; // (poruka, jeLiUspjeh)
+    public event Action<string, bool>? NotificationRequested; 
 
     public void Initialize()
     {
