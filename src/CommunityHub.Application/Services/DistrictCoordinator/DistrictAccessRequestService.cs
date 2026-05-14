@@ -1,20 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
-using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 namespace CommunityHub.Application.Services.DistrictCoordinator;
 
 public class DistrictAccessRequestService
 {
-    private readonly DistrictAccessRequestDbRepository _repository;
-    private readonly DistrictDbRepository _districtRepository;
+    private readonly IDistrictAccessRequestRepository _repository;
+    private readonly IDistrictRepository _districtRepository;
 
-    public DistrictAccessRequestService()
+    public DistrictAccessRequestService(IDistrictAccessRequestRepository repository, IDistrictRepository districtRepository)
     {
-        _repository = new DistrictAccessRequestDbRepository();
-        _districtRepository = new DistrictDbRepository();
+        _repository = repository;
+        _districtRepository = districtRepository;
     }
 
     public List<DistrictAccessRequestDto> GetByCoordinatorId(long coordinatorId)
