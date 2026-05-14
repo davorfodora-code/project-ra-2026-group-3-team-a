@@ -1,22 +1,22 @@
-using CommunityHub.Application.Database.Repositories.Citizen;
+using CommunityHub.Application;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Dto.Citizen;
 
 namespace CommunityHub.Application.Services.Citizen;
 
-public class CitizenDistrictEventService
+public class CitizenDistrictEventService : ICitizenDistrictEventService
 {
-    private readonly CitizenDistrictEventDbRepository _eventRepository;
-    private readonly CitizenDistrictEventApplicationDbRepository _applicationRepository;
-    private readonly CitizenDistrictMembershipDbRepository _membershipRepository;
-    private readonly CitizenDistrictDbRepository _districtRepository;
+    private readonly ICitizenDistrictEventRepository _eventRepository;
+    private readonly ICitizenDistrictEventApplicationRepository _applicationRepository;
+    private readonly ICitizenDistrictMembershipRepository _membershipRepository;
+    private readonly ICitizenDistrictRepository _districtRepository;
 
     public CitizenDistrictEventService()
     {
-        _eventRepository = new CitizenDistrictEventDbRepository();
-        _applicationRepository = new CitizenDistrictEventApplicationDbRepository();
-        _membershipRepository = new CitizenDistrictMembershipDbRepository();
-        _districtRepository = new CitizenDistrictDbRepository();
+        _eventRepository = Injector.Get<ICitizenDistrictEventRepository>();
+        _applicationRepository = Injector.Get<ICitizenDistrictEventApplicationRepository>();
+        _membershipRepository = Injector.Get<ICitizenDistrictMembershipRepository>();
+        _districtRepository = Injector.Get<ICitizenDistrictRepository>();
     }
 
     public long? GetCitizenDistrictId(long citizenId)

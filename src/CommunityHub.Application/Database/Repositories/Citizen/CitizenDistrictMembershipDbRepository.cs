@@ -1,8 +1,9 @@
 using System.Data;
+using CommunityHub.Application.Services.Citizen;
 
 namespace CommunityHub.Application.Database.Repositories.Citizen;
 
-public class CitizenDistrictMembershipDbRepository
+public class CitizenDistrictMembershipDbRepository : ICitizenDistrictMembershipRepository
 {
     public bool HasMembership(long userId)
     {

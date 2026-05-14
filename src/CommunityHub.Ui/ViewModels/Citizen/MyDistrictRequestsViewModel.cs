@@ -1,3 +1,4 @@
+using CommunityHub.Application;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Dto.Citizen;
 using CommunityHub.Application.Services.Citizen;
@@ -8,13 +9,13 @@ namespace CommunityHub.Ui.ViewModels.Citizen;
 public class MyDistrictRequestsViewModel
 {
     private readonly long _userId;
-    private readonly CitizenAccessRequestService _service;
+    private readonly ICitizenAccessRequestService _service;
     private List<DistrictAccessRequestDto> _allRequests = new();
 
     public MyDistrictRequestsViewModel(long userId)
     {
         _userId = userId;
-        _service = new CitizenAccessRequestService();
+        _service = Injector.Get<ICitizenAccessRequestService>();
     }
 
     public void LoadRequests()

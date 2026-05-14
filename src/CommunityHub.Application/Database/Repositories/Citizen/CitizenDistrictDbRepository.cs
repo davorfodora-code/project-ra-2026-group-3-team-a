@@ -1,14 +1,16 @@
 using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.Citizen;
 
 namespace CommunityHub.Application.Database.Repositories.Citizen;
 
-public class CitizenDistrictDbRepository
+public class CitizenDistrictDbRepository : ICitizenDistrictRepository
 {
     private readonly DistrictDbRepository _districtRepository;
 
     public CitizenDistrictDbRepository()
     {
+        
         _districtRepository = new DistrictDbRepository();
     }
 

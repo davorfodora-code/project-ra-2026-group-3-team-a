@@ -1,8 +1,9 @@
+using CommunityHub.Application.Services.Citizen;
 using System.Data;
 
 namespace CommunityHub.Application.Database.Repositories.Citizen;
 
-public class CitizenUserProfileDbRepository
+public class CitizenUserProfileDbRepository : ICitizenUserProfileRepository
 {
     public string? GetAddressByUserId(long userId)
     {

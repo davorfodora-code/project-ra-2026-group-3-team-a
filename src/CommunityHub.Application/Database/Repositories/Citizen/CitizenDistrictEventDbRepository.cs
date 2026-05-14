@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.Citizen;
 
 namespace CommunityHub.Application.Database.Repositories.Citizen;
 
-public class CitizenDistrictEventDbRepository
+public class CitizenDistrictEventDbRepository : ICitizenDistrictEventRepository
 {
     public long Create(DistrictEvent districtEvent)
     {

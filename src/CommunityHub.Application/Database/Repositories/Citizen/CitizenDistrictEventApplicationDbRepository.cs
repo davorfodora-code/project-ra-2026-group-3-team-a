@@ -1,9 +1,10 @@
 using System.Data;
 using System.Linq;
+using CommunityHub.Application.Services.Citizen;
 
 namespace CommunityHub.Application.Database.Repositories.Citizen;
 
-public class CitizenDistrictEventApplicationDbRepository
+public class CitizenDistrictEventApplicationDbRepository : ICitizenDistrictEventApplicationRepository
 {
     public bool ExistsByEventAndCitizen(long eventId, long citizenId)
     {
