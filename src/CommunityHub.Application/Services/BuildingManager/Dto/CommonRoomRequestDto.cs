@@ -25,7 +25,7 @@ public class CommonRoomRequestDto
     public string StatusLine => Status switch
     {
         "Pending"         => "Na čekanju",
-        "ProposedCounter" => "Na čekanju - promena termina",
+        "ProposedCounter" => "Predlog poslat - čeka potvrdu stanara",
         "Approved"        => "Odobreno",
         "Rejected"        => "Odbijeno",
         _                 => Status

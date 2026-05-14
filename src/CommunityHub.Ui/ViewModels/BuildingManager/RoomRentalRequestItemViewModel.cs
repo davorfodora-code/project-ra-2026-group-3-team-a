@@ -13,15 +13,21 @@ public class RoomRentalRequestItemViewModel : BaseViewModel
         _dto = dto;
     }
 
-    public long RequestId       => _dto.RequestId;
-    public long RoomId          => _dto.RoomId;
-    public string TenantFullName => _dto.TenantFullName;
-    public string RoomName      => _dto.RoomName;
-    public string BuildingLine  => $"Zgrada: {_dto.BuildingAddress}";
-    public string RoomLine      => $"Prostorija: {_dto.RoomName}";
-    public string DateLine      => $"Datum: {_dto.RequestedRangeLine}";
-    public string RentalTypeLine => _dto.RentalTypeLine;
-    public string StatusLine    => $"Status: {_dto.StatusLine}";
+    public long RequestId            => _dto.RequestId;
+    public long RoomId               => _dto.RoomId;
+    public string TenantFullName     => _dto.TenantFullName;
+    public string RoomName           => _dto.RoomName;
+    public string BuildingAddress    => _dto.BuildingAddress;
+    public string BuildingLine       => $"Zgrada: {_dto.BuildingAddress}";
+    public string RoomLine           => $"Prostorija: {_dto.RoomName}";
+    public string DateLine           => $"Datum: {_dto.RequestedRangeLine}";
+    public string RentalTypeLine     => _dto.RentalTypeLine;
+    public string StatusLine         => $"Status: {_dto.StatusLine}";
+    public DateTime RequestedStartDate => _dto.RequestedStartDate;
+    public DateTime RequestedEndDate   => _dto.RequestedEndDate;
+
+    // Sirovi status (za DataTrigger u XAML-u)
+    public string Status => _dto.Status;
 
     // Dugme "Izaberi dan" se prikazuje samo dok je zahtev na čekanju
     public bool CanPropose => _dto.Status == "Pending";

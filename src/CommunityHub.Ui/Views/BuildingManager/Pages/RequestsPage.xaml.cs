@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
@@ -10,12 +11,14 @@ public partial class RequestsPage : Page
     private readonly BuildingManagerWindow _shell;
     private readonly AccessRequestsViewModel _vm;
 
-    public RequestsPage(BuildingManagerWindow shell)
+    public RequestsPage(BuildingManagerWindow shell, int initialTab = 0)
     {
         InitializeComponent();
         _shell = shell;
         _vm = new AccessRequestsViewModel(shell.UserId);
         DataContext = _vm;
+        if (initialTab != 0)
+            _vm.ActiveTabIndex = initialTab;
     }
 
     private void Tab_Click(object sender, RoutedEventArgs e)
@@ -63,11 +66,29 @@ public partial class RequestsPage : Page
         catch (Exception ex) { MessageBox.Show(ex.Message, "Greska"); }
     }
 
+    // --- Rental akcije ---
+
+    private void RentalFilter_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_vm == null) return;
+        if (RentalFilterCombo.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+            _vm.RentalStatusFilter = tag;
+    }
+
+    private void RentalSort_Click(object sender, RoutedEventArgs e) => _vm.ToggleRentalSort();
+
+    private void ChooseDate_Click(object sender, RoutedEventArgs e)
+    {
+        RoomRentalRequestItemViewModel item = (RoomRentalRequestItemViewModel)((Button)sender).DataContext;
+        List<DateOnly> bookedDates = _vm.GetBookedDatesForRoom(item.RoomId);
+        _shell.MainFrame.Navigate(new RoomCalendarPage(_shell, item, bookedDates, _vm.ProposeDate));
+    }
+
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
         MessageBox.Show(
             "Zahtevi za pristup: odobrite ili odbijte zahteve stanara.\n\n" +
-            "Zahtevi za iznajmljivanje: upravljajte zahtevima za zajednicke prostorije.",
+            "Zahtevi za iznajmljivanje: izaberite slobodan termin za zahteve na cekanju.",
             "Pomoc", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
