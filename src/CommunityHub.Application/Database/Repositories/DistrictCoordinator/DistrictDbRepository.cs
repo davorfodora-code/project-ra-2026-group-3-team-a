@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.DistrictCoordinator;
 
 namespace CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 
-public class DistrictDbRepository
+public class DistrictDbRepository : IDistrictRepository
 {
     public District Create(District district)
     {
@@ -323,7 +324,6 @@ public class DistrictDbRepository
         streetPart = value;
     }
 
-    // Pomoćna metoda za dodavanje parametara — smanjuje ponavljanje koda
     private void AddParameter(IDbCommand command, string name, object value)
     {
         IDbDataParameter param = command.CreateParameter();

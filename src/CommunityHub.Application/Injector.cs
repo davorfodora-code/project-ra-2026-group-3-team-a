@@ -1,5 +1,7 @@
 using CommunityHub.Application.Database.Repositories.BuildingManager;
+using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Services.BuildingManager;
+using CommunityHub.Application.Services.DistrictCoordinator;
 
 namespace CommunityHub.Application;
 
@@ -11,6 +13,12 @@ public class Injector
         { typeof(IBuildingRepository),              new BuildingDbRepository() },
         { typeof(IBuildingAccessRequestRepository), new BuildingAccessRequestDbRepository() },
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
+
+        // DistrictCoordinator
+        { typeof(IDistrictRepository),                  new DistrictDbRepository() },
+        { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },
+        { typeof(IDistrictMeetingRepository),            new DistrictMeetingDbRepository() },
+        { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
     };
 
     public static T Get<T>()
