@@ -1,4 +1,7 @@
 using CommunityHub.Application.Database.Repositories.BuildingManager;
+using CommunityHub.Application.Database.Repositories.Citizen;
+using CommunityHub.Application.Services.BuildingManager;
+using CommunityHub.Application.Services.Citizen;
 using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Services.BuildingManager;
 using CommunityHub.Application.Services.DistrictCoordinator;
@@ -14,6 +17,18 @@ public class Injector
         { typeof(IBuildingAccessRequestRepository), new BuildingAccessRequestDbRepository() },
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
 
+        // Citizen
+        { typeof(ICitizenDistrictRepository),               new CitizenDistrictDbRepository() },
+        { typeof(ICitizenDistrictAccessRequestRepository),  new CitizenDistrictAccessRequestDbRepository() },
+        { typeof(ICitizenUserProfileRepository),            new CitizenUserProfileDbRepository()  },
+        { typeof(ICitizenDistrictMembershipRepository),     new CitizenDistrictMembershipDbRepository() },
+        { typeof(ICitizenDistrictEventRepository),          new CitizenDistrictEventDbRepository() },
+        { typeof(ICitizenDistrictEventApplicationRepository), new CitizenDistrictEventApplicationDbRepository() },
+            
+        { typeof(ICitizenDistrictEventService),             new CitizenDistrictEventService() },
+        { typeof(ICitizenAccessRequestService),             new CitizenAccessRequestService() },
+        { typeof(ICitizenDistrictService),                  new CitizenDistrictService() },
+        { typeof(ICitizenMembershipService),                new CitizenMembershipService() },
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },
         { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },

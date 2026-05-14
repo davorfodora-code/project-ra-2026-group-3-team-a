@@ -1,22 +1,22 @@
-using CommunityHub.Application.Database.Repositories.Citizen;
+using CommunityHub.Application;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Dto.Citizen;
 
 namespace CommunityHub.Application.Services.Citizen;
 
-public class CitizenAccessRequestService
+public class CitizenAccessRequestService : ICitizenAccessRequestService
 {
-    private readonly CitizenDistrictDbRepository _districtRepository;
-    private readonly CitizenDistrictAccessRequestDbRepository _requestRepository;
-    private readonly CitizenUserProfileDbRepository _userProfileRepository;
-    private readonly CitizenMembershipService _membershipService;
+    private readonly ICitizenDistrictRepository _districtRepository;
+    private readonly ICitizenDistrictAccessRequestRepository _requestRepository;
+    private readonly ICitizenUserProfileRepository _userProfileRepository;
+    private readonly ICitizenMembershipService _membershipService;
 
     public CitizenAccessRequestService()
     {
-        _districtRepository = new CitizenDistrictDbRepository();
-        _requestRepository = new CitizenDistrictAccessRequestDbRepository();
-        _userProfileRepository = new CitizenUserProfileDbRepository();
-        _membershipService = new CitizenMembershipService();
+        _districtRepository = Injector.Get<ICitizenDistrictRepository>();
+        _requestRepository = Injector.Get<ICitizenDistrictAccessRequestRepository>();
+        _userProfileRepository = Injector.Get<ICitizenUserProfileRepository>();
+        _membershipService = Injector.Get<ICitizenMembershipService>();
     }
 
     public AccessResultDto RequestDistrictAccess(long userId, long districtId)

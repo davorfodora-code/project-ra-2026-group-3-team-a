@@ -1,14 +1,14 @@
-using CommunityHub.Application.Database.Repositories.Citizen;
+using CommunityHub.Application;
 
 namespace CommunityHub.Application.Services.Citizen;
 
-public class CitizenMembershipService
+public class CitizenMembershipService : ICitizenMembershipService
 {
-    private readonly CitizenDistrictMembershipDbRepository _membershipRepository;
+    private readonly ICitizenDistrictMembershipRepository _membershipRepository;
 
     public CitizenMembershipService()
     {
-        _membershipRepository = new CitizenDistrictMembershipDbRepository();
+        _membershipRepository = Injector.Get<ICitizenDistrictMembershipRepository>();
     }
 
     public bool HasMembership(long userId)

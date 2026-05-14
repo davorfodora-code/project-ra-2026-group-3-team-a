@@ -1,16 +1,17 @@
+using CommunityHub.Application;
 using CommunityHub.Application.Database.Repositories.Citizen;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Dto.Citizen;
 
 namespace CommunityHub.Application.Services.Citizen;
 
-public class CitizenDistrictService
+public class CitizenDistrictService : ICitizenDistrictService
 {
-    private readonly CitizenDistrictDbRepository _districtRepository;
+    private readonly ICitizenDistrictRepository _districtRepository;
 
     public CitizenDistrictService()
     {
-        _districtRepository = new CitizenDistrictDbRepository();
+        _districtRepository = Injector.Get<ICitizenDistrictRepository>();
     }
 
     public List<DistrictListItemDto> GetAll()

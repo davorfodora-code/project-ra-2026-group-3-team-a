@@ -30,7 +30,13 @@
                 <Button Content="Moji zahtevi za pristup kvartu"
                         Padding="14,10"
                         FontSize="14"
-                        Click="MyDistrictRequestsButton_Click"/>
+                        Click="MyDistrictRequestsButton_Click"
+                        Margin="0,0,0,10"/>
+
+                <Button Content="Dogadjaji kvarta"
+                        Padding="14,10"
+                        FontSize="14"
+                        Click="DistrictEventsButton_Click"/>
             </StackPanel>
         </Border>
 

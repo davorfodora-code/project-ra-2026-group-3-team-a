@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.Citizen;
 
 namespace CommunityHub.Application.Database.Repositories.Citizen;
 
-public class CitizenDistrictAccessRequestDbRepository
+public class CitizenDistrictAccessRequestDbRepository : ICitizenDistrictAccessRequestRepository
 {
     public bool ExistsPending(long userId, long districtId)
     {
