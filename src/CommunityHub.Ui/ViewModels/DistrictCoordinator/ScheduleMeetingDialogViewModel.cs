@@ -1,8 +1,9 @@
 using System;
 using System.Windows.Input;
+using CommunityHub.Application;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
 using CommunityHub.Application.Services.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -22,7 +23,8 @@ public class ScheduleMeetingDialogViewModel : ViewModelBase
     public ScheduleMeetingDialogViewModel(long districtId, MeetingType? preselectedType)
     {
         _districtId      = districtId;
-        _service         = new DistrictMeetingService();
+        _service         = new DistrictMeetingService(
+            Injector.Get<IDistrictMeetingRepository>());
         _selectedType    = preselectedType ?? MeetingType.Dobrodoslica;
         _dateRangeStart  = DateTime.Today.AddDays(1);
         _dateRangeEnd    = DateTime.Today.AddDays(5);

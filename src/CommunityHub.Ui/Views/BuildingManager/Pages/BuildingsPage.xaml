@@ -30,14 +30,14 @@
                 <StackPanel Margin="16,12,16,80">
 
                     <!-- Prazan state -->
-                    <TextBlock x:Name="EmptyText"
-                               Text="Nemate registrovanih zgrada."
+                    <TextBlock Text="Nemate registrovanih zgrada."
                                Foreground="#AAAAAA" FontSize="14"
                                HorizontalAlignment="Center"
-                               Margin="0,40,0,0" Visibility="Collapsed"/>
+                               Margin="0,40,0,0"
+                               Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}"/>
 
                     <!-- Kartice zgrada -->
-                    <ItemsControl x:Name="BuildingsItemsControl">
+                    <ItemsControl ItemsSource="{Binding Buildings}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Style="{StaticResource CardButtonStyle}"

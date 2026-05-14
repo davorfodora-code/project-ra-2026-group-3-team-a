@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
-using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 namespace CommunityHub.Application.Services.DistrictCoordinator;
 
 public class DistrictService
 {
-    private readonly DistrictDbRepository _repository;
+    private readonly IDistrictRepository _repository;
+    private readonly IDistrictAccessRequestRepository _accessRequestRepository;
 
-    public DistrictService()
+    public DistrictService(IDistrictRepository repository, IDistrictAccessRequestRepository accessRequestRepository)
     {
-        _repository = new DistrictDbRepository();
+        _repository = repository;
+        _accessRequestRepository = accessRequestRepository;
     }
 
     public DistrictDto Create(CreateDistrictDto dto)
@@ -37,6 +38,25 @@ public class DistrictService
         return _repository.GetByCoordinatorId(coordinatorId)
             .Select(MapToDto)
             .ToList();
+    }
+
+    public List<DistrictHomeCardDto> GetHomeCardsByCoordinatorId(long coordinatorId)
+    {
+        List<District> districts = _repository.GetByCoordinatorId(coordinatorId);
+        List<DistrictAccessRequest> allRequests = _accessRequestRepository.GetByCoordinatorId(coordinatorId);
+
+        return districts.Select(d => new DistrictHomeCardDto
+        {
+            DistrictId           = d.Id,
+            Name                 = d.Name,
+            City                 = d.Location.City,
+            Country              = d.Location.Country,
+            Budget               = d.Budget,
+            StreetsCount         = d.Streets.Count,
+            MembersCount         = _accessRequestRepository.GetMembershipsByDistrictId(d.Id).Count,
+            PendingRequestsCount = allRequests.Count(r =>
+                r.District.Id == d.Id && r.Status == DistrictAccessRequestStatus.Pending)
+        }).ToList();
     }
 
     private static DistrictDto MapToDto(District d) => new DistrictDto

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using CommunityHub.Application;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
 using CommunityHub.Application.Services.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -27,8 +28,10 @@ public class StatisticsViewModel : ViewModelBase
     public StatisticsViewModel(long coordinatorId)
     {
         _coordinatorId    = coordinatorId;
-        _statsService     = new DistrictStatisticsService();
-        _meetingsService  = new DistrictMeetingService();
+        _statsService     = new DistrictStatisticsService(
+            Injector.Get<ICitizenTrustStatisticRepository>());
+        _meetingsService  = new DistrictMeetingService(
+            Injector.Get<IDistrictMeetingRepository>());
 
         Districts        = new ObservableCollection<CitizenTrustStatisticDto>();
         FilteredMeetings = new ObservableCollection<MeetingDto>();

@@ -1,16 +1,15 @@
 using System.Collections.Generic;
-using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 namespace CommunityHub.Application.Services.DistrictCoordinator;
 
 public class DistrictStatisticsService
 {
-    private readonly CitizenTrustStatisticDbRepository _repository;
+    private readonly ICitizenTrustStatisticRepository _repository;
 
-    public DistrictStatisticsService()
+    public DistrictStatisticsService(ICitizenTrustStatisticRepository repository)
     {
-        _repository = new CitizenTrustStatisticDbRepository();
+        _repository = repository;
     }
 
     public List<CitizenTrustStatisticDto> GetStatisticsByCoordinatorId(long coordinatorId)

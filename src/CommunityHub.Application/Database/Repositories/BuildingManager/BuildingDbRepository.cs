@@ -1,10 +1,11 @@
 using System.Data;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Services.BuildingManager;
+using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Application.Database.Repositories.BuildingManager;
 
-public class BuildingDbRepository : IBuildingRepository
+public class BuildingDbRepository : IBuildingRepository, ITenantBuildingSearchRepository
 {
     public Building Create(Building building)
     {

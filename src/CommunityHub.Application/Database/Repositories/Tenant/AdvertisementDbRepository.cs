@@ -1,10 +1,11 @@
 using System.Data;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
+using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Application.Database.Repositories.Tenant;
 
-public class AdvertisementDbRepository
+public class AdvertisementDbRepository : IAdvertisementRepository
 {
     public List<TenantBuildingDto> GetBuildingsByTenant(long tenantId)
     {

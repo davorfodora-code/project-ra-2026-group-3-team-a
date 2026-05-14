@@ -5,7 +5,6 @@
       Title="Nova zgrada" Background="#F5F5F5">
 
     <Page.Resources>
-        <!-- Stil za chip dugmic (x) unutar kartice -->
         <Style x:Key="ChipRemoveStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -29,7 +28,6 @@
             </Setter>
         </Style>
 
-        <!-- Dugme za podnosenje forme -->
         <Style x:Key="SubmitStyle" TargetType="Button">
             <Setter Property="Background" Value="#1A1A1A"/>
             <Setter Property="Foreground" Value="White"/>
@@ -63,7 +61,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Zaglavlje sa dugmetom nazad -->
+        <!-- Zaglavlje -->
         <Border Grid.Row="0" Background="White" Padding="12,12"
                 BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
             <Grid>
@@ -83,47 +81,155 @@
 
                 <!-- Adresa -->
                 <TextBlock Text="Adresa:" FontSize="13" FontWeight="SemiBold" Margin="2,0,0,4"/>
-                <TextBox x:Name="AddressBox" FontSize="14" Padding="12,10"
-                         Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
-                         Tag="npr. Bulevar kralja Aleksandra 75"
-                         GotFocus="Placeholder_GotFocus" LostFocus="Placeholder_LostFocus"
-                         Margin="0,0,0,3"/>
+                <Grid Margin="0,0,0,3">
+                    <TextBox x:Name="AddressBox" FontSize="14" Padding="12,10"
+                             Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                             Text="{Binding AddressInput, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="npr. Bulevar kralja Aleksandra 75"
+                               Foreground="#999999" FontSize="14"
+                               IsHitTestVisible="False"
+                               VerticalAlignment="Center" Margin="14,0,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=AddressBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
                 <TextBlock Text="(ulica + broj, npr. Jevrejska 22)"
                            FontSize="11" Foreground="#999999" Margin="2,0,0,12"/>
 
                 <!-- Naselje -->
                 <TextBlock Text="Naselje:" FontSize="13" FontWeight="SemiBold" Margin="2,0,0,4"/>
-                <TextBox x:Name="NeighborhoodBox" FontSize="14" Padding="12,10"
+                <TextBox FontSize="14" Padding="12,10"
                          Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Text="{Binding Neighborhood, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,0,3"/>
                 <TextBlock Text="(deo grada, npr. Detelinara)"
                            FontSize="11" Foreground="#999999" Margin="2,0,0,12"/>
 
                 <!-- Grad -->
                 <TextBlock Text="Grad" FontSize="12" Foreground="#888888" Margin="2,0,0,4"/>
-                <TextBox x:Name="CityBox" FontSize="14" Padding="12,10"
+                <TextBox FontSize="14" Padding="12,10"
                          Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Text="{Binding City, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,0,12"/>
 
                 <!-- Drzava -->
                 <TextBlock Text="Drzava" FontSize="12" Foreground="#888888" Margin="2,0,0,4"/>
-                <TextBox x:Name="CountryBox" Text="Srbija" FontSize="14" Padding="12,10"
+                <TextBox FontSize="14" Padding="12,10"
                          Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                         Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,0,0,16"/>
 
                 <!-- Broj spratova -->
                 <TextBlock Text="Broj spratova" FontSize="12" Foreground="#888888" Margin="2,0,0,4"/>
-                <TextBox x:Name="FloorsBox" FontSize="14" Padding="12,10"
+                <TextBox FontSize="14" Padding="12,10"
                          Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
-                         TextChanged="FloorsBox_TextChanged" Margin="0,0,0,16"/>
+                         Text="{Binding FloorsText, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,16"/>
 
-                <!-- Dinamicki panel za stanove -->
-                <StackPanel x:Name="FloorsContainer"/>
+                <!-- Dinamicki spratovi sa stanovima -->
+                <ItemsControl ItemsSource="{Binding Floors}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,12">
+                                <TextBlock Text="{Binding Label}" FontSize="13"
+                                           FontWeight="SemiBold" Foreground="#444444"
+                                           Margin="0,0,0,6"/>
+
+                                <!-- Cipovi stanova + inline input + "+ Stan" dugme, sve u jednom WrapPanel-u -->
+                                <WrapPanel Margin="0,0,0,6">
+                                    <ItemsControl ItemsSource="{Binding Apartments}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#F0F0F0" CornerRadius="10"
+                                                        Padding="10,4,6,4" Margin="0,0,6,6">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding}" FontSize="13"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0,0,4,0"/>
+                                                        <Button Content="×"
+                                                                Style="{StaticResource ChipRemoveStyle}"
+                                                                Click="RemoveApartment_Click"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <!-- Inline TextBox za unos broja stana -->
+                                    <TextBox FontSize="13" Padding="6,2"
+                                             Width="60" Height="28"
+                                             BorderBrush="#CCCCCC" BorderThickness="1"
+                                             VerticalContentAlignment="Center"
+                                             Margin="0,0,6,6"
+                                             Text="{Binding NewApartmentText, UpdateSourceTrigger=PropertyChanged}"
+                                             Visibility="{Binding IsAddingApartment, Converter={StaticResource BoolToVisibility}}"
+                                             KeyDown="ApartmentInput_KeyDown"
+                                             LostFocus="ApartmentInput_LostFocus"
+                                             Loaded="ApartmentInput_Loaded"/>
+
+                                    <!-- Dugme + Stan -->
+                                    <Button Click="AddApartment_Click" Margin="0,0,0,6"
+                                            VerticalAlignment="Center">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource AddChipStyle}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsAddingApartment}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <StackPanel Orientation="Horizontal">
+                                            <fa:IconBlock Icon="Plus" FontSize="11" Margin="0,0,4,0"/>
+                                            <TextBlock Text="Stan"/>
+                                        </StackPanel>
+                                    </Button>
+                                </WrapPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <!-- Slike -->
                 <TextBlock Text="Slike zgrade" FontSize="12" Foreground="#888888"
                            Margin="2,4,0,8"/>
-                <WrapPanel x:Name="ImagesPanel" Margin="0,0,0,8"/>
+                <ItemsControl ItemsSource="{Binding ImagePaths}" Margin="0,0,0,8">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="70" Height="70" CornerRadius="8"
+                                    Background="#EEEEEE" Margin="0,0,8,8" ClipToBounds="True">
+                                <Grid>
+                                    <Image Stretch="UniformToFill"
+                                           Source="{Binding Converter={StaticResource ImagePathConverter}}"/>
+                                    <Button Content="×" Width="20" Height="20"
+                                            FontSize="12" Foreground="White"
+                                            Background="#CC000000" BorderThickness="0"
+                                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Cursor="Hand"
+                                            Click="RemoveImage_Click"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <Button Style="{StaticResource AddChipStyle}" HorizontalAlignment="Left"
                         Click="AddImages_Click">
                     <StackPanel Orientation="Horizontal">
@@ -133,8 +239,9 @@
                 </Button>
 
                 <!-- Greska -->
-                <TextBlock x:Name="ErrorText" Foreground="#CC0000" FontSize="13"
-                           TextWrapping="Wrap" Visibility="Collapsed" Margin="0,12,0,0"/>
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#CC0000" FontSize="13"
+                           TextWrapping="Wrap" Margin="0,12,0,0"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}"/>
 
                 <!-- Submit -->
                 <Button Style="{StaticResource SubmitStyle}"

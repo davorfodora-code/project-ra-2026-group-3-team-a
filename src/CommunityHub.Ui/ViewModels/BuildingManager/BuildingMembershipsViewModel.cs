@@ -1,10 +1,10 @@
 using CommunityHub.Application;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Application.Services.BuildingManager;
 
 namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
-public class BuildingMembershipsViewModel
+public class BuildingMembershipsViewModel : BaseViewModel
 {
     private readonly BuildingAccessRequestService _service;
     private readonly long _managerId;

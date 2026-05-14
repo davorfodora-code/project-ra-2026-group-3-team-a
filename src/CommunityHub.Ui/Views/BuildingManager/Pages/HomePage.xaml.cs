@@ -1,16 +1,20 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
 
 public partial class HomePage : Page
 {
     private readonly BuildingManagerWindow _shell;
+    private readonly HomeViewModel _vm;
 
     public HomePage(BuildingManagerWindow shell)
     {
         InitializeComponent();
         _shell = shell;
+        _vm = new HomeViewModel(shell.UserId);
+        DataContext = _vm;
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
@@ -20,7 +24,6 @@ public partial class HomePage : Page
             "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
-    // Klik na baner skupštine — otvara tab Skupštine
     private void SkupstineLink_Click(object sender, RoutedEventArgs e)
     {
         _shell.SetActiveNav(3);
@@ -39,7 +42,6 @@ public partial class HomePage : Page
         _shell.MainFrame.Navigate(new RequestsPage(_shell));
     }
 
-    // Problemi i oglasi — zasad vodi na Više (funkcionalnost dolazi u kasnijoj iteraciji)
     private void NeresenoProblemi_Click(object sender, RoutedEventArgs e)
     {
         _shell.SetActiveNav(4);

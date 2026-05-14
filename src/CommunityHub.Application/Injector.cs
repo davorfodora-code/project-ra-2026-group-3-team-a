@@ -2,6 +2,9 @@ using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Database.Repositories.Citizen;
 using CommunityHub.Application.Services.BuildingManager;
 using CommunityHub.Application.Services.Citizen;
+using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
+using CommunityHub.Application.Services.BuildingManager;
+using CommunityHub.Application.Services.DistrictCoordinator;
 
 namespace CommunityHub.Application;
 
@@ -26,6 +29,11 @@ public class Injector
         { typeof(ICitizenAccessRequestService),             new CitizenAccessRequestService() },
         { typeof(ICitizenDistrictService),                  new CitizenDistrictService() },
         { typeof(ICitizenMembershipService),                new CitizenMembershipService() },
+        // DistrictCoordinator
+        { typeof(IDistrictRepository),                  new DistrictDbRepository() },
+        { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },
+        { typeof(IDistrictMeetingRepository),            new DistrictMeetingDbRepository() },
+        { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
     };
 
     public static T Get<T>()

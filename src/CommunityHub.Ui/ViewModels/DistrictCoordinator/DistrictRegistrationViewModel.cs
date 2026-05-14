@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application;
 using CommunityHub.Application.Services.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -35,7 +36,9 @@ public class DistrictRegistrationViewModel : ViewModelBase
     public DistrictRegistrationViewModel(long coordinatorId)
     {
         _coordinatorId = coordinatorId;
-        _service = new DistrictService();
+        _service = new DistrictService(
+            Injector.Get<IDistrictRepository>(),
+            Injector.Get<IDistrictAccessRequestRepository>());
 
         Streets    = new ObservableCollection<StreetInputDto>();
         ImageSlots = new ObservableCollection<ImageSlotViewModel>

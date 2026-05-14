@@ -1,35 +1,22 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application;
-using CommunityHub.Application.Dto.BuildingManager;
-using CommunityHub.Application.Services.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
 
 public partial class BuildingsPage : Page
 {
     private readonly BuildingManagerWindow _shell;
-    private readonly BuildingService _service;
+    private readonly BuildingsViewModel _vm;
 
     public BuildingsPage(BuildingManagerWindow shell)
     {
         InitializeComponent();
         _shell = shell;
-        _service = new BuildingService(Injector.Get<IBuildingRepository>());
-        LoadBuildings();
-    }
-
-    private void LoadBuildings()
-    {
-        List<BuildingDto> buildings = _service.Search(null, null, null, null);
-
-        if (buildings.Count == 0)
-        {
-            EmptyText.Visibility = Visibility.Visible;
-            return;
-        }
-
-        BuildingsItemsControl.ItemsSource = buildings;
+        _vm = new BuildingsViewModel();
+        DataContext = _vm;
+        _vm.Load();
     }
 
     private void BuildingCard_Click(object sender, RoutedEventArgs e)
@@ -40,7 +27,7 @@ public partial class BuildingsPage : Page
 
     private void AddBuilding_Click(object sender, RoutedEventArgs e)
     {
-        _shell.MainFrame.Navigate(new NewBuildingPage(_shell));
+        _shell.MainFrame.Navigate(new NewBuildingPage(_shell, _vm.Load));
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)

@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Dto.BuildingManager;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Ui.ViewModels.Tenant;
 
 namespace CommunityHub.Ui.Views.Tenant;
@@ -15,7 +15,8 @@ public partial class BuildingSearchWindow : Window
         InitializeComponent();
         _userId = userId;
         _viewModel = new BuildingSearchViewModel();
-        BuildingsDataGrid.ItemsSource = _viewModel.LoadAll();
+        BuildingsDataGrid.ItemsSource = _viewModel.Buildings;
+        _viewModel.LoadAll();
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -35,7 +36,7 @@ public partial class BuildingSearchWindow : Window
         string? city = string.IsNullOrWhiteSpace(CityTextBox.Text) ? null : CityTextBox.Text.Trim();
         string? country = string.IsNullOrWhiteSpace(CountryTextBox.Text) ? null : CountryTextBox.Text.Trim();
 
-        BuildingsDataGrid.ItemsSource = _viewModel.Search(address, neighborhood, city, country);
+        _viewModel.Search(address, neighborhood, city, country);
         ImagesBorder.Visibility = Visibility.Collapsed;
     }
 
