@@ -54,6 +54,7 @@
                  VerticalScrollBarVisibility="Auto" Margin="0,8"/>
 
         <TextBlock Grid.Row="5" Grid.Column="1" x:Name="ErrorText"
+                   Text="{Binding ErrorMessage}"
                    Foreground="Red" TextWrapping="Wrap" Margin="0,2"/>
 
         <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"

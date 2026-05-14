@@ -1,8 +1,9 @@
 using System.Data;
+using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Application.Database.Repositories.Tenant;
 
-public class BuildingMembershipDbRepository
+public class BuildingMembershipDbRepository : IBuildingMembershipRepository
 {
     public bool IsApartmentOccupied(long buildingId, int apartmentNumber)
     {

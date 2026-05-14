@@ -1,15 +1,18 @@
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application;
+using CommunityHub.Application.Services.Tenant.Dto;
 using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Ui.ViewModels.Tenant;
 
-public class BuildingAccessRequestViewModel
+public class BuildingAccessRequestViewModel : BaseViewModel
 {
     private readonly BuildingAccessRequestService _service;
 
     public BuildingAccessRequestViewModel()
     {
-        _service = new BuildingAccessRequestService();
+        _service = new BuildingAccessRequestService(
+            Injector.Get<IBuildingAccessRequestRepository>(),
+            Injector.Get<IBuildingMembershipRepository>());
     }
 
     public bool IsApartmentOccupied(long buildingId, int apartmentNumber)

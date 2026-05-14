@@ -1,4 +1,4 @@
-namespace CommunityHub.Application.Dto.Tenant;
+namespace CommunityHub.Application.Services.Tenant.Dto;
 
 public class CreateAdvertisementDto
 {

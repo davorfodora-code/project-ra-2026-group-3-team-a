@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Application.Database.Repositories.Tenant;
 
-public class BuildingAccessRequestDbRepository
+public class BuildingAccessRequestDbRepository : IBuildingAccessRequestRepository
 {
     public bool ExistsPending(long tenantId, long buildingId)
     {

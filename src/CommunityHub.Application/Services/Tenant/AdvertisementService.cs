@@ -1,16 +1,15 @@
-using CommunityHub.Application.Database.Repositories.Tenant;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
 
 namespace CommunityHub.Application.Services.Tenant;
 
 public class AdvertisementService
 {
-    private readonly AdvertisementDbRepository _repository;
+    private readonly IAdvertisementRepository _repository;
 
-    public AdvertisementService()
+    public AdvertisementService(IAdvertisementRepository repository)
     {
-        _repository = new AdvertisementDbRepository();
+        _repository = repository;
     }
 
     public List<TenantBuildingDto> GetBuildingsForTenant(long tenantId)
