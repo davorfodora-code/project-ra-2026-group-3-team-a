@@ -6,6 +6,7 @@
     <Application.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <conv:ImagePathToSourceConverter x:Key="ImagePathConverter"/>
+        <conv:NameToInitialsConverter x:Key="NameToInitials"/>
 
         <!-- Kružno dugme za Help (?) -->
         <Style x:Key="CircleButtonStyle" TargetType="Button">
