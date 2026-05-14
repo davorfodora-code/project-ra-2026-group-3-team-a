@@ -95,56 +95,56 @@
         <Border Grid.Column="0" Background="#2C3E50">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="72"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0" Background="#1A252F" Padding="20,0">
                     <TextBlock Text="Community Hub" Foreground="White"
-                               FontSize="17" FontWeight="Bold" VerticalAlignment="Center"/>
+                               FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/>
                 </Border>
                 <StackPanel Grid.Row="1" Margin="0,8,0,0">
                     <Button Style="{StaticResource SideNavStyle}" Click="NavHome_Click">
-                        <StackPanel Orientation="Horizontal" Margin="20,12">
-                            <fa:IconBlock Icon="House" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                            <TextBlock Text="Home" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                        <StackPanel Orientation="Horizontal" Margin="20,16">
+                            <fa:IconBlock Icon="House" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                            <TextBlock Text="Home" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource SideNavStyle}" Click="NavBuildings_Click">
-                        <StackPanel Orientation="Horizontal" Margin="20,12">
-                            <fa:IconBlock Icon="Building" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                            <TextBlock Text="Zgrade" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                        <StackPanel Orientation="Horizontal" Margin="20,16">
+                            <fa:IconBlock Icon="Building" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                            <TextBlock Text="Zgrade" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                         </StackPanel>
                     </Button>
                     <!-- Oglasna tabla (aktivan) -->
                     <Border Background="#243342">
                         <Grid>
                             <Border Width="4" HorizontalAlignment="Left" Background="White"/>
-                            <StackPanel Orientation="Horizontal" Margin="20,12">
-                                <fa:IconBlock Icon="CircleInfo" FontSize="18" Foreground="White" VerticalAlignment="Center" Width="20"/>
-                                <TextBlock Text="Oglasna tabla" Foreground="White" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="20,16">
+                                <fa:IconBlock Icon="CircleInfo" FontSize="22" Foreground="White" VerticalAlignment="Center" Width="20"/>
+                                <TextBlock Text="Oglasna tabla" Foreground="White" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                             </StackPanel>
                         </Grid>
                     </Border>
                     <Border BorderBrush="#3D5166" BorderThickness="0,1,0,0" Margin="16,8"/>
-                    <StackPanel Orientation="Horizontal" Margin="20,12" Opacity="0.35">
-                        <fa:IconBlock Icon="CalendarCheck" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                        <TextBlock Text="Zakazivanje" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
+                        <fa:IconBlock Icon="CalendarCheck" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                        <TextBlock Text="Zakazivanje" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="20,12" Opacity="0.35">
-                        <fa:IconBlock Icon="DoorOpen" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                        <TextBlock Text="Zajedničke sobe" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
+                        <fa:IconBlock Icon="DoorOpen" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                        <TextBlock Text="Zajedničke sobe" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="20,12" Opacity="0.35">
-                        <fa:IconBlock Icon="CircleExclamation" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                        <TextBlock Text="Problemi" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
+                        <fa:IconBlock Icon="CircleExclamation" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                        <TextBlock Text="Problemi" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="20,12" Opacity="0.35">
-                        <fa:IconBlock Icon="PeopleGroup" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                        <TextBlock Text="Skupštine" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
+                        <fa:IconBlock Icon="PeopleGroup" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                        <TextBlock Text="Skupštine" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="20,12" Opacity="0.35">
-                        <fa:IconBlock Icon="FileLines" FontSize="18" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
-                        <TextBlock Text="Izveštaji" Foreground="#B0BEC5" FontSize="15" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
+                        <fa:IconBlock Icon="FileLines" FontSize="22" Foreground="#B0BEC5" VerticalAlignment="Center" Width="20"/>
+                        <TextBlock Text="Izveštaji" Foreground="#B0BEC5" FontSize="18" VerticalAlignment="Center" Margin="14,0,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
@@ -161,7 +161,7 @@
             <!-- Gornji bar -->
             <Border Grid.Row="0" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
                 <Grid Margin="24,0">
-                    <TextBlock Text="Oglasna tabla" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="Oglasna tabla" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button Style="{StaticResource CircleButtonStyle}" Width="36" Height="36" ToolTip="Obaveštenja">
                             <fa:IconBlock Icon="Bell" FontSize="16" Foreground="#555555"/>
@@ -186,12 +186,12 @@
                         <Button x:Name="TabBoardBtn" Tag="active" Style="{StaticResource TabBtnStyle}"
                                 Click="TabBoard_Click" Margin="0,0,28,0" Padding="0,0,0,4">
                             <TextBlock x:Name="TabBoardText" Text="Oglasi na tabli"
-                                       FontSize="16" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+                                       FontSize="19" FontWeight="SemiBold" Foreground="#1A1A1A"/>
                         </Button>
                         <Button x:Name="TabMyPostsBtn" Style="{StaticResource TabBtnStyle}"
                                 Click="TabMyPosts_Click" Padding="0,0,0,4">
                             <TextBlock x:Name="TabMyPostsText" Text="Moji oglasi"
-                                       FontSize="15" Foreground="#888888"/>
+                                       FontSize="18" Foreground="#888888"/>
                         </Button>
                     </StackPanel>
 
@@ -253,7 +253,7 @@
                     </Border>
 
                     <!-- Aktivni oglasi -->
-                    <TextBlock Text="Aktivni oglasi" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock Text="Aktivni oglasi" FontSize="19" FontWeight="SemiBold"
                                Margin="0,0,0,10"/>
 
                     <TextBlock x:Name="NoBoardAdsText"
@@ -288,7 +288,7 @@
                                         <StackPanel Grid.Column="1">
                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                                 <TextBlock Text="{Binding TenantName}"
-                                                           FontSize="16" FontWeight="SemiBold"/>
+                                                           FontSize="19" FontWeight="SemiBold"/>
                                                 <TextBlock x:Name="YouBadge" Text=" [VI]"
                                                            FontSize="14" Foreground="#888888"
                                                            Visibility="{Binding IsOwn,
@@ -335,7 +335,7 @@
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="24,16,24,24">
 
-                    <TextBlock Text="Moji aktivni oglasi" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock Text="Moji aktivni oglasi" FontSize="19" FontWeight="SemiBold"
                                Margin="0,0,0,10"/>
 
                     <TextBlock x:Name="NoMyAdsText"
@@ -358,7 +358,7 @@
                                         <!-- Header: tip + dugme -->
                                         <Grid Grid.Row="0" Margin="0,0,0,6">
                                             <TextBlock Text="{Binding TypeDisplay}"
-                                                       FontSize="16" FontWeight="SemiBold"/>
+                                                       FontSize="19" FontWeight="SemiBold"/>
                                             <Button Content="Arhiviraj"
                                                     Tag="{Binding Id}"
                                                     Click="ArchiveButton_Click"

@@ -100,6 +100,11 @@ public partial class BuildingSearchWindow : Window
 
     private void SearchButton_Click(object sender, RoutedEventArgs e) => PerformSearch();
 
+    private void LiveSearch_Changed(object sender, EventArgs e)
+    {
+        if (IsLoaded) PerformSearch();
+    }
+
     private void ClearButton_Click(object sender, RoutedEventArgs e)
     {
         AddressTextBox.Text = string.Empty;

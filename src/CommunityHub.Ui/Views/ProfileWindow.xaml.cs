@@ -38,27 +38,13 @@ public partial class ProfileWindow : Window
         PostsItemsControl.ItemsSource = _posts;
     }
 
-    private void NewPostButton_Click(object sender, RoutedEventArgs e)
-    {
-        CreatePostWindow createPostWindow = new CreatePostWindow(_userId);
-        if (createPostWindow.ShowDialog() == true && createPostWindow.CreatedPost != null)
-        {
-            _user.AddPost(createPostWindow.CreatedPost);
-            _posts.Add(createPostWindow.CreatedPost);
-        }
-    }
-
-    private void HomeButton_Click(object sender, RoutedEventArgs e)
-    {
-        HomeWindow homeWindow = new HomeWindow(_userId);
-        homeWindow.Show();
-        this.Close();
-    }
+    private void BackButton_Click(object sender, RoutedEventArgs e) => Close();
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
-        LogInForm loginForm = new LogInForm();
-        loginForm.Show();
-        this.Close();
+        var toClose = System.Windows.Application.Current.Windows.Cast<Window>().ToList();
+        new LogInForm().Show();
+        foreach (var w in toClose)
+            w.Close();
     }
 }

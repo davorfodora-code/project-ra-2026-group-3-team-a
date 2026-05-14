@@ -21,20 +21,16 @@
                            HorizontalAlignment="Left"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Nova objava"
-                            Click="NewPostButton_Click"
-                            Padding="15,8"
-                            Margin="0,0,10,0"
-                            FontSize="14"/>
-                    <Button Content="Početna"
-                            Click="HomeButton_Click"
+                    <Button Content="← Nazad"
+                            Click="BackButton_Click"
                             Padding="15,8"
                             Margin="0,0,10,0"
                             FontSize="14"/>
                     <Button Content="Odjavi se"
                             Click="LogoutButton_Click"
                             Padding="15,8"
-                            FontSize="14"/>
+                            FontSize="14"
+                            Background="#E74C3C" Foreground="White" BorderThickness="0"/>
                 </StackPanel>
             </Grid>
         </Border>
