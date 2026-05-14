@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Application.Services.Tenant.Dto;
 using CommunityHub.Ui.ViewModels.Tenant;
 
@@ -10,32 +11,57 @@ public partial class BuildingAccessRequestForm : Window
     private readonly long _userId;
     private readonly long _buildingId;
     private readonly BuildingAccessRequestViewModel _viewModel;
+    private bool _isOccupied;
 
     public BuildingAccessRequestForm(long userId, long buildingId)
+        : this(userId, buildingId, null) { }
+
+    public BuildingAccessRequestForm(long userId, long buildingId, BuildingDto? buildingDto)
     {
         InitializeComponent();
         _userId = userId;
         _buildingId = buildingId;
         _viewModel = new BuildingAccessRequestViewModel();
+
+        if (buildingDto != null)
+        {
+            BuildingAddressText.Text = buildingDto.AddressDisplay;
+            BuildingLocationText.Text = $"{buildingDto.Neighborhood}, {buildingDto.LocationDisplay}";
+        }
+        else
+        {
+            BuildingAddressText.Text = $"Zgrada #{buildingId}";
+            BuildingLocationText.Text = string.Empty;
+        }
     }
 
     private void ApartmentNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        WarningTextBlock.Visibility = Visibility.Collapsed;
         ErrorTextBlock.Visibility = Visibility.Collapsed;
+        WarningBorder.Visibility = Visibility.Collapsed;
+        _isOccupied = false;
 
-        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int apartmentNumber) || apartmentNumber <= 0)
+        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int num) || num <= 0)
             return;
 
-        if (_viewModel.IsApartmentOccupied(_buildingId, apartmentNumber))
-            WarningTextBlock.Visibility = Visibility.Visible;
+        if (_viewModel.IsApartmentOccupied(_buildingId, num))
+        {
+            _isOccupied = true;
+            WarningTextBlock.Text = $"Stan {num} već ima prijavljenog stanara. Proverite da niste pogrešili broj stana. Zahtev možete i dalje podneti.";
+            WarningBorder.Visibility = Visibility.Visible;
+            ConfirmButton.Content = "Ipak podnesi";
+        }
+        else
+        {
+            ConfirmButton.Content = "Podnesi";
+        }
     }
 
     private void ConfirmButton_Click(object sender, RoutedEventArgs e)
     {
         ErrorTextBlock.Visibility = Visibility.Collapsed;
 
-        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int apartmentNumber) || apartmentNumber <= 0)
+        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int num) || num <= 0)
         {
             ErrorTextBlock.Text = "Unesite ispravan broj stana.";
             ErrorTextBlock.Visibility = Visibility.Visible;
@@ -53,7 +79,7 @@ public partial class BuildingAccessRequestForm : Window
         {
             TenantId = _userId,
             BuildingId = _buildingId,
-            ApartmentNumber = apartmentNumber
+            ApartmentNumber = num
         });
 
         MessageBox.Show("Zahtev za pristup zgradi je uspešno kreiran.", "Uspeh",

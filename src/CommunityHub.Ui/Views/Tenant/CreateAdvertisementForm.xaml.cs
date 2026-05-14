@@ -13,13 +13,16 @@ public partial class CreateAdvertisementForm : Window
 
     public CreateAdvertisementDto? Dto { get; private set; }
 
-    public CreateAdvertisementForm(long userId, long buildingId)
+    public CreateAdvertisementForm(long userId, long buildingId, string buildingName = "")
     {
         InitializeComponent();
         _userId = userId;
         _buildingId = buildingId;
         _vm = new CreateAdvertisementViewModel();
         DataContext = _vm;
+
+        if (!string.IsNullOrEmpty(buildingName))
+            BuildingSubtitle.Text = $"Oglas za: {buildingName}";
 
         StartDatePicker.DisplayDateStart = DateTime.Today;
         EndDatePicker.DisplayDateStart = DateTime.Today;

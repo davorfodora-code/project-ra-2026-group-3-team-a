@@ -37,7 +37,7 @@ public partial class LogInForm : Window
         Window? targetWindow = role switch
         {
             "BuildingManager" => new BuildingManagerWindow(userId),
-            "Tenant" => new TenantHomeWindow(userId),
+            "Tenant" => new TenantWindow(userId),
             "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
             "Citizen" => new CitizenHomeWindow(userId),
             _ => null
