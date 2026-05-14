@@ -1,4 +1,3 @@
-using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Services.BuildingManager.Dto;
 
@@ -6,11 +5,11 @@ namespace CommunityHub.Application.Services.Tenant;
 
 public class BuildingSearchService
 {
-    private readonly BuildingDbRepository _repository;
+    private readonly ITenantBuildingSearchRepository _repository;
 
-    public BuildingSearchService()
+    public BuildingSearchService(ITenantBuildingSearchRepository repository)
     {
-        _repository = new BuildingDbRepository();
+        _repository = repository;
     }
 
     public List<BuildingDto> Search(string? address, string? neighborhood, string? city, string? country)
