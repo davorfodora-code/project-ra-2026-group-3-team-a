@@ -9,14 +9,14 @@ public class CitizenAccessRequestService : ICitizenAccessRequestService
     private readonly ICitizenDistrictRepository _districtRepository;
     private readonly ICitizenDistrictAccessRequestRepository _requestRepository;
     private readonly ICitizenUserProfileRepository _userProfileRepository;
-    private readonly ICitizenMembershipService _membershipService;
+    private readonly CitizenMembershipService _membershipService;
 
     public CitizenAccessRequestService()
     {
         _districtRepository = Injector.Get<ICitizenDistrictRepository>();
         _requestRepository = Injector.Get<ICitizenDistrictAccessRequestRepository>();
         _userProfileRepository = Injector.Get<ICitizenUserProfileRepository>();
-        _membershipService = Injector.Get<ICitizenMembershipService>();
+        _membershipService = new CitizenMembershipService();
     }
 
     public AccessResultDto RequestDistrictAccess(long userId, long districtId)

@@ -1,4 +1,3 @@
-using CommunityHub.Application;
 using CommunityHub.Application.Dto.Citizen;
 using CommunityHub.Application.Services.Citizen;
 
@@ -6,13 +5,13 @@ namespace CommunityHub.Ui.ViewModels.Citizen;
 
 public class CitizenEventsViewModel
 {
-    private readonly ICitizenDistrictEventService _service;
+    private readonly CitizenDistrictEventService _service;
     private readonly long _citizenId;
 
     public CitizenEventsViewModel(long citizenId)
     {
         _citizenId = citizenId;
-        _service = Injector.Get<ICitizenDistrictEventService>();
+        _service = new CitizenDistrictEventService();
     }
 
     public long? GetCitizenDistrictId()

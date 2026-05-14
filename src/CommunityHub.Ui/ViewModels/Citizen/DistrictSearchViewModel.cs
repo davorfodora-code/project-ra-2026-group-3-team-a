@@ -1,4 +1,3 @@
-using CommunityHub.Application;
 using CommunityHub.Application.Dto.Citizen;
 using CommunityHub.Application.Services.Citizen;
 using CommunityHub.Ui.Views.Citizen;
@@ -8,15 +7,15 @@ namespace CommunityHub.Ui.ViewModels.Citizen;
 public class DistrictSearchViewModel
 {
     private readonly long _userId;
-    private readonly ICitizenDistrictService _districtService;
-    private readonly ICitizenAccessRequestService _accessService;
+    private readonly CitizenDistrictService _districtService;
+    private readonly CitizenAccessRequestService _accessService;
     private List<DistrictListItemDto> _currentDistricts = new();
 
     public DistrictSearchViewModel(long userId)
     {
         _userId = userId;
-        _districtService = Injector.Get<ICitizenDistrictService>();
-        _accessService = Injector.Get<ICitizenAccessRequestService>();
+        _districtService = new CitizenDistrictService();
+        _accessService = new CitizenAccessRequestService();
     }
 
     public List<DistrictRowViewModel> LoadAllDistricts()
