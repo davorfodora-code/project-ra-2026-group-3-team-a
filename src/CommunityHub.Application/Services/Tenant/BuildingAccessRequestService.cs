@@ -1,18 +1,19 @@
-using CommunityHub.Application.Database.Repositories.Tenant;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
 
 namespace CommunityHub.Application.Services.Tenant;
 
 public class BuildingAccessRequestService
 {
-    private readonly BuildingAccessRequestDbRepository _requestRepository;
-    private readonly BuildingMembershipDbRepository _membershipRepository;
+    private readonly IBuildingAccessRequestRepository _requestRepository;
+    private readonly IBuildingMembershipRepository _membershipRepository;
 
-    public BuildingAccessRequestService()
+    public BuildingAccessRequestService(
+        IBuildingAccessRequestRepository requestRepository,
+        IBuildingMembershipRepository membershipRepository)
     {
-        _requestRepository = new BuildingAccessRequestDbRepository();
-        _membershipRepository = new BuildingMembershipDbRepository();
+        _requestRepository = requestRepository;
+        _membershipRepository = membershipRepository;
     }
 
     public List<TenantAccessRequestDto> GetAllByTenant(long tenantId)
