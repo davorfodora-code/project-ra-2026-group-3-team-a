@@ -1,4 +1,4 @@
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;

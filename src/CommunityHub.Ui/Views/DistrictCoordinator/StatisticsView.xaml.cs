@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Domain;
-using CommunityHub.Application.Dto.DistrictCoordinator;
+using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 using CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 namespace CommunityHub.Ui.Views.DistrictCoordinator;
