@@ -1,36 +1,76 @@
 <Window x:Class="CommunityHub.Ui.Views.Tenant.MatchingAdsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Podudarni oglasi" Height="400" Width="780"
-        WindowStartupLocation="CenterOwner">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        Title="Podudarni oglasi" Width="820"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <StackPanel Margin="24,20,24,24">
 
-        <TextBlock Grid.Row="0"
-                   Text="Oglas je kreiran uspešno! Pronađeni su sledeći podudarni oglasi:"
-                   FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+        <TextBlock Text="Oglas je kreiran uspešno!"
+                   FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+        <TextBlock Text="Izaberite podudarni oglas i slobodan termin za susret."
+                   FontSize="13" Foreground="#666666" Margin="0,0,0,16"/>
 
-        <DataGrid Grid.Row="1" x:Name="MatchingGrid"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  SelectionMode="Single"
-                  CanUserAddRows="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Stanar" Binding="{Binding TenantName}" Width="140"/>
-                <DataGridTextColumn Header="Tip" Binding="{Binding TypeDisplay}" Width="100"/>
-                <DataGridTextColumn Header="Opseg datuma" Binding="{Binding DateRangeDisplay}" Width="190"/>
-                <DataGridTextColumn Header="Kategorija" Binding="{Binding Category}" Width="130"/>
-                <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="220"/>
+            </Grid.ColumnDefinitions>
 
-        <Button Grid.Row="2" Content="Zatvori"
-                Click="CloseButton_Click"
-                HorizontalAlignment="Right"
-                Padding="15,8" Margin="0,10,0,0"/>
-    </Grid>
+            <!-- Levo: podudarni oglasi -->
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Podudarni oglasi" FontSize="13" FontWeight="SemiBold"
+                           Margin="0,0,0,6"/>
+                <ListBox x:Name="AdsListBox"
+                         Height="220"
+                         SelectionChanged="AdsListBox_SelectionChanged"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4,6">
+                                <TextBlock Text="{Binding TenantName}"
+                                           FontSize="14" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TypeDisplay}"
+                                           FontSize="12" Foreground="#888888"/>
+                                <TextBlock Text="{Binding DateRangeDisplay}"
+                                           FontSize="12" Foreground="#666666"/>
+                                <TextBlock Text="{Binding Category}"
+                                           FontSize="12" Foreground="#666666"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+
+            <!-- Desno: slobodni termini -->
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Slobodni termini" FontSize="13" FontWeight="SemiBold"
+                           Margin="0,0,0,6"/>
+                <TextBlock x:Name="NoSlotsText"
+                           Text="Izaberite oglas."
+                           FontSize="12" Foreground="#AAAAAA"
+                           Margin="0,0,0,6" Visibility="Visible"/>
+                <ListBox x:Name="SlotsListBox"
+                         Height="220"
+                         DisplayMemberPath="DisplayText"
+                         SelectionChanged="SlotsListBox_SelectionChanged"
+                         Visibility="Collapsed"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Dugmad -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button x:Name="ReserveButton" Content="Rezerviši termin"
+                    Click="ReserveButton_Click"
+                    IsEnabled="False"
+                    Padding="16,8" Margin="0,0,10,0" FontSize="13" FontWeight="SemiBold"
+                    Background="#2C3E50" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+            <Button Content="Zatvori"
+                    Click="CloseButton_Click"
+                    Padding="16,8" FontSize="13" Cursor="Hand"/>
+        </StackPanel>
+
+    </StackPanel>
 </Window>

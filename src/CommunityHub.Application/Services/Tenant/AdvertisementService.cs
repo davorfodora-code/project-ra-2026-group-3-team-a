@@ -25,7 +25,7 @@ public class AdvertisementService
             .ToList();
     }
 
-    public (bool Success, List<AdvertisementDto> MatchingAds) CreateAdvertisement(CreateAdvertisementDto dto)
+    public (bool Success, long NewAdId, List<AdvertisementDto> MatchingAds) CreateAdvertisement(CreateAdvertisementDto dto)
     {
         long bulletinBoardId = _repository.EnsureBulletinBoard(dto.BuildingId);
         _repository.ArchiveExpiredAds(bulletinBoardId);
@@ -41,10 +41,15 @@ public class AdvertisementService
             .Select(a => MapToDto(a, dto.TenantId))
             .ToList();
 
-        return (true, matchingAds);
+        return (true, adId, matchingAds);
     }
 
     public void ArchiveAd(long adId) => _repository.ArchiveAd(adId);
+
+    public List<SlotDto> GetAvailableSlots(long adId) => _repository.GetAvailableSlots(adId);
+
+    public void ReserveSlot(long slotId, long requesterAdId, long tenantId)
+        => _repository.ReserveSlot(slotId, requesterAdId, tenantId);
 
     private static AdvertisementDto MapToDto(Advertisement a, long currentTenantId) => new()
     {

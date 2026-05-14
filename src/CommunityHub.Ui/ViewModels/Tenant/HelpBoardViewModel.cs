@@ -1,14 +1,14 @@
 using System.Collections.ObjectModel;
 using CommunityHub.Application;
-using CommunityHub.Application.Services.Tenant.Dto;
 using CommunityHub.Application.Services.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
 
 namespace CommunityHub.Ui.ViewModels.Tenant;
 
 public class HelpBoardViewModel : BaseViewModel
 {
     private readonly AdvertisementService _service;
-    private readonly long _tenantId;
+    public long TenantId { get; }
     private long? _selectedBuildingId;
 
     public List<TenantBuildingDto> Buildings { get; private set; } = [];
@@ -22,7 +22,7 @@ public class HelpBoardViewModel : BaseViewModel
 
     public HelpBoardViewModel(long tenantId)
     {
-        _tenantId = tenantId;
+        TenantId = tenantId;
         _service = new AdvertisementService(Injector.Get<IAdvertisementRepository>());
         Buildings = _service.GetBuildingsForTenant(tenantId);
         if (Buildings.Count > 0)
@@ -31,18 +31,24 @@ public class HelpBoardViewModel : BaseViewModel
 
     public bool IsInBuilding() => Buildings.Count > 0;
 
+
     public void SelectBuilding(long buildingId) => SelectedBuildingId = buildingId;
 
     public void LoadAds()
     {
         Ads.Clear();
         if (SelectedBuildingId == null) return;
-        foreach (var ad in _service.GetActiveBoardAds(_tenantId, SelectedBuildingId.Value))
+        foreach (var ad in _service.GetActiveBoardAds(TenantId, SelectedBuildingId.Value))
             Ads.Add(ad);
     }
 
-    public (bool Success, List<AdvertisementDto> MatchingAds) CreateAd(CreateAdvertisementDto dto)
+    public (bool Success, long NewAdId, List<AdvertisementDto> MatchingAds) CreateAd(CreateAdvertisementDto dto)
         => _service.CreateAdvertisement(dto);
 
     public void ArchiveAd(long adId) => _service.ArchiveAd(adId);
+
+    public List<SlotDto> GetAvailableSlots(long adId) => _service.GetAvailableSlots(adId);
+
+    public void ReserveSlot(long slotId, long requesterAdId)
+        => _service.ReserveSlot(slotId, requesterAdId, TenantId);
 }

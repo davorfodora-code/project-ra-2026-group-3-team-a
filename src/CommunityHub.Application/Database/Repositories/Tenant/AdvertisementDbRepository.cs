@@ -163,6 +163,50 @@ public class AdvertisementDbRepository : IAdvertisementRepository
         cmd.ExecuteNonQuery();
     }
 
+    public List<SlotDto> GetAvailableSlots(long adId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT id, start_time, end_time
+            FROM advertisement_slots
+            WHERE advertisement_id = @adId AND is_available = TRUE
+            ORDER BY start_time";
+        AddParameter(cmd, "@adId", adId);
+
+        List<SlotDto> slots = new();
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            slots.Add(new SlotDto
+            {
+                Id       = reader.GetInt64(reader.GetOrdinal("id")),
+                StartTime = reader.GetDateTime(reader.GetOrdinal("start_time")),
+                EndTime   = reader.GetDateTime(reader.GetOrdinal("end_time"))
+            });
+        }
+        return slots;
+    }
+
+    public void ReserveSlot(long slotId, long requesterAdId, long tenantId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand updateCmd = connection.CreateCommand();
+        updateCmd.CommandText = "UPDATE advertisement_slots SET is_available = FALSE WHERE id = @slotId";
+        AddParameter(updateCmd, "@slotId", slotId);
+        updateCmd.ExecuteNonQuery();
+
+        IDbCommand insertCmd = connection.CreateCommand();
+        insertCmd.CommandText = @"
+            INSERT INTO slot_reservations (slot_id, requester_ad_id, tenant_id)
+            VALUES (@slotId, @requesterAdId, @tenantId)";
+        AddParameter(insertCmd, "@slotId", slotId);
+        AddParameter(insertCmd, "@requesterAdId", requesterAdId);
+        AddParameter(insertCmd, "@tenantId", tenantId);
+        insertCmd.ExecuteNonQuery();
+    }
+
     public void ArchiveExpiredAds(long bulletinBoardId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
