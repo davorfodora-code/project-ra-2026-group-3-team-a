@@ -7,19 +7,29 @@ namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
 public class AccessRequestsViewModel : BaseViewModel
 {
-    private readonly BuildingAccessRequestService _service;
+    private readonly BuildingAccessRequestService _accessService;
+    private readonly CommonRoomRequestService _rentalService;
     private readonly long _managerId;
 
+    // --- Access requests stanje ---
     private List<BuildingAccessRequestDto> _allRequests = new();
     private ObservableCollection<AccessRequestItemViewModel> _filteredRequests = new();
     private string _statusFilter = "Svi";
     private bool _newestFirst = true;
+
+    // --- Rental requests stanje ---
+    private List<CommonRoomRequestDto> _allRentalRequests = new();
+    private ObservableCollection<RoomRentalRequestItemViewModel> _filteredRentalRequests = new();
+    private string _rentalStatusFilter = "Svi";
+    private bool _rentalNewestFirst = true;
+
     private int _activeTabIndex;
 
     public AccessRequestsViewModel(long managerId)
     {
         _managerId = managerId;
-        _service = new BuildingAccessRequestService(Injector.Get<IBuildingAccessRequestRepository>());
+        _accessService = new BuildingAccessRequestService(Injector.Get<IBuildingAccessRequestRepository>());
+        _rentalService = new CommonRoomRequestService(Injector.Get<ICommonRoomRequestRepository>());
         LoadAndApply();
     }
 
@@ -35,6 +45,7 @@ public class AccessRequestsViewModel : BaseViewModel
                 OnPropertyChanged(nameof(IsAccessTabActive));
                 OnPropertyChanged(nameof(IsRentalTabActive));
                 if (IsAccessTabActive) LoadAndApply();
+                if (IsRentalTabActive) LoadRentalAndApply();
             }
         }
     }
@@ -42,16 +53,14 @@ public class AccessRequestsViewModel : BaseViewModel
     public bool IsAccessTabActive => _activeTabIndex == 0;
     public bool IsRentalTabActive => _activeTabIndex == 1;
 
-    // --- Filter i sort ---
+    // ================================================================
+    // --- Access requests: filter, sort, lista, akcije ---
+    // ================================================================
 
     public string StatusFilter
     {
         get => _statusFilter;
-        set
-        {
-            if (SetProperty(ref _statusFilter, value))
-                ApplyFilters();
-        }
+        set { if (SetProperty(ref _statusFilter, value)) ApplyFilters(); }
     }
 
     public bool NewestFirst
@@ -65,8 +74,6 @@ public class AccessRequestsViewModel : BaseViewModel
         NewestFirst = !NewestFirst;
         ApplyFilters();
     }
-
-    // --- Lista zahteva ---
 
     public ObservableCollection<AccessRequestItemViewModel> FilteredRequests
     {
@@ -84,7 +91,7 @@ public class AccessRequestsViewModel : BaseViewModel
 
     public void LoadAndApply()
     {
-        try { _allRequests = _service.GetByManagerId(_managerId); }
+        try { _allRequests = _accessService.GetByManagerId(_managerId); }
         catch { _allRequests = new List<BuildingAccessRequestDto>(); }
         ApplyFilters();
     }
@@ -104,17 +111,86 @@ public class AccessRequestsViewModel : BaseViewModel
             filtered.Select(dto => new AccessRequestItemViewModel(dto)));
     }
 
-    // --- Akcije ---
-
     public void Approve(long requestId)
     {
-        _service.Approve(requestId);
+        _accessService.Approve(requestId);
         LoadAndApply();
     }
 
     public void Reject(long requestId, string? reason)
     {
-        _service.Reject(requestId, reason);
+        _accessService.Reject(requestId, reason);
         LoadAndApply();
+    }
+
+    // ================================================================
+    // --- Rental requests: filter, sort, lista, akcije ---
+    // ================================================================
+
+    public string RentalStatusFilter
+    {
+        get => _rentalStatusFilter;
+        set { if (SetProperty(ref _rentalStatusFilter, value)) ApplyRentalFilters(); }
+    }
+
+    public bool RentalNewestFirst
+    {
+        get => _rentalNewestFirst;
+        private set => SetProperty(ref _rentalNewestFirst, value);
+    }
+
+    public void ToggleRentalSort()
+    {
+        RentalNewestFirst = !RentalNewestFirst;
+        ApplyRentalFilters();
+    }
+
+    public ObservableCollection<RoomRentalRequestItemViewModel> FilteredRentalRequests
+    {
+        get => _filteredRentalRequests;
+        private set
+        {
+            SetProperty(ref _filteredRentalRequests, value);
+            OnPropertyChanged(nameof(HasRentalRequests));
+            OnPropertyChanged(nameof(HasNoRentalRequests));
+        }
+    }
+
+    public bool HasRentalRequests => _filteredRentalRequests.Count > 0;
+    public bool HasNoRentalRequests => _filteredRentalRequests.Count == 0;
+
+    public void LoadRentalAndApply()
+    {
+        try { _allRentalRequests = _rentalService.GetByManagerId(_managerId); }
+        catch { _allRentalRequests = new List<CommonRoomRequestDto>(); }
+        ApplyRentalFilters();
+    }
+
+    private void ApplyRentalFilters()
+    {
+        IEnumerable<CommonRoomRequestDto> filtered = _allRentalRequests;
+
+        if (_rentalStatusFilter != "Svi")
+            filtered = filtered.Where(r => r.Status == _rentalStatusFilter);
+
+        filtered = _rentalNewestFirst
+            ? filtered.OrderByDescending(r => r.RequestedStartDate)
+            : filtered.OrderBy(r => r.RequestedStartDate);
+
+        FilteredRentalRequests = new ObservableCollection<RoomRentalRequestItemViewModel>(
+            filtered.Select(dto => new RoomRentalRequestItemViewModel(dto)));
+    }
+
+    // Vraća zauzete datume za prostoriju — koristi RoomCalendarPage za prikaz
+    public List<DateOnly> GetBookedDatesForRoom(long roomId)
+    {
+        return _rentalService.GetBookedDatesForRoom(roomId);
+    }
+
+    // Predlaže konkretan termin stanaru (kalendar → Potvrdi)
+    public void ProposeDate(long requestId, DateTime proposedStart, DateTime proposedEnd)
+    {
+        _rentalService.ProposeDate(requestId, proposedStart, proposedEnd);
+        LoadRentalAndApply();
     }
 }
