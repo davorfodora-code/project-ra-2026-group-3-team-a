@@ -1,5 +1,5 @@
 using System.Windows;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
 
 namespace CommunityHub.Ui.Views.Tenant;
 

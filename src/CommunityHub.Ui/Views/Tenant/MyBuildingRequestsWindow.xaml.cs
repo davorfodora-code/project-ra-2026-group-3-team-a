@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
 using CommunityHub.Ui.ViewModels.Tenant;
 
 namespace CommunityHub.Ui.Views.Tenant;
@@ -15,6 +15,7 @@ public partial class MyBuildingRequestsWindow : Window
         InitializeComponent();
         _userId = userId;
         _viewModel = new MyBuildingRequestsViewModel(userId);
+        RequestsDataGrid.ItemsSource = _viewModel.FilteredRequests;
         LoadRequests();
     }
 
@@ -28,7 +29,7 @@ public partial class MyBuildingRequestsWindow : Window
     {
         string status = (StatusFilterComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Svi";
         bool newestFirst = (SortComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() != "Najstariji prvo";
-        RequestsDataGrid.ItemsSource = _viewModel.GetFiltered(status, newestFirst);
+        _viewModel.ApplyFilters(status, newestFirst);
     }
 
     private void StatusFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
+using CommunityHub.Ui.ViewModels.Tenant;
 
 namespace CommunityHub.Ui.Views.Tenant;
 
@@ -8,6 +9,8 @@ public partial class CreateAdvertisementForm : Window
 {
     private readonly long _userId;
     private readonly long _buildingId;
+    private readonly CreateAdvertisementViewModel _vm;
+
     public CreateAdvertisementDto? Dto { get; private set; }
 
     public CreateAdvertisementForm(long userId, long buildingId)
@@ -15,6 +18,8 @@ public partial class CreateAdvertisementForm : Window
         InitializeComponent();
         _userId = userId;
         _buildingId = buildingId;
+        _vm = new CreateAdvertisementViewModel();
+        DataContext = _vm;
 
         StartDatePicker.DisplayDateStart = DateTime.Today;
         EndDatePicker.DisplayDateStart = DateTime.Today;
@@ -22,53 +27,18 @@ public partial class CreateAdvertisementForm : Window
 
     private void CreateButton_Click(object sender, RoutedEventArgs e)
     {
-        ErrorText.Text = string.Empty;
-
-        if (StartDatePicker.SelectedDate == null || EndDatePicker.SelectedDate == null)
-        {
-            ErrorText.Text = "Molimo izaberite opseg datuma.";
-            return;
-        }
-
-        DateTime startDate = StartDatePicker.SelectedDate.Value;
-        DateTime endDate = EndDatePicker.SelectedDate.Value;
-
-        if (startDate < DateTime.Today)
-        {
-            ErrorText.Text = "Datum početka ne može biti u prošlosti.";
-            return;
-        }
-
-        if (endDate < DateTime.Today)
-        {
-            ErrorText.Text = "Datum kraja ne može biti u prošlosti.";
-            return;
-        }
-
-        if (endDate < startDate)
-        {
-            ErrorText.Text = "Datum kraja mora biti posle datuma početka.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(DescriptionBox.Text))
-        {
-            ErrorText.Text = "Molimo unesite opis.";
-            return;
-        }
-
         string category = ((ComboBoxItem)CategoryCombo.SelectedItem).Content.ToString()!;
 
-        Dto = new CreateAdvertisementDto
-        {
-            TenantId = _userId,
-            BuildingId = _buildingId,
-            Description = DescriptionBox.Text.Trim(),
-            IsOffering = OfferingRadio.IsChecked == true,
-            StartDate = startDate,
-            EndDate = endDate,
-            Category = category
-        };
+        Dto = _vm.TryBuildDto(
+            tenantId: _userId,
+            buildingId: _buildingId,
+            isOffering: OfferingRadio.IsChecked == true,
+            startDate: StartDatePicker.SelectedDate,
+            endDate: EndDatePicker.SelectedDate,
+            description: DescriptionBox.Text,
+            category: category);
+
+        if (Dto == null) return;
 
         DialogResult = true;
         Close();

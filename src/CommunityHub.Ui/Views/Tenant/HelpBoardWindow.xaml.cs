@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-using CommunityHub.Application.Dto.Tenant;
+using CommunityHub.Application.Services.Tenant.Dto;
 using CommunityHub.Ui.ViewModels.Tenant;
 
 namespace CommunityHub.Ui.Views.Tenant;
@@ -25,8 +25,9 @@ public partial class HelpBoardWindow : Window
             return;
         }
 
+        AdsDataGrid.ItemsSource = _viewModel.Ads;
         SetupBuildingSelector();
-        RefreshAds();
+        _viewModel.LoadAds();
     }
 
     private void SetupBuildingSelector()
@@ -43,11 +44,7 @@ public partial class HelpBoardWindow : Window
         }
     }
 
-    private void RefreshAds()
-    {
-        _viewModel.LoadAds();
-        AdsDataGrid.ItemsSource = _viewModel.GetAds();
-    }
+    private void RefreshAds() => _viewModel.LoadAds();
 
     private void BuildingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
