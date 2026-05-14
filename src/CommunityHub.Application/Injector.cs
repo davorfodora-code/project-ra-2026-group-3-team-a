@@ -15,6 +15,7 @@ public class Injector
         { typeof(IBuildingRepository),              new BuildingDbRepository() },
         { typeof(IBuildingAccessRequestRepository), new BuildingAccessRequestDbRepository() },
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
+        { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
 
         // Citizen
         { typeof(ICitizenDistrictRepository),               new CitizenDistrictDbRepository() },

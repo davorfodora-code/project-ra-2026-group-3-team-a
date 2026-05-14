@@ -43,13 +43,31 @@
             </Setter>
         </Style>
 
-        <!-- Stil za status liniju — boja zavisi od Status vrednosti na ItemVM-u -->
+        <!-- Status stil za zahteve za pristup -->
         <Style x:Key="StatusLineStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="#E65C00"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Status}" Value="Accepted">
+                    <Setter Property="Foreground" Value="#2E7D32"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Rejected">
+                    <Setter Property="Foreground" Value="#C62828"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Status stil za zahteve za iznajmljivanje -->
+        <Style x:Key="RentalStatusStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#E65C00"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="ProposedCounter">
+                    <Setter Property="Foreground" Value="#1565C0"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Approved">
                     <Setter Property="Foreground" Value="#2E7D32"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="Rejected">
@@ -84,8 +102,14 @@
         <!-- Tab traka -->
         <Border Grid.Row="1" Background="White"
                 BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Za pristup" Click="Tab_Click" Tag="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="Za pristup" Click="Tab_Click" Tag="0">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
                             <Style.Triggers>
@@ -98,9 +122,10 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <TextBlock Text="|" Foreground="#CCCCCC"
-                           VerticalAlignment="Center" Margin="0,10"/>
-                <Button Content="Za iznajmljivanje" Click="Tab_Click" Tag="1">
+
+                <TextBlock Grid.Column="1" Text="|" Foreground="#CCCCCC" VerticalAlignment="Center"/>
+
+                <Button Grid.Column="2" Content="Za iznajmljivanje" Click="Tab_Click" Tag="1">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
                             <Style.Triggers>
@@ -113,24 +138,44 @@
                         </Style>
                     </Button.Style>
                 </Button>
-            </StackPanel>
+            </Grid>
         </Border>
 
-        <!-- Filter traka (samo za "Za pristup" tab) -->
-        <Grid Grid.Row="2" Margin="16,10,16,6"
-              Visibility="{Binding IsAccessTabActive, Converter={StaticResource BoolToVisibility}}">
-            <ComboBox x:Name="FilterCombo" Width="140" HorizontalAlignment="Left"
-                      FontSize="13" SelectionChanged="Filter_Changed">
-                <ComboBoxItem Content="Svi" Tag="Svi" IsSelected="True"/>
-                <ComboBoxItem Content="Ceka odobrenje" Tag="Pending"/>
-                <ComboBoxItem Content="Prihvacen" Tag="Accepted"/>
-                <ComboBoxItem Content="Odbijen" Tag="Rejected"/>
-            </ComboBox>
-            <Button HorizontalAlignment="Right" Background="Transparent"
-                    BorderThickness="0" Cursor="Hand" Click="Sort_Click"
-                    ToolTip="Promeni redosled">
-                <TextBlock Text="&#x2191;&#x2193;" FontSize="18" Foreground="#555555"/>
-            </Button>
+        <!-- Filter traka — menja se po aktivnom tabu -->
+        <Grid Grid.Row="2" Margin="16,10,16,6">
+
+            <!-- Access filter bar -->
+            <Grid Visibility="{Binding IsAccessTabActive, Converter={StaticResource BoolToVisibility}}">
+                <ComboBox x:Name="FilterCombo" Width="140" HorizontalAlignment="Left"
+                          FontSize="13" SelectionChanged="Filter_Changed">
+                    <ComboBoxItem Content="Svi" Tag="Svi" IsSelected="True"/>
+                    <ComboBoxItem Content="Ceka odobrenje" Tag="Pending"/>
+                    <ComboBoxItem Content="Prihvacen" Tag="Accepted"/>
+                    <ComboBoxItem Content="Odbijen" Tag="Rejected"/>
+                </ComboBox>
+                <Button HorizontalAlignment="Right" Background="Transparent"
+                        BorderThickness="0" Cursor="Hand" Click="Sort_Click"
+                        ToolTip="Promeni redosled">
+                    <TextBlock Text="&#x2191;&#x2193;" FontSize="18" Foreground="#555555"/>
+                </Button>
+            </Grid>
+
+            <!-- Rental filter bar -->
+            <Grid Visibility="{Binding IsRentalTabActive, Converter={StaticResource BoolToVisibility}}">
+                <ComboBox x:Name="RentalFilterCombo" Width="160" HorizontalAlignment="Left"
+                          FontSize="13" SelectionChanged="RentalFilter_Changed">
+                    <ComboBoxItem Content="Svi" Tag="Svi" IsSelected="True"/>
+                    <ComboBoxItem Content="Na cekanju" Tag="Pending"/>
+                    <ComboBoxItem Content="Predlog poslat" Tag="ProposedCounter"/>
+                    <ComboBoxItem Content="Odobreno" Tag="Approved"/>
+                </ComboBox>
+                <Button HorizontalAlignment="Right" Background="Transparent"
+                        BorderThickness="0" Cursor="Hand" Click="RentalSort_Click"
+                        ToolTip="Promeni redosled">
+                    <TextBlock Text="&#x2191;&#x2193;" FontSize="18" Foreground="#555555"/>
+                </Button>
+            </Grid>
+
         </Grid>
 
         <!-- Sadrzaj -->
@@ -234,12 +279,55 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <!-- ===== Za iznajmljivanje tab (stub — Feature 4) ===== -->
+                <!-- ===== Za iznajmljivanje tab ===== -->
                 <StackPanel Visibility="{Binding IsRentalTabActive, Converter={StaticResource BoolToVisibility}}">
-                    <TextBlock Text="Zahtevi za iznajmljivanje prostorija dolaze uskoro."
-                               FontSize="14" Foreground="#AAAAAA"
-                               HorizontalAlignment="Center" TextAlignment="Center"
-                               TextWrapping="Wrap" Margin="16,40,16,0"/>
+
+                    <TextBlock Text="Nema zahteva za prikaz." FontSize="14"
+                               Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,40,0,0"
+                               Visibility="{Binding HasNoRentalRequests, Converter={StaticResource BoolToVisibility}}"/>
+
+                    <ItemsControl ItemsSource="{Binding FilteredRentalRequests}"
+                                  Visibility="{Binding HasRentalRequests, Converter={StaticResource BoolToVisibility}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="#DDDDDD"
+                                        BorderThickness="1" CornerRadius="8"
+                                        Margin="0,0,0,10" Padding="14,12">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TenantFullName}"
+                                                   FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                        <TextBlock Text="{Binding BuildingLine}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding RoomLine}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding DateLine}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding RentalTypeLine}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2"/>
+
+                                        <Grid Margin="0,6,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{Binding StatusLine}"
+                                                       Style="{StaticResource RentalStatusStyle}"
+                                                       VerticalAlignment="Center"/>
+
+                                            <Button Grid.Column="1" Content="Izaberi dan"
+                                                    Style="{StaticResource SmallBtnStyle}"
+                                                    Margin="8,0,0,0"
+                                                    Click="ChooseDate_Click"
+                                                    Visibility="{Binding CanPropose, Converter={StaticResource BoolToVisibility}}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
                 </StackPanel>
 
             </Grid>

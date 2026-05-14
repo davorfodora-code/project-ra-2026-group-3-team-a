@@ -187,3 +187,28 @@ INSERT INTO bulletin_boards (id, building_id) VALUES
 INSERT INTO advertisements (id, bulletin_board_id, tenant_id, description, is_offering, start_date, end_date, category, status) VALUES
 (-1, -1, -3, 'Nudim pomoć pri selidbi, imam kombi i slobodne ruke.', TRUE,  '2026-05-10', '2026-05-15', 'Selidba', 'Aktivan'),
 (-2, -1, -4, 'Tražim nekoga ko može da mi pomogne sa selidbom.', FALSE, '2026-05-12', '2026-05-18', 'Selidba', 'Aktivan');
+
+
+-- ============================================================
+--  Zajedničke prostorije (test podaci za funkcionalnosti 1.3 i 1.4)
+-- ============================================================
+INSERT INTO common_rooms (id, building_id, name, description, floor_number, is_multi_day) VALUES
+(-1, -1, 'Sala za proslave', 'Prostorija za organizovanje proslava i priredbi.', 1, FALSE),
+(-2, -1, 'Vešernica',        'Prostorija sa veš mašinama za stanare.',            0, TRUE),
+(-3, -1, 'Ostava',           'Zajednička ostava za bicikle i sezónske stvari.',   0, FALSE);
+
+
+-- ============================================================
+--  Zahtevi za iznajmljivanje prostorija (test podaci za funkcionalnost 1.4)
+-- ============================================================
+-- Zahtev na čekanju: Petar želi Salu za proslave 15.05-17.05 (upravnik treba da izabere dan)
+INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start_date, requested_end_date, proposed_start_date, proposed_end_date, approved_date, status) VALUES
+(-1, -3, -1, '2026-05-15 00:00:00', '2026-05-17 00:00:00', NULL, NULL, NULL, 'Pending');
+
+-- Zahtev - promena termina: Jovana želi Vešernicu 20.05-25.05, upravnik predložio 21.05-26.05
+INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start_date, requested_end_date, proposed_start_date, proposed_end_date, approved_date, status) VALUES
+(-2, -4, -2, '2026-05-20 00:00:00', '2026-05-25 00:00:00', '2026-05-21 00:00:00', '2026-05-26 00:00:00', NULL, 'ProposedCounter');
+
+-- Odobreni zahtev: Petar je koristio Ostavu 06.05-08.05
+INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start_date, requested_end_date, proposed_start_date, proposed_end_date, approved_date, status) VALUES
+(-3, -3, -3, '2026-05-05 00:00:00', '2026-05-08 00:00:00', '2026-05-06 00:00:00', '2026-05-08 00:00:00', '2026-05-06 08:00:00', 'Approved');

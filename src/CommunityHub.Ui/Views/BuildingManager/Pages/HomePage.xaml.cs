@@ -39,7 +39,7 @@ public partial class HomePage : Page
     private void ZahteviIznajmljivanje_Click(object sender, RoutedEventArgs e)
     {
         _shell.SetActiveNav(2);
-        _shell.MainFrame.Navigate(new RequestsPage(_shell));
+        _shell.MainFrame.Navigate(new RequestsPage(_shell, initialTab: 1));
     }
 
     private void NeresenoProblemi_Click(object sender, RoutedEventArgs e)
