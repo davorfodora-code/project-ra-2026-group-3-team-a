@@ -51,12 +51,18 @@ public partial class MatchingAdsWindow : Window
     {
         if (SlotsListBox.SelectedItem is not SlotDto slot) return;
 
-        _viewModel.ReserveSlot(slot.Id, _newAdId);
-
-        MessageBox.Show($"Termin {slot.DisplayText} je uspešno rezervisan.",
-            "Rezervacija potvrđena", MessageBoxButton.OK, MessageBoxImage.Information);
-
-        Close();
+        try
+        {
+            _viewModel.ReserveSlot(slot.Id, _newAdId);
+            MessageBox.Show($"Termin {slot.DisplayText} je uspešno rezervisan.",
+                "Rezervacija potvrđena", MessageBoxButton.OK, MessageBoxImage.Information);
+            Close();
+        }
+        catch (InvalidOperationException ex)
+        {
+            MessageBox.Show(ex.Message, "Termin nije dostupan", MessageBoxButton.OK, MessageBoxImage.Warning);
+            AdsListBox_SelectionChanged(AdsListBox, null!);
+        }
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
