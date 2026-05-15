@@ -9,12 +9,17 @@ public partial class MatchingAdsWindow : Window
 {
     private readonly HelpBoardViewModel _viewModel;
     private readonly long _newAdId;
+    private readonly DateTime _requesterStart;
+    private readonly DateTime _requesterEnd;
 
-    public MatchingAdsWindow(List<AdvertisementDto> matchingAds, HelpBoardViewModel viewModel, long newAdId)
+    public MatchingAdsWindow(List<AdvertisementDto> matchingAds, HelpBoardViewModel viewModel,
+        long newAdId, DateTime requesterStart, DateTime requesterEnd)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _newAdId = newAdId;
+        _viewModel      = viewModel;
+        _newAdId        = newAdId;
+        _requesterStart = requesterStart;
+        _requesterEnd   = requesterEnd;
         AdsListBox.ItemsSource = matchingAds;
     }
 
@@ -23,7 +28,11 @@ public partial class MatchingAdsWindow : Window
         if (AdsListBox.SelectedItem is not AdvertisementDto selected)
             return;
 
-        var slots = _viewModel.GetAvailableSlots(selected.Id);
+        // Show only slots within the intersection of both ads' date ranges
+        DateTime filterStart = selected.StartDate > _requesterStart ? selected.StartDate : _requesterStart;
+        DateTime filterEnd   = selected.EndDate   < _requesterEnd   ? selected.EndDate   : _requesterEnd;
+
+        var slots = _viewModel.GetAvailableSlots(selected.Id, filterStart, filterEnd);
 
         if (slots.Count == 0)
         {

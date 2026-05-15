@@ -585,4 +585,37 @@ INSERT INTO bulletin_boards (id, building_id) VALUES
 
 INSERT INTO advertisements (id, bulletin_board_id, tenant_id, description, is_offering, start_date, end_date, category, status) VALUES
 (-1, -1, -3, 'Nudim pomoć pri selidbi, imam kombi i slobodne ruke.', TRUE,  '2026-05-10', '2026-05-15', 'Selidba', 'Aktivan'),
-(-2, -1, -4, 'Tražim nekoga ko može da mi pomogne sa selidbom.', FALSE, '2026-05-12', '2026-05-18', 'Selidba', 'Aktivan');
+(-2, -1, -4, 'Tražim nekoga ko može da mi pomogne sa selidbom.', FALSE, '2026-05-12', '2026-05-18', 'Selidba', 'Aktivan'),
+(-3, -1, -3, 'Mogu da pomognem sa čišćenjem, imam opremu.', TRUE,  '2026-05-15', '2026-05-25', 'Čišćenje', 'Aktivan'),
+(-4, -1, -4, 'Trebam čišćenje stana pre selidbe.', FALSE, '2026-05-17', '2026-05-25', 'Čišćenje', 'Aktivan'),
+(-5, -1, -3, 'Trebam nekoga ko bi mi pomogao sa čišćenjem.', FALSE, '2026-04-05', '2026-04-12', 'Čišćenje', 'Arhiviran'),
+(-6, -1, -4, 'Nudim pomoć sa čišćenjem, imam sopstvenu opremu.', TRUE,  '2026-04-03', '2026-04-15', 'Čišćenje', 'Aktivan');
+
+-- ============================================================
+--  Termini i rezervacije (test podaci za 2.4 Zakazivanje)
+-- ============================================================
+INSERT INTO advertisement_slots (id, advertisement_id, start_time, end_time, is_available) VALUES
+(-101, -1, '2026-05-12 16:00:00', '2026-05-12 17:00:00', FALSE),
+(-102, -1, '2026-05-12 17:00:00', '2026-05-12 18:00:00', TRUE),
+(-103, -1, '2026-05-13 16:00:00', '2026-05-13 17:00:00', TRUE),
+(-104, -1, '2026-05-13 17:00:00', '2026-05-13 18:00:00', FALSE),
+(-105, -1, '2026-05-14 16:00:00', '2026-05-14 17:00:00', TRUE),
+(-106, -1, '2026-05-14 17:00:00', '2026-05-14 18:00:00', TRUE),
+(-201, -2, '2026-05-12 16:00:00', '2026-05-12 17:00:00', TRUE),
+(-202, -2, '2026-05-13 16:00:00', '2026-05-13 17:00:00', TRUE),
+(-203, -2, '2026-05-14 16:00:00', '2026-05-14 17:00:00', TRUE),
+(-301, -3, '2026-05-19 16:00:00', '2026-05-19 17:00:00', FALSE),
+(-302, -3, '2026-05-19 17:00:00', '2026-05-19 18:00:00', TRUE),
+(-303, -3, '2026-05-20 16:00:00', '2026-05-20 17:00:00', TRUE),
+(-401, -4, '2026-05-19 16:00:00', '2026-05-19 17:00:00', FALSE),
+(-402, -4, '2026-05-20 16:00:00', '2026-05-20 17:00:00', TRUE),
+(-501, -5, '2026-04-07 16:00:00', '2026-04-07 17:00:00', FALSE),
+(-601, -6, '2026-04-07 16:00:00', '2026-04-07 17:00:00', TRUE),
+(-602, -6, '2026-04-08 16:00:00', '2026-04-08 17:00:00', TRUE);
+
+INSERT INTO slot_reservations (id, slot_id, requester_ad_id, tenant_id) VALUES
+(-1, -101, -2, -4),
+(-2, -104, -2, -4),
+(-3, -301, -4, -4),
+(-4, -401, -3, -3),
+(-5, -501, -6, -4);

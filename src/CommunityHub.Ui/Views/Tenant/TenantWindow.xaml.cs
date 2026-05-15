@@ -24,9 +24,10 @@ public partial class TenantWindow : Window
 
         _navItems =
         [
-            (NavHomeHighlight, NavHomeIcon, NavHomeText, "Home"),
-            (NavZgradeHighlight, NavZgradeIcon, NavZgradeText, "Zgrade"),
-            (NavOglasnaHighlight, NavOglasnaIcon, NavOglasnaText, "Oglasna tabla"),
+            (NavHomeHighlight,       NavHomeIcon,        NavHomeText,        "Home"),
+            (NavZgradeHighlight,     NavZgradeIcon,      NavZgradeText,      "Zgrade"),
+            (NavOglasnaHighlight,    NavOglasnaIcon,     NavOglasnaText,     "Oglasna tabla"),
+            (NavZakazivanjeHighlight, NavZakazivanjeIcon, NavZakazivanjeText, "Zakazivanje"),
         ];
 
         SetActiveNav(0);
@@ -63,6 +64,12 @@ public partial class TenantWindow : Window
     {
         SetActiveNav(2);
         MainFrame.Navigate(new HelpBoardPage(this));
+    }
+
+    private void NavZakazivanje_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav(3);
+        MainFrame.Navigate(new SchedulingPage(this));
     }
 
     private void Avatar_Click(object sender, MouseButtonEventArgs e)
