@@ -185,8 +185,30 @@ INSERT INTO bulletin_boards (id, building_id) VALUES
 (-2, -2);
 
 INSERT INTO advertisements (id, bulletin_board_id, tenant_id, description, is_offering, start_date, end_date, category, status) VALUES
-(-1, -1, -3, 'Nudim pomoć pri selidbi, imam kombi i slobodne ruke.', TRUE,  '2026-05-10', '2026-05-15', 'Selidba', 'Aktivan'),
-(-2, -1, -4, 'Tražim nekoga ko može da mi pomogne sa selidbom.', FALSE, '2026-05-12', '2026-05-18', 'Selidba', 'Aktivan');
+-- Maj 2026 — aktivni
+(-1, -1, -3, 'Nudim pomoć pri selidbi, imam kombi i slobodne ruke.',    TRUE,  '2026-05-10', '2026-05-15', 'Selidba',           'Aktivan'),
+(-2, -1, -4, 'Tražim nekoga ko može da mi pomogne sa selidbom.',        FALSE, '2026-05-12', '2026-05-18', 'Selidba',           'Aktivan'),
+(-3, -1, -3, 'Mogu pozajmiti alat za sitne kućne popravke.',            TRUE,  '2026-05-01', '2026-05-31', 'Pozajmljivanje',    'Aktivan'),
+(-4, -1, -4, 'Tražim nekoga za popravku veš mašine.',                   FALSE, '2026-05-05', '2026-05-20', 'Popravke uređaja',  'Aktivan'),
+-- April 2026 — miks aktivnih i arhiviranih
+(-5, -1, -3, 'Nudim pomoć pri čišćenju stana posle selidbe.',           TRUE,  '2026-04-01', '2026-04-10', 'Čišćenje',          'Arhiviran'),
+(-6, -1, -4, 'Tražim pomoć sa čišćenjem tepiha.',                       FALSE, '2026-04-05', '2026-04-15', 'Čišćenje',          'Arhiviran'),
+(-7, -1, -3, 'Nudim pomoć pri selidbi u aprilu.',                       TRUE,  '2026-04-10', '2026-04-25', 'Selidba',           'Arhiviran'),
+(-8, -1, -4, 'Tražim nekoga za popravku bojlera.',                      FALSE, '2026-04-12', '2026-04-20', 'Popravke uređaja',  'Aktivan'),
+(-9, -1, -3, 'Pozajmljujem merdevine i osnovni alat.',                  TRUE,  '2026-04-15', '2026-04-30', 'Pozajmljivanje',    'Aktivan');
+
+-- Zauzeti termini za oglase gde Petar nudi pomoć (za top pomagača)
+-- Oglas -1 (Petar nudi selidbu, 10-15.05): 5 zauzetih termina
+INSERT INTO advertisement_slots (advertisement_id, start_time, end_time, is_available) VALUES
+(-1, '2026-05-10 16:00:00', '2026-05-10 17:00:00', FALSE),
+(-1, '2026-05-10 17:00:00', '2026-05-10 18:00:00', FALSE),
+(-1, '2026-05-11 16:00:00', '2026-05-11 17:00:00', FALSE),
+(-1, '2026-05-12 16:00:00', '2026-05-12 17:00:00', FALSE),
+(-1, '2026-05-13 16:00:00', '2026-05-13 17:00:00', FALSE),
+-- Oglas -3 (Petar pozajmljuje alat, ceo maj): još 3 zauzeta termina
+(-3, '2026-05-02 16:00:00', '2026-05-02 17:00:00', FALSE),
+(-3, '2026-05-08 17:00:00', '2026-05-08 18:00:00', FALSE),
+(-3, '2026-05-14 16:00:00', '2026-05-14 17:00:00', FALSE);
 
 
 -- ============================================================
