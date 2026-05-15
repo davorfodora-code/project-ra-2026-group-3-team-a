@@ -94,7 +94,24 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
         int total = stats.Sum(s => s.Count);
         if (total == 0) return;
 
-        double cx = 60, cy = 60, r = 54, startDeg = -90;
+        const double cx = 60, cy = 60, r = 54;
+
+        // ArcSegment ne renderuje kad su start == end (sweep = 360°)
+        if (stats.Count == 1)
+        {
+            var circle = new Ellipse
+            {
+                Width = r * 2, Height = r * 2,
+                Fill = stats[0].Color,
+                Stroke = Brushes.White, StrokeThickness = 1.5
+            };
+            Canvas.SetLeft(circle, cx - r);
+            Canvas.SetTop(circle, cy - r);
+            PieChartCanvas.Children.Add(circle);
+            return;
+        }
+
+        double startDeg = -90;
         foreach (var stat in stats)
         {
             double sweep = (stat.Count / (double)total) * 360;
@@ -166,16 +183,16 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
 
         if (form.ShowDialog() == true && form.Dto != null)
         {
-            var (success, matchingAds) = _viewModel.CreateAd(form.Dto);
+            var (success, newAdId, matchingAds) = _viewModel.CreateAd(form.Dto);
             if (success)
             {
                 RefreshAll();
-                ShowMatchingAds(matchingAds);
+                ShowMatchingAds(matchingAds, newAdId);
             }
         }
     }
 
-    private void ShowMatchingAds(List<AdvertisementDto> matchingAds)
+    private void ShowMatchingAds(List<AdvertisementDto> matchingAds, long newAdId)
     {
         if (matchingAds.Count == 0)
         {
@@ -184,7 +201,7 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
             return;
         }
 
-        var matchWin = new MatchingAdsWindow(matchingAds);
+        var matchWin = new MatchingAdsWindow(matchingAds, _viewModel, newAdId);
         matchWin.Owner = System.Windows.Window.GetWindow(this);
         matchWin.ShowDialog();
     }
@@ -204,4 +221,11 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
             }
         }
     }
+}
+
+internal class CategoryStat
+{
+    public string Category { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public System.Windows.Media.Brush Color { get; set; } = System.Windows.Media.Brushes.Gray;
 }

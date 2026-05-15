@@ -4,6 +4,8 @@ using CommunityHub.Application.Services.BuildingManager;
 using CommunityHub.Application.Services.Citizen;
 using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 using CommunityHub.Application.Services.DistrictCoordinator;
+using TenantDb  = CommunityHub.Application.Database.Repositories.Tenant;
+using TenantSvc = CommunityHub.Application.Services.Tenant;
 
 namespace CommunityHub.Application;
 
@@ -24,7 +26,13 @@ public class Injector
         { typeof(ICitizenDistrictMembershipRepository),     new CitizenDistrictMembershipDbRepository() },
         { typeof(ICitizenDistrictEventRepository),          new CitizenDistrictEventDbRepository() },
         { typeof(ICitizenDistrictEventApplicationRepository), new CitizenDistrictEventApplicationDbRepository() },
-            
+
+        // Tenant
+        { typeof(TenantSvc.ITenantBuildingSearchRepository),  new BuildingDbRepository() },
+        { typeof(TenantSvc.IBuildingAccessRequestRepository), new TenantDb.BuildingAccessRequestDbRepository() },
+        { typeof(TenantSvc.IBuildingMembershipRepository),    new TenantDb.BuildingMembershipDbRepository() },
+        { typeof(TenantSvc.IAdvertisementRepository),         new TenantDb.AdvertisementDbRepository() },
+
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },
         { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },

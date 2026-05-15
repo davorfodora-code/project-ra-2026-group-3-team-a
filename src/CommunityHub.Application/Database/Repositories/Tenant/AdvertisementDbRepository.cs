@@ -36,20 +36,13 @@ public class AdvertisementDbRepository : IAdvertisementRepository
     public long EnsureBulletinBoard(long buildingId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
-
-        IDbCommand selectCmd = connection.CreateCommand();
-        selectCmd.CommandText = "SELECT id FROM bulletin_boards WHERE building_id = @buildingId LIMIT 1";
-        AddParameter(selectCmd, "@buildingId", buildingId);
-
-        object? existing = selectCmd.ExecuteScalar();
-        if (existing != null && existing != DBNull.Value)
-            return Convert.ToInt64(existing);
-
-        IDbCommand insertCmd = connection.CreateCommand();
-        insertCmd.CommandText = "INSERT INTO bulletin_boards (building_id) VALUES (@buildingId) RETURNING id";
-        AddParameter(insertCmd, "@buildingId", buildingId);
-
-        return Convert.ToInt64(insertCmd.ExecuteScalar());
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO bulletin_boards (building_id) VALUES (@buildingId)
+            ON CONFLICT (building_id) DO UPDATE SET building_id = EXCLUDED.building_id
+            RETURNING id";
+        AddParameter(cmd, "@buildingId", buildingId);
+        return Convert.ToInt64(cmd.ExecuteScalar());
     }
 
     public long CreateAdvertisement(long bulletinBoardId, long tenantId, string description,
@@ -75,25 +68,34 @@ public class AdvertisementDbRepository : IAdvertisementRepository
 
     public void CreateSlotsForAd(long adId, DateTime startDate, DateTime endDate)
     {
-        using IDbConnection connection = PostgresConnection.CreateConnection();
-
+        var slots = new List<(DateTime Start, DateTime End)>();
         DateTime current = startDate.Date;
         while (current <= endDate.Date)
         {
             for (int hour = 16; hour < 20; hour++)
-            {
-                IDbCommand cmd = connection.CreateCommand();
-                cmd.CommandText = @"
-                    INSERT INTO advertisement_slots (advertisement_id, start_time, end_time, is_available)
-                    VALUES (@adId, @startTime, @endTime, TRUE)";
-
-                AddParameter(cmd, "@adId", adId);
-                AddParameter(cmd, "@startTime", current.AddHours(hour));
-                AddParameter(cmd, "@endTime", current.AddHours(hour + 1));
-                cmd.ExecuteNonQuery();
-            }
+                slots.Add((current.AddHours(hour), current.AddHours(hour + 1)));
             current = current.AddDays(1);
         }
+
+        if (slots.Count == 0) return;
+
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = connection.CreateCommand();
+
+        var values = new List<string>(slots.Count);
+        for (int i = 0; i < slots.Count; i++)
+        {
+            values.Add($"(@adId, @s{i}, @e{i}, TRUE)");
+            AddParameter(cmd, $"@s{i}", slots[i].Start);
+            AddParameter(cmd, $"@e{i}", slots[i].End);
+        }
+        AddParameter(cmd, "@adId", adId);
+
+        cmd.CommandText = $@"
+            INSERT INTO advertisement_slots (advertisement_id, start_time, end_time, is_available)
+            VALUES {string.Join(", ", values)}";
+
+        cmd.ExecuteNonQuery();
     }
 
     public List<Advertisement> GetActiveByBulletinBoard(long bulletinBoardId)
@@ -161,6 +163,80 @@ public class AdvertisementDbRepository : IAdvertisementRepository
         cmd.CommandText = "UPDATE advertisements SET status = 'Arhiviran' WHERE id = @adId";
         AddParameter(cmd, "@adId", adId);
         cmd.ExecuteNonQuery();
+    }
+
+    public List<SlotDto> GetAvailableSlots(long adId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT id, start_time, end_time
+            FROM advertisement_slots
+            WHERE advertisement_id = @adId AND is_available = TRUE
+            ORDER BY start_time";
+        AddParameter(cmd, "@adId", adId);
+
+        List<SlotDto> slots = new();
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            slots.Add(new SlotDto
+            {
+                Id       = reader.GetInt64(reader.GetOrdinal("id")),
+                StartTime = reader.GetDateTime(reader.GetOrdinal("start_time")),
+                EndTime   = reader.GetDateTime(reader.GetOrdinal("end_time"))
+            });
+        }
+        return slots;
+    }
+
+    public void ReserveSlot(long slotId, long requesterAdId, long tenantId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        using IDbTransaction tx = connection.BeginTransaction();
+
+        IDbCommand checkCmd = connection.CreateCommand();
+        checkCmd.Transaction = tx;
+        checkCmd.CommandText = "SELECT is_available FROM advertisement_slots WHERE id = @slotId FOR UPDATE";
+        AddParameter(checkCmd, "@slotId", slotId);
+        object? available = checkCmd.ExecuteScalar();
+        if (available == null || available == DBNull.Value || !(bool)available)
+        {
+            tx.Rollback();
+            throw new InvalidOperationException("Odabrani termin više nije dostupan.");
+        }
+
+        IDbCommand updateCmd = connection.CreateCommand();
+        updateCmd.Transaction = tx;
+        updateCmd.CommandText = "UPDATE advertisement_slots SET is_available = FALSE WHERE id = @slotId";
+        AddParameter(updateCmd, "@slotId", slotId);
+        updateCmd.ExecuteNonQuery();
+
+        IDbCommand insertCmd = connection.CreateCommand();
+        insertCmd.Transaction = tx;
+        insertCmd.CommandText = @"
+            INSERT INTO slot_reservations (slot_id, requester_ad_id, tenant_id)
+            VALUES (@slotId, @requesterAdId, @tenantId)
+            RETURNING id";
+        AddParameter(insertCmd, "@slotId", slotId);
+        AddParameter(insertCmd, "@requesterAdId", requesterAdId);
+        AddParameter(insertCmd, "@tenantId", tenantId);
+        long reservationId = Convert.ToInt64(insertCmd.ExecuteScalar());
+
+        IDbCommand notifCmd = connection.CreateCommand();
+        notifCmd.Transaction = tx;
+        notifCmd.CommandText = @"
+            INSERT INTO notifications (tenant_id, type, related_ad_id, related_slot_id, is_read, created_at)
+            SELECT a.tenant_id, 'Rezervacija termina', a.id, @reservationId, FALSE, @now
+            FROM advertisement_slots s
+            JOIN advertisements a ON a.id = s.advertisement_id
+            WHERE s.id = @slotId";
+        AddParameter(notifCmd, "@reservationId", reservationId);
+        AddParameter(notifCmd, "@now", DateTime.UtcNow);
+        AddParameter(notifCmd, "@slotId", slotId);
+        notifCmd.ExecuteNonQuery();
+
+        tx.Commit();
     }
 
     public void ArchiveExpiredAds(long bulletinBoardId)
