@@ -1,0 +1,317 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.BulletinBoardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Oglasna tabla" Background="#F5F5F5">
+
+    <Page.Resources>
+        <Style x:Key="TabBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StatBoxStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,14"/>
+        </Style>
+
+        <!-- Stil statusa na karticama oglasa -->
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#2E7D32"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Arhiviran">
+                    <Setter Property="Foreground" Value="#888888"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje -->
+        <Border Grid.Row="0" Background="White" Padding="12,12"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="Oglasna tabla" FontSize="18" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Tab traka -->
+        <Border Grid.Row="1" Background="White"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="Oglasi" Click="Tab_Click" Tag="0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdsTabActive}" Value="True">
+                                    <Setter Property="Foreground" Value="#1A1A1A"/>
+                                    <Setter Property="BorderBrush" Value="#1A1A1A"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <TextBlock Grid.Column="1" Text="|" Foreground="#CCCCCC" VerticalAlignment="Center"/>
+
+                <Button Grid.Column="2" Content="Statistika" Click="Tab_Click" Tag="1">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStatsTabActive}" Value="True">
+                                    <Setter Property="Foreground" Value="#1A1A1A"/>
+                                    <Setter Property="BorderBrush" Value="#1A1A1A"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Filter traka -->
+        <Grid Grid.Row="2" Margin="16,10,16,6">
+
+            <!-- Oglasi: dropdown zgrade (levo) + filter statusa (desno) -->
+            <Grid Visibility="{Binding IsAdsTabActive, Converter={StaticResource BoolToVisibility}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox Grid.Column="0"
+                          ItemsSource="{Binding Buildings}"
+                          DisplayMemberPath="Address"
+                          SelectedIndex="{Binding SelectedBuildingIndex, Mode=TwoWay}"
+                          MinWidth="140" FontSize="13"/>
+
+                <ComboBox Grid.Column="2" x:Name="StatusFilterCombo"
+                          Width="120" FontSize="13"
+                          SelectionChanged="StatusFilter_Changed">
+                    <ComboBoxItem Content="Svi"       Tag="Svi"       IsSelected="True"/>
+                    <ComboBoxItem Content="Aktivni"   Tag="Aktivan"/>
+                    <ComboBoxItem Content="Arhivirani" Tag="Arhiviran"/>
+                </ComboBox>
+            </Grid>
+
+            <!-- Statistika: period dropdown -->
+            <Grid Visibility="{Binding IsStatsTabActive, Converter={StaticResource BoolToVisibility}}">
+                <ComboBox HorizontalAlignment="Left"
+                          ItemsSource="{Binding Periods}"
+                          DisplayMemberPath="Label"
+                          SelectedIndex="{Binding SelectedPeriodIndex, Mode=TwoWay}"
+                          MinWidth="140" FontSize="13"/>
+            </Grid>
+        </Grid>
+
+        <!-- Sadržaj -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="16,4,16,16">
+
+                <!-- ===== Tab: Oglasi ===== -->
+                <StackPanel Visibility="{Binding IsAdsTabActive, Converter={StaticResource BoolToVisibility}}">
+
+                    <TextBlock Text="Nema oglasa za prikaz." FontSize="14"
+                               Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,40,0,0"
+                               Visibility="{Binding HasNoAds, Converter={StaticResource BoolToVisibility}}"/>
+
+                    <ItemsControl ItemsSource="{Binding FilteredAds}"
+                                  Visibility="{Binding HasAds, Converter={StaticResource BoolToVisibility}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="#DDDDDD"
+                                        BorderThickness="1" CornerRadius="8"
+                                        Margin="0,0,0,10" Padding="14,12">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TenantFullName}"
+                                                   FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                        <TextBlock Text="{Binding BuildingAddress}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding TypeLine}"
+                                                   FontSize="12" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding Category}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding DateLine}"
+                                                   FontSize="12" Foreground="#555555" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding StatusLine}"
+                                                   Style="{StaticResource StatusTextStyle}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- ===== Tab: Statistika ===== -->
+                <StackPanel Visibility="{Binding IsStatsTabActive, Converter={StaticResource BoolToVisibility}}">
+
+                    <!-- Broj oglasa u periodu -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{StaticResource StatBoxStyle}">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding PeriodOfferingCount}"
+                                           FontSize="34" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Nude pomoć" FontSize="13" Foreground="#555555"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource StatBoxStyle}">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding PeriodSeekingCount}"
+                                           FontSize="34" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Traže pomoć" FontSize="13" Foreground="#555555"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Breakdown po kategoriji -->
+                    <Border Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                            CornerRadius="8" Padding="14,12" Margin="0,0,0,12"
+                            Visibility="{Binding HasCategoryStats, Converter={StaticResource BoolToVisibility}}">
+                        <ItemsControl ItemsSource="{Binding CategoryStats}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,3,0,3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding Category}"
+                                                   FontSize="13" FontWeight="SemiBold"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <TextBlock Text="{Binding OfferingCount}" FontSize="13"/>
+                                            <TextBlock Text=" nude  |  " FontSize="13" Foreground="#888888"/>
+                                            <TextBlock Text="{Binding SeekingCount}" FontSize="13"/>
+                                            <TextBlock Text=" traže" FontSize="13" Foreground="#888888"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+
+                    <!-- Trenutno stanje -->
+                    <TextBlock Text="Trenutno stanje oglasa:" FontSize="14" FontWeight="SemiBold"
+                               Margin="0,0,0,8"/>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{StaticResource StatBoxStyle}">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding CurrentActiveCount}"
+                                           FontSize="34" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Aktivnih" FontSize="13" Foreground="#555555"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource StatBoxStyle}">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding CurrentArchivedCount}"
+                                           FontSize="34" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Arhiviranih" FontSize="13" Foreground="#555555"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Aktivni po kategoriji -->
+                    <Border Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                            CornerRadius="8" Padding="14,12" Margin="0,0,0,12"
+                            Visibility="{Binding HasActiveByCategory, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <TextBlock Text="Aktivnih po kategoriji:" FontSize="13"
+                                       FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <ItemsControl ItemsSource="{Binding ActiveByCategoryLines}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontSize="13"
+                                                   Foreground="#555555" Margin="0,2,0,2"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Top pomagač -->
+                    <Border Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                            CornerRadius="8" Padding="14,12">
+                        <StackPanel>
+                            <TextBlock Text="Najviše pomogao:" FontSize="13"
+                                       FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="☆ " FontSize="14" Foreground="#E65C00"/>
+                                <TextBlock Text="{Binding TopHelperText}" FontSize="14"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>
