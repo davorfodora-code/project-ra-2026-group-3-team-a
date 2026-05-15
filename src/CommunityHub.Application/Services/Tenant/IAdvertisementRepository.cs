@@ -15,6 +15,6 @@ public interface IAdvertisementRepository
         DateTime startDate, DateTime endDate, string category, long excludeAdId);
     void ArchiveAd(long adId);
     void ArchiveExpiredAds(long bulletinBoardId);
-    List<SlotDto> GetAvailableSlots(long adId);
+    List<SlotDto> GetAvailableSlots(long adId, DateTime rangeStart, DateTime rangeEnd);
     void ReserveSlot(long slotId, long requesterAdId, long tenantId);
 }
