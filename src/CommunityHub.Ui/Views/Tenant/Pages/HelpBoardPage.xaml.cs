@@ -183,16 +183,18 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
 
         if (form.ShowDialog() == true && form.Dto != null)
         {
-            var (success, newAdId, matchingAds) = _viewModel.CreateAd(form.Dto);
+            var dto = form.Dto;
+            var (success, newAdId, matchingAds) = _viewModel.CreateAd(dto);
             if (success)
             {
                 RefreshAll();
-                ShowMatchingAds(matchingAds, newAdId);
+                ShowMatchingAds(matchingAds, newAdId, dto.StartDate, dto.EndDate);
             }
         }
     }
 
-    private void ShowMatchingAds(List<AdvertisementDto> matchingAds, long newAdId)
+    private void ShowMatchingAds(List<AdvertisementDto> matchingAds, long newAdId,
+        DateTime requesterStart, DateTime requesterEnd)
     {
         if (matchingAds.Count == 0)
         {
@@ -201,7 +203,7 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
             return;
         }
 
-        var matchWin = new MatchingAdsWindow(matchingAds, _viewModel, newAdId);
+        var matchWin = new MatchingAdsWindow(matchingAds, _viewModel, newAdId, requesterStart, requesterEnd);
         matchWin.Owner = System.Windows.Window.GetWindow(this);
         matchWin.ShowDialog();
     }

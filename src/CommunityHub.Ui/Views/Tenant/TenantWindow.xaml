@@ -66,14 +66,23 @@
                         </Button>
                     </Grid>
 
-                    <Border BorderBrush="#3D5166" BorderThickness="0,1,0,0" Margin="16,8"/>
-
-                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="CalendarCheck" FontSize="22" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="32" TextAlignment="Center"/>
-                        <TextBlock Text="Zakazivanje" Foreground="#B0BEC5" FontSize="18"
-                                   VerticalAlignment="Center" Margin="8,0,0,0"/>
-                    </StackPanel>
+                    <!-- Zakazivanje -->
+                    <Grid>
+                        <Border x:Name="NavZakazivanjeHighlight" Background="#243342"
+                                Visibility="Collapsed">
+                            <Border Width="4" HorizontalAlignment="Left" Background="White"/>
+                        </Border>
+                        <Button Style="{StaticResource SideNavStyle}" Click="NavZakazivanje_Click">
+                            <StackPanel Orientation="Horizontal" Margin="20,16">
+                                <fa:IconBlock x:Name="NavZakazivanjeIcon" Icon="CalendarCheck" FontSize="22"
+                                              Foreground="#B0BEC5" VerticalAlignment="Center"
+                                              Width="32" TextAlignment="Center"/>
+                                <TextBlock x:Name="NavZakazivanjeText" Text="Zakazivanje"
+                                           Foreground="#B0BEC5" FontSize="18"
+                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
                         <fa:IconBlock Icon="DoorOpen" FontSize="22" Foreground="#B0BEC5"
                                       VerticalAlignment="Center" Width="32" TextAlignment="Center"/>

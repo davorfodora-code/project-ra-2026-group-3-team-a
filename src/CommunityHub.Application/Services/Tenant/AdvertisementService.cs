@@ -46,7 +46,8 @@ public class AdvertisementService
 
     public void ArchiveAd(long adId) => _repository.ArchiveAd(adId);
 
-    public List<SlotDto> GetAvailableSlots(long adId) => _repository.GetAvailableSlots(adId);
+    public List<SlotDto> GetAvailableSlots(long adId, DateTime rangeStart, DateTime rangeEnd)
+        => _repository.GetAvailableSlots(adId, rangeStart, rangeEnd);
 
     public void ReserveSlot(long slotId, long requesterAdId, long tenantId)
         => _repository.ReserveSlot(slotId, requesterAdId, tenantId);

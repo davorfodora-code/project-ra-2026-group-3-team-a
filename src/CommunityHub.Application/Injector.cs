@@ -32,6 +32,7 @@ public class Injector
         { typeof(TenantSvc.IBuildingAccessRequestRepository), new TenantDb.BuildingAccessRequestDbRepository() },
         { typeof(TenantSvc.IBuildingMembershipRepository),    new TenantDb.BuildingMembershipDbRepository() },
         { typeof(TenantSvc.IAdvertisementRepository),         new TenantDb.AdvertisementDbRepository() },
+        { typeof(TenantSvc.ISchedulingRepository),            new TenantDb.SchedulingDbRepository() },
 
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },

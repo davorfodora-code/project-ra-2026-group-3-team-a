@@ -47,7 +47,8 @@ public class HelpBoardViewModel : BaseViewModel
 
     public void ArchiveAd(long adId) => _service.ArchiveAd(adId);
 
-    public List<SlotDto> GetAvailableSlots(long adId) => _service.GetAvailableSlots(adId);
+    public List<SlotDto> GetAvailableSlots(long adId, DateTime rangeStart, DateTime rangeEnd)
+        => _service.GetAvailableSlots(adId, rangeStart, rangeEnd);
 
     public void ReserveSlot(long slotId, long requesterAdId)
         => _service.ReserveSlot(slotId, requesterAdId, TenantId);

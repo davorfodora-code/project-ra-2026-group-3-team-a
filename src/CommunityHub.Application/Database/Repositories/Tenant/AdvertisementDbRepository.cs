@@ -165,16 +165,21 @@ public class AdvertisementDbRepository : IAdvertisementRepository
         cmd.ExecuteNonQuery();
     }
 
-    public List<SlotDto> GetAvailableSlots(long adId)
+    public List<SlotDto> GetAvailableSlots(long adId, DateTime rangeStart, DateTime rangeEnd)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             SELECT id, start_time, end_time
             FROM advertisement_slots
-            WHERE advertisement_id = @adId AND is_available = TRUE
+            WHERE advertisement_id = @adId
+              AND is_available = TRUE
+              AND start_time::date >= @rangeStart::date
+              AND start_time::date <= @rangeEnd::date
             ORDER BY start_time";
         AddParameter(cmd, "@adId", adId);
+        AddParameter(cmd, "@rangeStart", rangeStart.Date);
+        AddParameter(cmd, "@rangeEnd", rangeEnd.Date);
 
         List<SlotDto> slots = new();
         using IDataReader reader = cmd.ExecuteReader();
