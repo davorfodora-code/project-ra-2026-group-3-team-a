@@ -24,6 +24,13 @@ public partial class RoomCalendarPage : Page
         foreach (DateOnly date in bookedDates)
             RoomCalendar.BlackoutDates.Add(
                 new CalendarDateRange(date.ToDateTime(TimeOnly.MinValue)));
+
+        // Jednodnevna prostorija: ograniči prikaz kalendara na traženi opseg datuma
+        if (!_vm.IsMultiDay)
+        {
+            RoomCalendar.DisplayDateStart = _vm.RequestedStartDate.Date;
+            RoomCalendar.DisplayDateEnd   = _vm.RequestedEndDate.Date;
+        }
     }
 
     private bool _updatingDates;

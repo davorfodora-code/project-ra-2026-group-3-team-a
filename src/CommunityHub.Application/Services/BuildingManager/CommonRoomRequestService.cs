@@ -26,6 +26,12 @@ public class CommonRoomRequestService
         _repository.ProposeDate(requestId, proposedStart, proposedEnd);
     }
 
+    // Odobrava zahtev za jednodnevnu prostoriju sa izabranim danom (status → Approved)
+    public void ApproveWithDate(long requestId, DateTime date)
+    {
+        _repository.ApproveWithDate(requestId, date);
+    }
+
     // Lista svih zauzetih dana za prostoriju (za prikaz X-eva na kalendaru)
     public List<DateOnly> GetBookedDatesForRoom(long roomId)
     {

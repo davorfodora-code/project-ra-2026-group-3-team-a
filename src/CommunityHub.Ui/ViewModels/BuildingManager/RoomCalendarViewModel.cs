@@ -7,6 +7,7 @@ public class RoomCalendarViewModel : BaseViewModel
 {
     private readonly long _requestId;
     private readonly TimeSpan _duration;
+    private readonly bool _isMultiDay;
     private readonly Action<long, DateTime, DateTime> _onConfirmed;
 
     private DateTime? _selectedDate;
@@ -17,15 +18,22 @@ public class RoomCalendarViewModel : BaseViewModel
         Action<long, DateTime, DateTime> onConfirmed)
     {
         _requestId   = item.RequestId;
-        _duration    = item.RequestedEndDate.Date - item.RequestedStartDate.Date;
+        _isMultiDay  = item.IsMultiDay;
+        // Višednevna prostorija: trajanje = razlika datuma zahteva (manager predlaže isti broj dana)
+        // Jednodnevna prostorija: manager bira tačno jedan dan bez obzira na opseg zahteva
+        _duration    = _isMultiDay
+            ? item.RequestedEndDate.Date - item.RequestedStartDate.Date
+            : TimeSpan.Zero;
         _onConfirmed = onConfirmed;
 
-        RoomName     = item.RoomName;
-        BuildingLine = $"Zgrada: {item.BuildingAddress}";
-        TenantLine   = $"Stanar: {item.TenantFullName}";
-        PeriodLine   = $"Željeni period: {item.RequestedStartDate:dd.MM.} - {item.RequestedEndDate:dd.MM.}";
-        TypeLine     = $"Iznajmljivanje na: {item.RentalTypeLine.ToLower()}";
-        BookedDates  = bookedDates;
+        RoomName           = item.RoomName;
+        BuildingLine       = $"Zgrada: {item.BuildingAddress}";
+        TenantLine         = $"Stanar: {item.TenantFullName}";
+        PeriodLine         = $"Željeni period: {item.RequestedStartDate:dd.MM.} - {item.RequestedEndDate:dd.MM.}";
+        TypeLine           = $"Iznajmljivanje na: {item.RentalTypeLine.ToLower()}";
+        BookedDates        = bookedDates;
+        RequestedStartDate = item.RequestedStartDate;
+        RequestedEndDate   = item.RequestedEndDate;
     }
 
     // Zaglavlje i info-box
@@ -51,6 +59,13 @@ public class RoomCalendarViewModel : BaseViewModel
 
     // Trajanje rezervacije u danima (0 = jednodnevno)
     public int DurationDays => (int)_duration.TotalDays;
+
+    // Da li je prostorija višednevna — dolazi od room.is_multi_day, ne od datuma zahteva
+    public bool IsMultiDay => _isMultiDay;
+
+    // Opseg datuma koji je stanar tražio (za ograničenje kalendara kod jednodnevnih)
+    public DateTime RequestedStartDate { get; }
+    public DateTime RequestedEndDate   { get; }
 
     public bool CanConfirm => _selectedDate.HasValue;
 

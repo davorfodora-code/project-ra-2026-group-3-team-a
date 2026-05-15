@@ -187,10 +187,18 @@ public class AccessRequestsViewModel : BaseViewModel
         return _rentalService.GetBookedDatesForRoom(roomId);
     }
 
-    // Predlaže konkretan termin stanaru (kalendar → Potvrdi)
+    // Predlaže konkretan termin stanaru za višednevnu prostoriju (status → ProposedCounter)
     public void ProposeDate(long requestId, DateTime proposedStart, DateTime proposedEnd)
     {
         _rentalService.ProposeDate(requestId, proposedStart, proposedEnd);
+        LoadRentalAndApply();
+    }
+
+    // Odobrava zahtev za jednodnevnu prostoriju sa izabranim danom (status → Approved)
+    // Potpis je kompatibilan sa Action<long, DateTime, DateTime> — drugi parametar se ignoriše
+    public void ApproveRentalWithDate(long requestId, DateTime date, DateTime _)
+    {
+        _rentalService.ApproveWithDate(requestId, date);
         LoadRentalAndApply();
     }
 }

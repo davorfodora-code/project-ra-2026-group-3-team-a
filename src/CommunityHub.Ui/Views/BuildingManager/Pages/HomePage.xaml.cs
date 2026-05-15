@@ -50,7 +50,7 @@ public partial class HomePage : Page
 
     private void AktivniOglasi_Click(object sender, RoutedEventArgs e)
     {
-        _shell.SetActiveNav(4);
-        _shell.MainFrame.Navigate(new MorePage(_shell));
+        _shell.SetActiveNav(1);
+        _shell.MainFrame.Navigate(new BulletinBoardPage(_shell));
     }
 }
