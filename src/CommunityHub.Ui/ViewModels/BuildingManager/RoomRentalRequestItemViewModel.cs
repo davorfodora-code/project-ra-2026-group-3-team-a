@@ -29,6 +29,9 @@ public class RoomRentalRequestItemViewModel : BaseViewModel
     // Sirovi status (za DataTrigger u XAML-u)
     public string Status => _dto.Status;
 
+    // Da li se prostorija iznajmljuje na više dana (određuje tip akcije na kalendaru)
+    public bool IsMultiDay => _dto.IsMultiDay;
+
     // Dugme "Izaberi dan" se prikazuje samo dok je zahtev na čekanju
     public bool CanPropose => _dto.Status == "Pending";
 }

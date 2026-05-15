@@ -10,6 +10,9 @@ public interface ICommonRoomRequestRepository
     // Postavlja predloženi termin i menja status na ProposedCounter
     void ProposeDate(long requestId, DateTime proposedStart, DateTime proposedEnd);
 
+    // Odobrava zahtev za jednodnevnu prostoriju sa izabranim danom (status → Approved)
+    void ApproveWithDate(long requestId, DateTime date);
+
     // Vraća zauzete periode za datu prostoriju (Approved i ProposedCounter zahtevi)
     List<(DateTime Start, DateTime End)> GetBookedRangesForRoom(long roomId);
 }

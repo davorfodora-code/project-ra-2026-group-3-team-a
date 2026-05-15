@@ -87,6 +87,25 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
         cmd.ExecuteNonQuery();
     }
 
+    // Odobrava zahtev za jednodnevnu prostoriju — postavlja izabrani dan i status Approved
+    public void ApproveWithDate(long requestId, DateTime date)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            UPDATE common_room_requests
+            SET status              = 'Approved',
+                proposed_start_date = @date,
+                proposed_end_date   = @date,
+                approved_date       = NOW()
+            WHERE id = @requestId";
+
+        AddParameter(cmd, "@requestId", requestId);
+        AddParameter(cmd, "@date",      date.Date);
+        cmd.ExecuteNonQuery();
+    }
+
     // Vraća zauzete periode za datu prostoriju (Approved i ProposedCounter)
     // Koristi predložene datume ako postoje, inače originalno tražene
     public List<(DateTime Start, DateTime End)> GetBookedRangesForRoom(long roomId)

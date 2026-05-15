@@ -81,7 +81,14 @@ public partial class RequestsPage : Page
     {
         RoomRentalRequestItemViewModel item = (RoomRentalRequestItemViewModel)((Button)sender).DataContext;
         List<DateOnly> bookedDates = _vm.GetBookedDatesForRoom(item.RoomId);
-        _shell.MainFrame.Navigate(new RoomCalendarPage(_shell, item, bookedDates, _vm.ProposeDate));
+
+        // Višednevna prostorija → predlog termina (ProposedCounter)
+        // Jednodnevna prostorija → direktno odobrenje (Approved)
+        Action<long, DateTime, DateTime> onConfirmed = item.IsMultiDay
+            ? _vm.ProposeDate
+            : _vm.ApproveRentalWithDate;
+
+        _shell.MainFrame.Navigate(new RoomCalendarPage(_shell, item, bookedDates, onConfirmed));
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
