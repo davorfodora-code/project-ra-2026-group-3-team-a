@@ -21,15 +21,10 @@
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Top bar: District selector + section tabs -->
             <DockPanel Grid.Row="0" Margin="0,0,0,12" LastChildFill="False">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                     <TextBlock Text="Kvart:" FontSize="13" FontWeight="SemiBold"
@@ -39,124 +34,181 @@
                               SelectedItem="{Binding SelectedDistrict, Mode=TwoWay}"
                               DisplayMemberPath="DisplayText"/>
                 </StackPanel>
+
+                <!-- Section tabs -->
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="24,0,0,0">
-                    <TextBlock Text="Zahtevi za pristup"
-                               FontSize="13" FontWeight="SemiBold"
-                               VerticalAlignment="Center" Margin="0,0,18,0"
-                               Foreground="#2C3E50"/>
-                    <TextBlock Text="Članstva"
-                               FontSize="13" Foreground="#888"
-                               VerticalAlignment="Center"/>
+                    <Grid Margin="0,0,18,0">
+                        <Button Content="Zahtevi za pristup"
+                                Command="{Binding ShowRequestsSectionCommand}"
+                                Background="Transparent" BorderThickness="0"
+                                Padding="0,4" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Foreground" Value="#888"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="FontSize" Value="13"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsRequestsSection}" Value="True">
+                                            <Setter Property="Foreground" Value="#2C3E50"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                                Visibility="{Binding IsRequestsSection, Converter={StaticResource BoolToVis}}"/>
+                    </Grid>
+                    <Grid>
+                        <Button Content="Članstva"
+                                Command="{Binding ShowMembershipsSectionCommand}"
+                                Background="Transparent" BorderThickness="0"
+                                Padding="0,4" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Foreground" Value="#888"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="FontSize" Value="13"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMembershipsSection}" Value="True">
+                                            <Setter Property="Foreground" Value="#2C3E50"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                                Visibility="{Binding IsMembershipsSection, Converter={StaticResource BoolToVis}}"/>
+                    </Grid>
                 </StackPanel>
             </DockPanel>
 
-            <TextBlock Grid.Row="1" Text="Zahtevi za pristup"
-                       FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
+            <!-- REQUESTS SECTION -->
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsRequestsSection, Converter={StaticResource BoolToVis}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
-                        Command="{Binding SetRequestFilterCommand}" CommandParameter="Svi"
-                        Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
-                        Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Na čekanju"
-                        Command="{Binding SetRequestFilterCommand}" CommandParameter="Pending"
-                        Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Pending}"
-                        Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Pending}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Prihvaćeni"
-                        Command="{Binding SetRequestFilterCommand}" CommandParameter="Approved"
-                        Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Approved}"
-                        Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Approved}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Odbijeni"
-                        Command="{Binding SetRequestFilterCommand}" CommandParameter="Rejected"
-                        Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Rejected}"
-                        Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Rejected}"/>
-            </StackPanel>
+                <TextBlock Grid.Row="0" Text="Zahtevi za pristup"
+                           FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
 
-            <DataGrid Grid.Row="3" ItemsSource="{Binding Requests}"
-                      AutoGenerateColumns="False" IsReadOnly="True"
-                      CanUserAddRows="False" SelectionMode="Single"
-                      HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                      RowBackground="White" AlternatingRowBackground="#FAFAFA"
-                      BorderBrush="#DDDDDD" BorderThickness="1"
-                      CanUserResizeRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Građanin"          Binding="{Binding CitizenFullName}"    Width="160"/>
-                    <DataGridTextColumn Header="Adresa stanovanja" Binding="{Binding CitizenAddress}"     Width="180"/>
-                    <DataGridTextColumn Header="Kvart"             Binding="{Binding DistrictName}"       Width="140"/>
-                    <DataGridTextColumn Header="Datum"             Binding="{Binding CreatedAtFormatted}" Width="110"/>
-                    <DataGridTextColumn Header="Status"            Binding="{Binding StatusDisplay}"      Width="120"/>
-                    <DataGridTemplateColumn Header="Akcija" Width="160" CanUserSort="False">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
+                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Svi"
+                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
+                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Na čekanju"
+                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Pending"
+                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Pending}"
+                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Pending}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Prihvaćeni"
+                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Approved"
+                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Approved}"
+                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Approved}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Odbijeni"
+                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Rejected"
+                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Rejected}"
+                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Rejected}"/>
+                </StackPanel>
 
-                                    <Button Content="Prihvati"
-                                            Command="{Binding DataContext.ShowApproveOverlayCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            Visibility="{Binding IsPending, Converter={StaticResource BoolToVis}}"
-                                            Padding="8,3" Margin="0,0,4,0" FontSize="11"
-                                            Background="#27AE60" Foreground="White"
-                                            BorderThickness="0" Cursor="Hand"/>
-                                    <Button Content="Odbij"
-                                            Command="{Binding DataContext.ShowRejectOverlayCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            Visibility="{Binding IsPending, Converter={StaticResource BoolToVis}}"
-                                            Padding="8,3" FontSize="11"
-                                            Background="#E74C3C" Foreground="White"
-                                            BorderThickness="0" Cursor="Hand"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                <DataGrid Grid.Row="2" ItemsSource="{Binding Requests}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" SelectionMode="Single"
+                          HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                          RowBackground="White" AlternatingRowBackground="#FAFAFA"
+                          BorderBrush="#DDDDDD" BorderThickness="1"
+                          CanUserResizeRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Građanin"          Binding="{Binding CitizenFullName}"    Width="160"/>
+                        <DataGridTextColumn Header="Adresa stanovanja" Binding="{Binding CitizenAddress}"     Width="180"/>
+                        <DataGridTextColumn Header="Kvart"             Binding="{Binding DistrictName}"       Width="140"/>
+                        <DataGridTextColumn Header="Datum"             Binding="{Binding CreatedAtFormatted}" Width="110"/>
+                        <DataGridTextColumn Header="Status"            Binding="{Binding StatusDisplay}"      Width="120"/>
+                        <DataGridTemplateColumn Header="Akcija" Width="160" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Button Content="Prihvati"
+                                                Command="{Binding DataContext.ShowApproveOverlayCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding IsPending, Converter={StaticResource BoolToVis}}"
+                                                Padding="8,3" Margin="0,0,4,0" FontSize="11"
+                                                Background="#27AE60" Foreground="White"
+                                                BorderThickness="0" Cursor="Hand"/>
+                                        <Button Content="Odbij"
+                                                Command="{Binding DataContext.ShowRejectOverlayCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding IsPending, Converter={StaticResource BoolToVis}}"
+                                                Padding="8,3" FontSize="11"
+                                                Background="#E74C3C" Foreground="White"
+                                                BorderThickness="0" Cursor="Hand"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
 
-            <Separator Grid.Row="4" Margin="0,14,0,14" Background="#DDDDDD" Height="1"/>
+            <!-- MEMBERSHIPS SECTION -->
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsMembershipsSection, Converter={StaticResource BoolToVis}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="5" Text="Članstva"
-                       FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                <TextBlock Grid.Row="0" Text="Članstva"
+                           FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
 
-            <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
-                        Command="{Binding SetTrustFilterCommand}" CommandParameter="Svi"
-                        Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
-                        Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Nov u kvartu"
-                        Command="{Binding SetTrustFilterCommand}" CommandParameter="Nov"
-                        Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Nov}"
-                        Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Nov}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Neaktivan"
-                        Command="{Binding SetTrustFilterCommand}" CommandParameter="Neaktivan"
-                        Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Neaktivan}"
-                        Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Neaktivan}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Aktivan"
-                        Command="{Binding SetTrustFilterCommand}" CommandParameter="Aktivan"
-                        Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Aktivan}"
-                        Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Aktivan}"/>
-                <Button Style="{StaticResource FilterButtonStyle}" Content="Istaknut"
-                        Command="{Binding SetTrustFilterCommand}" CommandParameter="Istaknuti"
-                        Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Istaknuti}"
-                        Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Istaknuti}"/>
-            </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
+                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Svi"
+                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
+                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Nov u kvartu"
+                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Nov"
+                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Nov}"
+                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Nov}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Neaktivan"
+                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Neaktivan"
+                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Neaktivan}"
+                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Neaktivan}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Aktivan"
+                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Aktivan"
+                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Aktivan}"
+                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Aktivan}"/>
+                    <Button Style="{StaticResource FilterButtonStyle}" Content="Istaknut"
+                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Istaknuti"
+                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Istaknuti}"
+                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Istaknuti}"/>
+                </StackPanel>
 
-            <DataGrid Grid.Row="7" ItemsSource="{Binding Memberships}"
-                      AutoGenerateColumns="False" IsReadOnly="True"
-                      CanUserAddRows="False" HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal"
-                      RowBackground="White" AlternatingRowBackground="#FAFAFA"
-                      BorderBrush="#DDDDDD" BorderThickness="1"
-                      CanUserResizeRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Građanin"          Binding="{Binding CitizenFullName}"   Width="200"/>
-                    <DataGridTextColumn Header="Adresa stanovanja" Binding="{Binding CitizenAddress}"    Width="*"/>
-                    <DataGridTextColumn Header="Datum učlanjenja"  Binding="{Binding JoinDateFormatted}" Width="130"/>
-                    <DataGridTextColumn Header="Nivo poverenja"    Binding="{Binding TrustLevel}"        Width="130"/>
-                </DataGrid.Columns>
-            </DataGrid>
+                <DataGrid Grid.Row="2" ItemsSource="{Binding Memberships}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          RowBackground="White" AlternatingRowBackground="#FAFAFA"
+                          BorderBrush="#DDDDDD" BorderThickness="1"
+                          CanUserResizeRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Građanin"          Binding="{Binding CitizenFullName}"   Width="200"/>
+                        <DataGridTextColumn Header="Adresa stanovanja" Binding="{Binding CitizenAddress}"    Width="*"/>
+                        <DataGridTextColumn Header="Datum učlanjenja"  Binding="{Binding JoinDateFormatted}" Width="130"/>
+                        <DataGridTextColumn Header="Nivo poverenja"    Binding="{Binding TrustLevel}"        Width="130"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
         </Grid>
 
+        <!-- Overlay dialog -->
         <Grid Panel.ZIndex="20" Background="#99000000"
               Visibility="{Binding IsOverlayVisible, Converter={StaticResource BoolToVis}}">
             <Border Background="White" CornerRadius="8" Padding="28,22"
