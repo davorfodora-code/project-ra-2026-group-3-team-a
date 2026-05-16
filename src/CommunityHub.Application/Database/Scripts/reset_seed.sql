@@ -619,3 +619,22 @@ INSERT INTO slot_reservations (id, slot_id, requester_ad_id, tenant_id) VALUES
 (-3, -301, -4, -4),
 (-4, -401, -3, -3),
 (-5, -501, -6, -4);
+
+
+-- ============================================================
+--  Zajedničke prostorije (test podaci za 2.5)
+-- ============================================================
+INSERT INTO common_rooms (id, building_id, name, description, floor_number, is_multi_day) VALUES
+(-1, -1, 'Sala za proslave',  'Prostorija za organizovanje proslava i priredbi, kapaciteta 30 osoba.',  1, FALSE),
+(-2, -1, 'Vešernica',         'Prostorija sa četiri veš mašine i sušilicama za stanare.',               0, TRUE),
+(-3, -1, 'Ostava',            'Zajednička ostava za bicikle i sezonske stvari.',                        0, FALSE),
+(-4, -1, 'Sala za sastanke',  'Opremljena sala sa projektorom i stolom za 10 osoba.',                   2, FALSE);
+
+-- Svi statusi: Pending, ProposedCounter, Approved, Rejected, Cancelled
+INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start_date, requested_end_date, proposed_start_date, proposed_end_date, approved_date, status) VALUES
+(-1, -3, -1, '2026-05-28 00:00:00', '2026-05-28 00:00:00', NULL, NULL, NULL, 'Pending'),
+(-2, -4, -2, '2026-05-20 00:00:00', '2026-05-25 00:00:00', '2026-05-22 00:00:00', '2026-05-27 00:00:00', NULL, 'ProposedCounter'),
+(-3, -3, -3, '2026-05-05 00:00:00', '2026-05-07 00:00:00', '2026-05-06 00:00:00', '2026-05-06 00:00:00', '2026-05-06 08:00:00', 'Approved'),
+(-4, -4, -1, '2026-05-10 00:00:00', '2026-05-10 00:00:00', NULL, NULL, NULL, 'Rejected'),
+(-5, -3, -2, '2026-05-01 00:00:00', '2026-05-03 00:00:00', NULL, NULL, NULL, 'Cancelled'),
+(-6, -4, -4, '2026-05-30 00:00:00', '2026-05-30 00:00:00', NULL, NULL, NULL, 'Pending');
