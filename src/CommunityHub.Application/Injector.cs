@@ -42,6 +42,7 @@ public class Injector
         { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },
         { typeof(IDistrictMeetingRepository),            new DistrictMeetingDbRepository() },
         { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
+        { typeof(IForumRepository), new ForumDbRepository() },
     };
 
     public static T Get<T>()
