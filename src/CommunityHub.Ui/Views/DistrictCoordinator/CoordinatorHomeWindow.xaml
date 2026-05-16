@@ -22,6 +22,9 @@
         <DataTemplate DataType="{x:Type vm:DistrictRegistrationViewModel}">
             <local:DistrictRegistrationOverlay/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ForumViewModel}">
+            <local:ForumView/>
+        </DataTemplate>
 
         <Style x:Key="NavTabStyle" TargetType="Button">
             <Setter Property="Background"      Value="Transparent"/>
@@ -75,6 +78,9 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsStatsTab}" Value="True">
                                 <Setter Property="Text" Value="Statistika"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsForumTab}" Value="True">
+                                <Setter Property="Text" Value="Forum"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -159,8 +165,22 @@
                             Visibility="{Binding IsStatsTab, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
 
-                <Button Content="Forum"        Style="{StaticResource NavTabStyle}"
-                        Command="{Binding NotImplementedTabCommand}" CommandParameter="Forum"/>
+                <Grid>
+                    <Button Content="Forum"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="forum">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavTabStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsForumTab}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                            Visibility="{Binding IsForumTab, Converter={StaticResource BoolToVis}}"/>
+                </Grid>
                 <Button Content="Rezervacije"  Style="{StaticResource NavTabStyle}"
                         Command="{Binding NotImplementedTabCommand}" CommandParameter="Rezervacije"/>
                 <Button Content="Recenzije"    Style="{StaticResource NavTabStyle}"
