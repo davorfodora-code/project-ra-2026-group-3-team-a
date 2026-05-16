@@ -83,12 +83,23 @@
                             </StackPanel>
                         </Button>
                     </Grid>
-                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="DoorOpen" FontSize="22" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="32" TextAlignment="Center"/>
-                        <TextBlock Text="Zajedničke sobe" Foreground="#B0BEC5" FontSize="18"
-                                   VerticalAlignment="Center" Margin="8,0,0,0"/>
-                    </StackPanel>
+                    <!-- Zajedničke prostorije -->
+                    <Grid>
+                        <Border x:Name="NavZajednickeHighlight" Background="#243342"
+                                Visibility="Collapsed">
+                            <Border Width="4" HorizontalAlignment="Left" Background="White"/>
+                        </Border>
+                        <Button Style="{StaticResource SideNavStyle}" Click="NavZajednicke_Click">
+                            <StackPanel Orientation="Horizontal" Margin="20,16">
+                                <fa:IconBlock x:Name="NavZajednickeIcon" Icon="DoorOpen" FontSize="22"
+                                              Foreground="#B0BEC5" VerticalAlignment="Center"
+                                              Width="32" TextAlignment="Center"/>
+                                <TextBlock x:Name="NavZajednickeText" Text="Zajedničke sobe"
+                                           Foreground="#B0BEC5" FontSize="18"
+                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
                         <fa:IconBlock Icon="CircleExclamation" FontSize="22" Foreground="#B0BEC5"
                                       VerticalAlignment="Center" Width="32" TextAlignment="Center"/>
