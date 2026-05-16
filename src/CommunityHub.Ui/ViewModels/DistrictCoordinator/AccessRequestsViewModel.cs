@@ -23,6 +23,8 @@ public class AccessRequestsViewModel : ViewModelBase
     private string _trustFilter   = "Svi";
     private DistrictDto? _selectedDistrict;
 
+    private bool _isRequestsSection = true;
+
     private bool _isOverlayVisible;
     private string _overlayTitle = string.Empty;
     private bool _isApproveAction;
@@ -40,8 +42,10 @@ public class AccessRequestsViewModel : ViewModelBase
         Districts   = new ObservableCollection<DistrictDto>();
         Memberships = new ObservableCollection<DistrictMembershipDto>();
 
-        SetRequestFilterCommand = new RelayCommand(p => RequestFilter = p?.ToString() ?? "Svi");
-        SetTrustFilterCommand   = new RelayCommand(p => TrustFilter   = p?.ToString() ?? "Svi");
+        SetRequestFilterCommand  = new RelayCommand(p => RequestFilter = p?.ToString() ?? "Svi");
+        SetTrustFilterCommand    = new RelayCommand(p => TrustFilter   = p?.ToString() ?? "Svi");
+        ShowRequestsSectionCommand   = new RelayCommand(_ => IsRequestsSection = true);
+        ShowMembershipsSectionCommand = new RelayCommand(_ => IsRequestsSection = false);
 
         ShowApproveOverlayCommand = new RelayCommand(p =>
         {
@@ -88,8 +92,18 @@ public class AccessRequestsViewModel : ViewModelBase
         {
             if (SetProperty(ref _selectedDistrict, value) && value != null)
             {
-                TrustFilter = "Svi"; // reset
-                LoadMemberships(value.Id);
+                RequestFilter = "Svi";
+                TrustFilter = "Svi";
+                ApplyRequestFilter();
+                try
+                {
+                    LoadMemberships(value.Id);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Zahtevi] LoadMemberships error: {ex}");
+                    NotificationRequested?.Invoke($"Greška pri učitavanju članstava:\n{ex.Message}", false);
+                }
             }
         }
     }
@@ -135,20 +149,42 @@ public class AccessRequestsViewModel : ViewModelBase
         set => SetProperty(ref _rejectionReason, value);
     }
 
-    public ICommand SetRequestFilterCommand    { get; }
-    public ICommand SetTrustFilterCommand      { get; }
-    public ICommand ShowApproveOverlayCommand  { get; }
-    public ICommand ShowRejectOverlayCommand   { get; }
-    public ICommand ConfirmOverlayCommand      { get; }
-    public ICommand CancelOverlayCommand       { get; }
+    public bool IsRequestsSection
+    {
+        get => _isRequestsSection;
+        set
+        {
+            if (SetProperty(ref _isRequestsSection, value))
+                OnPropertyChanged(nameof(IsMembershipsSection));
+        }
+    }
+
+    public bool IsMembershipsSection => !_isRequestsSection;
+
+    public ICommand SetRequestFilterCommand       { get; }
+    public ICommand SetTrustFilterCommand         { get; }
+    public ICommand ShowRequestsSectionCommand    { get; }
+    public ICommand ShowMembershipsSectionCommand { get; }
+    public ICommand ShowApproveOverlayCommand     { get; }
+    public ICommand ShowRejectOverlayCommand      { get; }
+    public ICommand ConfirmOverlayCommand         { get; }
+    public ICommand CancelOverlayCommand          { get; }
 
 
     public event Action<string, bool>? NotificationRequested; 
 
     public void Initialize()
     {
-        LoadRequests();
-        LoadDistricts();
+        try
+        {
+            LoadDistricts();
+            LoadRequests();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Zahtevi] Initialize error: {ex}");
+            NotificationRequested?.Invoke($"Greška pri učitavanju:\n{ex.Message}", false);
+        }
     }
 
     private void LoadRequests()
@@ -176,6 +212,10 @@ public class AccessRequestsViewModel : ViewModelBase
     private void ApplyRequestFilter()
     {
         IEnumerable<DistrictAccessRequestDto> filtered = _allRequests;
+
+        if (_selectedDistrict != null)
+            filtered = filtered.Where(r => r.DistrictName == _selectedDistrict.Name);
+
         if (_requestFilter != "Svi")
             filtered = filtered.Where(r => r.Status == _requestFilter);
 

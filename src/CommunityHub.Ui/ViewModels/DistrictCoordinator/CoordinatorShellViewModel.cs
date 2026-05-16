@@ -14,6 +14,7 @@ public class CoordinatorShellViewModel : ViewModelBase
     public const string TabHome     = "home";
     public const string TabRequests = "requests";
     public const string TabStats    = "stats";
+    public const string TabForum    = "forum";
 
     private readonly UserDbRepository _userRepository;
 
@@ -32,6 +33,7 @@ public class CoordinatorShellViewModel : ViewModelBase
         Home     = new HomeContentViewModel(coordinatorId);
         Requests = new AccessRequestsViewModel(coordinatorId);
         Stats    = new StatisticsViewModel(coordinatorId);
+        Forum    = new ForumViewModel(coordinatorId);
 
         Home.RegisterDistrictRequested += OpenRegistrationOverlay;
         Home.FinanceRequested          += districtName =>
@@ -52,6 +54,7 @@ public class CoordinatorShellViewModel : ViewModelBase
     public HomeContentViewModel     Home     { get; }
     public AccessRequestsViewModel  Requests { get; }
     public StatisticsViewModel      Stats    { get; }
+    public ForumViewModel           Forum    { get; }
 
     public string CurrentTab
     {
@@ -64,11 +67,13 @@ public class CoordinatorShellViewModel : ViewModelBase
                 {
                     TabRequests => Requests,
                     TabStats    => Stats,
+                    TabForum    => Forum,
                     _           => Home,
                 };
                 OnPropertyChanged(nameof(IsHomeTab));
                 OnPropertyChanged(nameof(IsRequestsTab));
                 OnPropertyChanged(nameof(IsStatsTab));
+                OnPropertyChanged(nameof(IsForumTab));
             }
         }
     }
@@ -82,6 +87,7 @@ public class CoordinatorShellViewModel : ViewModelBase
     public bool IsHomeTab     => _currentTab == TabHome;
     public bool IsRequestsTab => _currentTab == TabRequests;
     public bool IsStatsTab    => _currentTab == TabStats;
+    public bool IsForumTab    => _currentTab == TabForum;
 
     public ViewModelBase? ActiveOverlay
     {
