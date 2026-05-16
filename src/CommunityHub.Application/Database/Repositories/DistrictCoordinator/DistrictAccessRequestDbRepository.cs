@@ -179,12 +179,13 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
     {
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO district_memberships (district_id, user_id, join_date)
-            VALUES (@districtId, @userId, @joinDate)";
+            INSERT INTO district_memberships (district_id, user_id, join_date, trust_level)
+            VALUES (@districtId, @userId, @joinDate, @trustLevel)";
 
         AddParameter(cmd, "@districtId", districtId);
         AddParameter(cmd, "@userId", userId);
         AddParameter(cmd, "@joinDate", DateTime.Now);
+        AddParameter(cmd, "@trustLevel", CitizenTrustLevel.Nov.ToString());
         cmd.ExecuteNonQuery();
     }
 
@@ -231,8 +232,10 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
     private static DistrictMembership MapMembership(IDataReader reader)
     {
         User user = MapUserFromReader(reader);
-        CitizenTrustLevel trustLevel = Enum.Parse<CitizenTrustLevel>(
-            reader.GetString(reader.GetOrdinal("trust_level")));
+        int trustOrd = reader.GetOrdinal("trust_level");
+        CitizenTrustLevel trustLevel = reader.IsDBNull(trustOrd)
+            ? CitizenTrustLevel.Nov
+            : Enum.Parse<CitizenTrustLevel>(reader.GetString(trustOrd));
         return new DistrictMembership(
             reader.GetInt64(reader.GetOrdinal("id")),
             null!,
