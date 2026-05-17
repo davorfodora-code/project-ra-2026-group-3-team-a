@@ -99,6 +99,23 @@ INSERT INTO district_memberships (id, district_id, user_id, join_date, trust_lev
 (-22, -1, -22, '2024-03-14 09:00:00', 'Nov'),
 (-23, -1, -23, '2023-08-01 09:00:00', 'Nov');
 
+-- Sastanci kvarta (4.5)
+INSERT INTO district_meetings (id, district_id, meeting_type, meeting_time, date_range_start, date_range_end, status, scheduled_date) VALUES
+(-1, -2, 'Dobrodoslica', '20:00', '2026-05-25', '2026-05-29', 'UPripremi', NULL),
+(-2, -2, 'Motivacija',   '19:30', '2026-04-20', '2026-04-28', 'Zakazan',   '2026-04-24'),
+(-3, -2, 'Motivacija',   '19:00', '2026-04-10', '2026-04-12', 'Otkazan',   NULL),
+(-4, -2, 'Dobrodoslica', '18:00', '2026-05-19', '2026-05-21', 'UPripremi', NULL);
+
+INSERT INTO district_meeting_votes (id, meeting_id, citizen_id, preferred_date) VALUES
+(-1, -1, -8, '2026-05-27');
+
+-- Sastanci kvarta Zemun (auto-uclanjenje preko Zemunske ulice)
+INSERT INTO district_meetings (id, district_id, meeting_type, meeting_time, date_range_start, date_range_end, status, scheduled_date) VALUES
+(-5, -1, 'Dobrodoslica', '20:00', '2026-05-25', '2026-05-29', 'UPripremi', NULL),
+(-6, -1, 'Motivacija',   '19:30', '2026-04-20', '2026-04-28', 'Zakazan',   '2026-04-24'),
+(-7, -1, 'Motivacija',   '19:00', '2026-04-10', '2026-04-12', 'Otkazan',   NULL),
+(-8, -1, 'Dobrodoslica', '18:00', '2026-05-19', '2026-05-21', 'UPripremi', NULL);
+
 -- Dogadjaji gradjana (4.3)
 INSERT INTO district_events (id, district_id, organizer_id, name, description, event_date, start_time, duration_minutes, min_volunteers, status, created_at) VALUES
 (-1, -1, -7, 'Ciscenje parka', 'Akcija ciscenja centralnog parka u kvartu.', '2026-06-20', '09:00', 180, 2, 'UPripremi', '2026-06-01 10:00:00'),
