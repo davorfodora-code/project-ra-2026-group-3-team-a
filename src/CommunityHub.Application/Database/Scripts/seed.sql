@@ -16,7 +16,15 @@ INSERT INTO users (id, username, password, name, surname, birthday, role, addres
 (-6, 'milica', 'milica123', 'Milica', 'Milić',      '2000-07-08', 'DistrictCoordinator',  'Knez Mihailova 3, Beograd'),
 (-7, 'nikola', 'nikola123', 'Nikola', 'Nikolić',    '1997-12-18', 'Citizen',              'Zemunska 10, Beograd'),
 (-8, 'ivana',  'ivana123',  'Ivana',  'Ivanović',   '2001-09-05', 'Citizen',              'Gandijeva 25, Beograd'),
-(-9, 'boban',  'boban123',  'Boban',  'Bobanović',  '1999-04-10', 'Citizen',              'Zemunska 22, Beograd');
+(-9, 'boban',  'boban123',  'Boban',  'Bobanović',  '1999-04-10', 'Citizen',              'Zemunska 22, Beograd'),
+(-10, 'jelena', 'jelena123', 'Jelena', 'Petrović',   '1996-02-11', 'Citizen',             'Gandijeva 14, Beograd'),
+(-11, 'milan',  'milan123',  'Milan',  'Jovanović',  '1995-10-01', 'Citizen',             'Gandijeva 40, Beograd'),
+(-14, 'teodora','teodora123','Teodora','Ristić',     '1999-01-07', 'Citizen',             'Gandijeva 62, Beograd'),
+(-17, 'uros',   'uros123',   'Uroš',   'Živković',   '1994-09-28', 'Citizen',             'Bulevar Zorana Đinđića 110, Beograd'),
+(-19, 'aleksa', 'aleksa123', 'Aleksa', 'Milošević',  '1996-08-08', 'Citizen',             'Gandijeva 49, Beograd'),
+(-21, 'igor',   'igor123',   'Igor',   'Babić',      '1993-04-26', 'Citizen',             'Gandijeva 12, Beograd'),
+(-22, 'nina',   'nina123',   'Nina',   'Lazić',      '2000-12-05', 'Citizen',             'Glavna 9, Beograd'),
+(-23, 'filip',  'filip123',  'Filip',  'Tadić',      '1998-01-22', 'Citizen',             'Zemunska 28, Beograd');
 
 
 -- ============================================================
@@ -79,30 +87,131 @@ INSERT INTO district_access_requests (id, user_id, district_id, creation_date, s
 (-3, -8, -2, '2025-03-12 16:45:00', 'Approved', NULL),
 (-4, -7, -2, '2025-03-08 11:20:00', 'Rejected', 'Adresa nije u opsegu ulica kvarta.');
 
--- Članstva u kvartovima (za odobrene zahteve)
+-- Članstva u kvartovima (bogatiji podaci za 4.4)
 INSERT INTO district_memberships (id, district_id, user_id, join_date, trust_level) VALUES
-(-1, -2, -8, '2025-03-12 16:45:00', 'Nov');
+(-1,  -2, -8,  '2026-02-12 16:45:00', 'Nov'),
+(-10, -2, -10, '2024-06-01 09:00:00', 'Nov'),
+(-11, -2, -11, '2023-02-10 09:00:00', 'Nov'),
+(-14, -2, -14, '2022-10-21 09:00:00', 'Nov'),
+(-17, -2, -17, '2021-05-09 09:00:00', 'Nov'),
+(-19, -2, -19, '2023-12-05 09:00:00', 'Nov'),
+(-21, -2, -21, '2022-01-12 09:00:00', 'Nov'),
+(-22, -1, -22, '2024-03-14 09:00:00', 'Nov'),
+(-23, -1, -23, '2023-08-01 09:00:00', 'Nov');
 
 -- Dogadjaji gradjana (4.3)
 INSERT INTO district_events (id, district_id, organizer_id, name, description, event_date, start_time, duration_minutes, min_volunteers, status, created_at) VALUES
 (-1, -1, -7, 'Ciscenje parka', 'Akcija ciscenja centralnog parka u kvartu.', '2026-06-20', '09:00', 180, 2, 'UPripremi', '2026-06-01 10:00:00'),
-(-2, -2, -8, 'Uredjenje igralista', 'Farbanje klupa i sredjivanje igralista.', '2026-06-22', '10:00', 120, 2, 'Zakazan', '2026-06-02 12:00:00');
+(-2, -2, -8, 'Uredjenje igralista', 'Farbanje klupa i sredjivanje igralista.', '2026-06-22', '10:00', 120, 2, 'Zakazan', '2026-06-02 12:00:00'),
+(-10, -2, -10, 'Prolecno ciscenje bloka', 'Ciscenje oko zgrada i parkinga.', '2026-03-01', '09:00', 120, 3, 'Zavrsen', '2026-02-20 12:00:00'),
+(-11, -2, -11, 'Sadnja drveca', 'Sadnja mladica u dvoristu kvartovske skole.', '2026-03-09', '11:00', 180, 4, 'Zavrsen', '2026-02-28 13:00:00'),
+(-12, -2, -11, 'Uredjenje igralista 2', 'Popravka klupa i kanti za otpatke.', '2026-03-18', '10:00', 150, 3, 'Zavrsen', '2026-03-05 14:00:00'),
+(-13, -2, -14, 'Akcija reciklaze', 'Prikupljanje i sortiranje reciklaznog otpada.', '2026-03-24', '09:30', 120, 4, 'Zavrsen', '2026-03-10 09:30:00'),
+(-14, -2, -17, 'Bojenje parkovske ograde', 'Uredjenje ograde i zamena ostecenih delova.', '2026-03-27', '08:00', 180, 4, 'Zavrsen', '2026-03-12 08:15:00'),
+(-15, -2, -19, 'Komsijski sajam knjiga', 'Razmena knjiga i uredjenje stajalista.', '2026-04-02', '12:00', 120, 2, 'Zavrsen', '2026-03-20 16:00:00'),
+(-16, -2, -21, 'Ciscenje setalista', 'Sredjivanje setalista uz glavnu saobracajnicu.', '2026-04-08', '09:00', 120, 3, 'Zavrsen', '2026-03-28 10:00:00'),
+(-17, -2, -17, 'Kosenje i uredjenje zelenila', 'Uredjenje travnjaka i zelenih povrsina.', '2026-04-15', '08:30', 180, 4, 'Zavrsen', '2026-04-01 10:00:00'),
+(-18, -1, -22, 'Ciscenje zemunskog parka', 'Akcija ciscenja i uredjenja klupa.', '2026-03-22', '09:00', 120, 3, 'Zavrsen', '2026-03-10 12:00:00');
 
 INSERT INTO district_event_required_items (id, event_id, item_name, assigned_volunteer_id) VALUES
 (-1, -1, 'Rukavice', -7),
 (-2, -1, 'Vrece za smece', NULL),
 (-3, -2, 'Farba', -8),
-(-4, -2, 'Cetke', -9);
+(-4, -2, 'Cetke', -9),
+(-10, -10, 'Vrece za smece', NULL),
+(-11, -10, 'Rukavice', -10),
+(-12, -11, 'Lopate', -14),
+(-13, -11, 'Rukavice', -11),
+(-14, -12, 'Farba', -19),
+(-15, -13, 'Kese', -14),
+(-16, -14, 'Cetke', -19),
+(-17, -15, 'Stolovi', -21),
+(-18, -16, 'Metle', -10),
+(-19, -17, 'Trimer', -11),
+(-20, -18, 'Rukavice', -23);
 
 INSERT INTO district_event_applications (id, event_id, citizen_id, applied_at) VALUES
 (-1, -1, -7, '2026-06-05 09:30:00'),
 (-2, -2, -8, '2026-06-06 08:00:00'),
-(-3, -2, -9, '2026-06-06 08:10:00');
+(-3, -2, -9, '2026-06-06 08:10:00'),
+(-10, -10, -10, '2026-02-25 09:00:00'),
+(-11, -10, -11, '2026-02-25 09:10:00'),
+(-12, -11, -14, '2026-03-02 08:50:00'),
+(-13, -11, -10, '2026-03-02 09:05:00'),
+(-14, -12, -11, '2026-03-11 10:00:00'),
+(-15, -13, -19, '2026-03-16 09:40:00'),
+(-16, -14, -19, '2026-03-20 08:30:00'),
+(-17, -15, -21, '2026-03-25 12:20:00'),
+(-18, -16, -10, '2026-04-01 09:00:00'),
+(-19, -17, -11, '2026-04-06 08:00:00'),
+(-20, -18, -23, '2026-03-14 09:00:00');
 
 INSERT INTO district_event_application_items (id, application_id, required_item_id) VALUES
 (-1, -1, -1),
 (-2, -2, -3),
-(-3, -3, -4);
+(-3, -3, -4),
+(-10, -10, -10),
+(-11, -11, -11),
+(-12, -12, -12),
+(-13, -13, -13),
+(-14, -14, -14),
+(-15, -15, -15),
+(-16, -16, -16),
+(-17, -17, -17),
+(-18, -18, -18),
+(-19, -19, -19),
+(-20, -20, -20);
+
+-- Potvrdjena volontiranja (4.4) za raznolikost nivoa poverenja
+INSERT INTO district_event_volunteer_attendances (id, event_id, volunteer_id, attended, marked_at) VALUES
+(-1, -10, -10, TRUE,  '2026-03-01 12:30:00'),
+(-2, -10, -11, TRUE,  '2026-03-01 12:30:00'),
+(-3, -11, -14, TRUE,  '2026-03-09 14:30:00'),
+(-4, -11, -10, TRUE,  '2026-03-09 14:30:00'),
+(-5, -12, -11, TRUE,  '2026-03-18 13:20:00'),
+(-6, -13, -19, TRUE,  '2026-03-24 12:10:00'),
+(-7, -14, -19, TRUE,  '2026-03-27 11:50:00'),
+(-8, -15, -21, TRUE,  '2026-04-02 14:05:00'),
+(-9, -16, -10, TRUE,  '2026-04-08 11:35:00'),
+(-10, -17, -11, TRUE, '2026-04-15 13:10:00'),
+(-11, -18, -23, TRUE, '2026-03-22 11:00:00'),
+(-12, -14, -10, TRUE, '2026-03-27 11:55:00'),
+(-13, -17, -10, TRUE, '2026-04-15 13:12:00'),
+(-14, -11, -11, TRUE, '2026-03-09 14:32:00'),
+(-15, -12, -19, TRUE, '2026-03-18 13:25:00'),
+(-16, -15, -19, TRUE, '2026-04-02 14:06:00'),
+(-17, -16, -19, TRUE, '2026-04-08 11:37:00'),
+(-18, -13, -14, TRUE, '2026-03-24 12:20:00'),
+(-19, -14, -14, TRUE, '2026-03-27 11:58:00'),
+(-20, -15, -10, TRUE, '2026-04-02 14:10:00'),
+(-21, -16, -14, TRUE, '2026-04-08 11:40:00'),
+(-22, -17, -14, TRUE, '2026-04-15 13:15:00'),
+(-23, -10, -21, TRUE, '2026-03-01 12:32:00'),
+(-24, -12, -21, TRUE, '2026-03-18 13:30:00'),
+(-25, -14, -21, TRUE, '2026-03-27 12:00:00'),
+(-26, -15, -11, TRUE, '2026-04-02 14:15:00'),
+(-27, -16, -11, TRUE, '2026-04-08 11:42:00'),
+(-28, -17, -19, TRUE, '2026-04-15 13:18:00'),
+(-29, -13, -10, TRUE, '2026-03-24 12:22:00'),
+(-30, -14, -11, TRUE, '2026-03-27 12:03:00'),
+(-31, -17, -21, FALSE,'2026-04-15 13:20:00'),
+(-32, -18, -19, TRUE, '2026-04-02 14:20:00'),
+(-33, -16, -21, TRUE, '2026-04-08 11:45:00'),
+(-34, -18, -21, TRUE, '2026-04-15 13:23:00'),
+(-35, -10, -19, TRUE, '2026-03-01 12:40:00'),
+(-36, -11, -19, TRUE, '2026-03-09 14:40:00'),
+(-37, -18, -10, TRUE, '2026-03-18 13:35:00'),
+(-38, -18, -11, TRUE, '2026-03-24 12:25:00'),
+(-39, -18, -14, TRUE, '2026-03-27 12:05:00'),
+(-40, -18, -17, TRUE, '2026-04-02 14:25:00'),
+(-41, -18, -8, TRUE, '2026-04-08 11:48:00'),
+(-42, -18, -9, TRUE, '2026-04-15 13:27:00'),
+(-43, -10, -14, TRUE, '2026-03-01 12:45:00'),
+(-44, -11, -21, TRUE, '2026-03-09 14:45:00'),
+(-45, -12, -22, TRUE, '2026-03-18 13:40:00'),
+(-46, -13, -21, TRUE, '2026-03-24 12:30:00'),
+(-47, -14, -22, TRUE, '2026-03-27 12:07:00'),
+(-48, -15, -22, TRUE, '2026-04-02 14:30:00');
 
 
 -- ============================================================
