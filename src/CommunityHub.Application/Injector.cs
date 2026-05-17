@@ -1,5 +1,7 @@
+using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Application.Database.Repositories.BuildingManager;
 using CommunityHub.Application.Database.Repositories.Citizen;
+using CommunityHub.Application.Services;
 using CommunityHub.Application.Services.BuildingManager;
 using CommunityHub.Application.Services.Citizen;
 using CommunityHub.Application.Database.Repositories.DistrictCoordinator;
@@ -36,6 +38,9 @@ public class Injector
         { typeof(TenantSvc.ISchedulingRepository),                new TenantDb.SchedulingDbRepository() },
         { typeof(TenantSvc.ICommonRoomTenantRepository),          new TenantDb.CommonRoomTenantDbRepository() },
         { typeof(TenantSvc.ICommonRoomRequestTenantRepository),   new TenantDb.CommonRoomRequestTenantDbRepository() },
+
+        // User
+        { typeof(IUserRepository),                      new UserDbRepository() },
 
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },
