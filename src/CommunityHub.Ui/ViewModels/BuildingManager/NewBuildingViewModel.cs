@@ -89,64 +89,45 @@ public class NewBuildingViewModel : BaseViewModel
     public bool TrySubmit()
     {
         ErrorMessage = string.Empty;
+        string? err = Validate();
+        if (err != null) { ErrorMessage = err; return false; }
+        try { _regVm.RegisterBuilding(BuildDto()); return true; }
+        catch (Exception ex) { ErrorMessage = $"Greska: {ex.Message}"; return false; }
+    }
+
+    private string? Validate()
+    {
         if (string.IsNullOrWhiteSpace(_addressInput))
-        {
-            ErrorMessage = "Unesite adresu zgrade.";
-            return false;
-        }
+            return "Unesite adresu zgrade.";
+        if (_addressInput.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
+            return "Adresa mora sadrzati ulicu i kucni broj (npr. Nemanjina 4).";
+        if (string.IsNullOrWhiteSpace(_neighborhood)) return "Unesite naziv naselja.";
+        if (string.IsNullOrWhiteSpace(_city))         return "Unesite grad.";
+        if (string.IsNullOrWhiteSpace(_country))      return "Unesite drzavu.";
+        if (!int.TryParse(_floorsText, out int f) || f <= 0)
+            return "Broj spratova mora biti pozitivan broj.";
+        if (ImagePaths.Count == 0) return "Dodajte bar jednu sliku zgrade.";
+        foreach (FloorInputViewModel floor in Floors)
+            if (floor.Apartments.Count == 0)
+                return $"Sprat {floor.FloorNumber} mora imati bar jedan stan.";
+        return null;
+    }
+
+    private CreateBuildingDto BuildDto()
+    {
         string[] parts = _addressInput.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 2)
-        {
-            ErrorMessage = "Adresa mora sadrzati ulicu i kucni broj (npr. Nemanjina 4).";
-            return false;
-        }
         string streetNumber = parts[^1];
         string street = string.Join(" ", parts[..^1]);
-        if (string.IsNullOrWhiteSpace(_neighborhood)) { ErrorMessage = "Unesite naziv naselja."; return false; }
-        if (string.IsNullOrWhiteSpace(_city))         { ErrorMessage = "Unesite grad."; return false; }
-        if (string.IsNullOrWhiteSpace(_country))      { ErrorMessage = "Unesite drzavu."; return false; }
-        if (!int.TryParse(_floorsText, out int floors) || floors <= 0)
-        {
-            ErrorMessage = "Broj spratova mora biti pozitivan broj.";
-            return false;
-        }
-        if (ImagePaths.Count == 0) { ErrorMessage = "Dodajte bar jednu sliku zgrade."; return false; }
-        foreach (FloorInputViewModel floor in Floors)
-        {
-            if (floor.Apartments.Count == 0)
-            {
-                ErrorMessage = $"Sprat {floor.FloorNumber} mora imati bar jedan stan.";
-                return false;
-            }
-        }
+        int.TryParse(_floorsText, out int floors);
         CreateBuildingDto dto = new CreateBuildingDto
         {
-            Street = street,
-            StreetNumber = streetNumber,
-            Neighborhood = _neighborhood.Trim(),
-            City = _city.Trim(),
-            Country = _country.Trim(),
-            NumberOfFloors = floors,
-            ManagerId = _managerId,
+            Street = street, StreetNumber = streetNumber,
+            Neighborhood = _neighborhood.Trim(), City = _city.Trim(), Country = _country.Trim(),
+            NumberOfFloors = floors, ManagerId = _managerId,
             ImagePaths = new List<string>(ImagePaths)
         };
         foreach (FloorInputViewModel floor in Floors)
-        {
-            dto.Floors.Add(new FloorInputDto
-            {
-                FloorNumber = floor.FloorNumber,
-                ApartmentNumbers = floor.Apartments.ToList()
-            });
-        }
-        try
-        {
-            _regVm.RegisterBuilding(dto);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Greska: {ex.Message}";
-            return false;
-        }
+            dto.Floors.Add(new FloorInputDto { FloorNumber = floor.FloorNumber, ApartmentNumbers = floor.Apartments.ToList() });
+        return dto;
     }
 }

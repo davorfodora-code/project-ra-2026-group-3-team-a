@@ -50,12 +50,7 @@ internal static class BulletinBoardStatsQueries
         var result = new List<CategoryStatsDto>();
         using IDataReader r = cmd.ExecuteReader();
         while (r.Read())
-            result.Add(new CategoryStatsDto
-            {
-                Category      = r.GetString(0),
-                OfferingCount = r.GetInt32(1),
-                SeekingCount  = r.GetInt32(2),
-            });
+            result.Add(new CategoryStatsDto { Category = r.GetString(0), OfferingCount = r.GetInt32(1), SeekingCount = r.GetInt32(2) });
         return result;
     }
 
@@ -118,6 +113,18 @@ internal static class BulletinBoardStatsQueries
         if (!r.Read()) return (null, 0);
         return (r.GetString(0), r.GetInt32(1));
     }
+
+    internal static BulletinBoardAdDto ReadAd(IDataReader r) => new BulletinBoardAdDto
+    {
+        Id              = r.GetInt64(r.GetOrdinal("id")),
+        TenantFullName  = r.GetString(r.GetOrdinal("tenant_name")),
+        BuildingAddress = r.GetString(r.GetOrdinal("building_address")),
+        IsOffering      = r.GetBoolean(r.GetOrdinal("is_offering")),
+        StartDate       = r.GetDateTime(r.GetOrdinal("start_date")),
+        EndDate         = r.GetDateTime(r.GetOrdinal("end_date")),
+        Category        = r.GetString(r.GetOrdinal("category")),
+        Status          = r.GetString(r.GetOrdinal("status")),
+    };
 
     internal static void AddParam(IDbCommand cmd, string name, object value)
     {

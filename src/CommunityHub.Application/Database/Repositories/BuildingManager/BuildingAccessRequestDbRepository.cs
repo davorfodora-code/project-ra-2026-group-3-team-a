@@ -27,20 +27,7 @@ public class BuildingAccessRequestDbRepository : IBuildingAccessRequestRepositor
         List<BuildingAccessRequest> requests = new();
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            User tenant     = BuildingAccessDbHelpers.ReadUserFromReader(reader, "tenant_id");
-            Building building = BuildingAccessDbHelpers.ReadBuildingFromReader(reader);
-            string? rejectionReason = reader.IsDBNull(reader.GetOrdinal("rejection_reason"))
-                ? null : reader.GetString(reader.GetOrdinal("rejection_reason"));
-            requests.Add(new BuildingAccessRequest(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                tenant,
-                building,
-                reader.GetInt32(reader.GetOrdinal("apartment_number")),
-                reader.GetDateTime(reader.GetOrdinal("created_at")),
-                reader.GetString(reader.GetOrdinal("status")),
-                rejectionReason));
-        }
+            requests.Add(BuildingAccessDbHelpers.ReadAccessRequest(reader));
         return requests;
     }
 

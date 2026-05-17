@@ -30,34 +30,37 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
         List<CommonRoomRequest> requests = new();
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            User tenant = ReadUserFromReader(reader);
-            Building building = ReadBuildingFromReader(reader);
-            CommonRoom room = new CommonRoom(
-                reader.GetInt64(reader.GetOrdinal("room_id")),
-                building,
-                reader.GetString(reader.GetOrdinal("room_name")),
-                reader.GetString(reader.GetOrdinal("description")),
-                reader.GetInt32(reader.GetOrdinal("floor_number")),
-                reader.GetBoolean(reader.GetOrdinal("is_multi_day")));
-            DateTime? proposedStart = reader.IsDBNull(reader.GetOrdinal("proposed_start_date"))
-                ? null : reader.GetDateTime(reader.GetOrdinal("proposed_start_date"));
-            DateTime? proposedEnd = reader.IsDBNull(reader.GetOrdinal("proposed_end_date"))
-                ? null : reader.GetDateTime(reader.GetOrdinal("proposed_end_date"));
-            DateTime? approvedDate = reader.IsDBNull(reader.GetOrdinal("approved_date"))
-                ? null : reader.GetDateTime(reader.GetOrdinal("approved_date"));
-            requests.Add(new CommonRoomRequest(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                tenant,
-                room,
-                reader.GetDateTime(reader.GetOrdinal("requested_start_date")),
-                reader.GetDateTime(reader.GetOrdinal("requested_end_date")),
-                proposedStart,
-                proposedEnd,
-                approvedDate,
-                reader.GetString(reader.GetOrdinal("status"))));
-        }
+            requests.Add(ReadCommonRoomRequest(reader));
         return requests;
+    }
+
+    private CommonRoomRequest ReadCommonRoomRequest(IDataReader reader)
+    {
+        User tenant       = ReadUserFromReader(reader);
+        Building building = ReadBuildingFromReader(reader);
+        CommonRoom room = new CommonRoom(
+            reader.GetInt64(reader.GetOrdinal("room_id")),
+            building,
+            reader.GetString(reader.GetOrdinal("room_name")),
+            reader.GetString(reader.GetOrdinal("description")),
+            reader.GetInt32(reader.GetOrdinal("floor_number")),
+            reader.GetBoolean(reader.GetOrdinal("is_multi_day")));
+        DateTime? proposedStart = reader.IsDBNull(reader.GetOrdinal("proposed_start_date"))
+            ? null : reader.GetDateTime(reader.GetOrdinal("proposed_start_date"));
+        DateTime? proposedEnd = reader.IsDBNull(reader.GetOrdinal("proposed_end_date"))
+            ? null : reader.GetDateTime(reader.GetOrdinal("proposed_end_date"));
+        DateTime? approvedDate = reader.IsDBNull(reader.GetOrdinal("approved_date"))
+            ? null : reader.GetDateTime(reader.GetOrdinal("approved_date"));
+        return new CommonRoomRequest(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            tenant,
+            room,
+            reader.GetDateTime(reader.GetOrdinal("requested_start_date")),
+            reader.GetDateTime(reader.GetOrdinal("requested_end_date")),
+            proposedStart,
+            proposedEnd,
+            approvedDate,
+            reader.GetString(reader.GetOrdinal("status")));
     }
 
     public void ProposeDate(long requestId, DateTime proposedStart, DateTime proposedEnd)

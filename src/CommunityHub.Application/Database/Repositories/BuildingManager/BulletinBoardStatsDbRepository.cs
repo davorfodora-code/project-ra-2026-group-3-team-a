@@ -44,17 +44,7 @@ public class BulletinBoardStatsDbRepository : IBulletinBoardStatsRepository
         var result = new List<BulletinBoardAdDto>();
         using IDataReader r = cmd.ExecuteReader();
         while (r.Read())
-            result.Add(new BulletinBoardAdDto
-            {
-                Id              = r.GetInt64(r.GetOrdinal("id")),
-                TenantFullName  = r.GetString(r.GetOrdinal("tenant_name")),
-                BuildingAddress = r.GetString(r.GetOrdinal("building_address")),
-                IsOffering      = r.GetBoolean(r.GetOrdinal("is_offering")),
-                StartDate       = r.GetDateTime(r.GetOrdinal("start_date")),
-                EndDate         = r.GetDateTime(r.GetOrdinal("end_date")),
-                Category        = r.GetString(r.GetOrdinal("category")),
-                Status          = r.GetString(r.GetOrdinal("status")),
-            });
+            result.Add(BulletinBoardStatsQueries.ReadAd(r));
         return result;
     }
 

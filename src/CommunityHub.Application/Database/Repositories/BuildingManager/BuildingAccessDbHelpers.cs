@@ -82,6 +82,22 @@ internal static class BuildingAccessDbHelpers
         cmd.ExecuteNonQuery();
     }
 
+    internal static BuildingAccessRequest ReadAccessRequest(IDataReader reader)
+    {
+        User tenant       = ReadUserFromReader(reader, "tenant_id");
+        Building building = ReadBuildingFromReader(reader);
+        string? rejectionReason = reader.IsDBNull(reader.GetOrdinal("rejection_reason"))
+            ? null : reader.GetString(reader.GetOrdinal("rejection_reason"));
+        return new BuildingAccessRequest(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            tenant,
+            building,
+            reader.GetInt32(reader.GetOrdinal("apartment_number")),
+            reader.GetDateTime(reader.GetOrdinal("created_at")),
+            reader.GetString(reader.GetOrdinal("status")),
+            rejectionReason);
+    }
+
     internal static void AddParameter(IDbCommand command, string name, object value)
     {
         IDbDataParameter param = command.CreateParameter();
