@@ -24,12 +24,12 @@
                 </StackPanel>
             </Border>
 
-            <!-- Unos broja stana -->
-            <TextBlock Text="Unesite broj stana:" FontSize="13" Margin="0,0,0,6"/>
-            <TextBox x:Name="ApartmentNumberTextBox"
-                     Padding="10,8" BorderBrush="#DDDDDD" BorderThickness="1"
-                     FontSize="14" Width="160" HorizontalAlignment="Left"
-                     TextChanged="ApartmentNumberTextBox_TextChanged"/>
+            <!-- Izbor broja stana -->
+            <TextBlock Text="Izaberite broj stana:" FontSize="13" Margin="0,0,0,6"/>
+            <ComboBox x:Name="ApartmentComboBox"
+                      Padding="10,8" BorderBrush="#DDDDDD" BorderThickness="1"
+                      FontSize="14" Width="160" HorizontalAlignment="Left"
+                      SelectionChanged="ApartmentComboBox_SelectionChanged"/>
 
             <!-- Upozorenje (zauzet stan) -->
             <Border x:Name="WarningBorder" Visibility="Collapsed"

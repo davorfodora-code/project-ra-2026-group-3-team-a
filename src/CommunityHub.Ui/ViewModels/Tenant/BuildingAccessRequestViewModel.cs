@@ -15,6 +15,11 @@ public class BuildingAccessRequestViewModel : BaseViewModel
             Injector.Get<IBuildingMembershipRepository>());
     }
 
+    public List<int> GetApartmentNumbers(long buildingId)
+    {
+        return _service.GetApartmentNumbers(buildingId);
+    }
+
     public bool IsApartmentOccupied(long buildingId, int apartmentNumber)
     {
         return _service.IsApartmentOccupied(buildingId, apartmentNumber);

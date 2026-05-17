@@ -127,6 +127,24 @@ public class BuildingAccessRequestDbRepository : IBuildingAccessRequestRepositor
             reader.GetInt64(reader.GetOrdinal("manager_id")));
     }
 
+    public List<int> GetApartmentNumbers(long buildingId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT ap.apartment_number
+            FROM apartments ap
+            JOIN floors f ON f.id = ap.floor_id
+            WHERE f.building_id = @buildingId
+            ORDER BY ap.apartment_number";
+        AddParameter(cmd, "@buildingId", buildingId);
+        var numbers = new List<int>();
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+            numbers.Add(reader.GetInt32(0));
+        return numbers;
+    }
+
     public void Delete(long requestId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
