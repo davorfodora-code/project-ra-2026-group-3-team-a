@@ -1,7 +1,7 @@
 <Window x:Class="CommunityHub.Ui.Views.Citizen.CitizenHomeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Građanin — Početna" Height="460" Width="520"
+        Title="Građanin — Početna" Height="580" Width="520"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid Margin="20">
@@ -39,6 +39,14 @@
                         Click="MyDistrictButton_Click"
                         Margin="0,0,0,10"/>
 
+                <Button x:Name="MeetingsButton"
+                        Content="Sastanci"
+                        Padding="14,10"
+                        FontSize="14"
+                        Click="MeetingsButton_Click"
+                        Margin="0,0,0,10"
+                        Visibility="Collapsed"/>
+
                 <Button Content="Dogadjaji kvarta"
                         Padding="14,10"
                         FontSize="14"
@@ -52,4 +60,3 @@
         </StackPanel>
     </Grid>
 </Window>
-
