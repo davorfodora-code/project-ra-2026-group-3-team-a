@@ -10,19 +10,12 @@ public class AccessRequestsViewModel : BaseViewModel
     private readonly BuildingAccessRequestService _accessService;
     private readonly CommonRoomRequestService _rentalService;
     private readonly long _managerId;
-
-    // --- Access requests stanje ---
     private List<BuildingAccessRequestDto> _allRequests = new();
-    private ObservableCollection<AccessRequestItemViewModel> _filteredRequests = new();
-    private string _statusFilter = "Svi";
-    private bool _newestFirst = true;
-
-    // --- Rental requests stanje ---
     private List<CommonRoomRequestDto> _allRentalRequests = new();
-    private ObservableCollection<RoomRentalRequestItemViewModel> _filteredRentalRequests = new();
+    private string _statusFilter = "Svi";
     private string _rentalStatusFilter = "Svi";
+    private bool _newestFirst = true;
     private bool _rentalNewestFirst = true;
-
     private int _activeTabIndex;
 
     public AccessRequestsViewModel(long managerId)
@@ -30,10 +23,10 @@ public class AccessRequestsViewModel : BaseViewModel
         _managerId = managerId;
         _accessService = new BuildingAccessRequestService(Injector.Get<IBuildingAccessRequestRepository>());
         _rentalService = new CommonRoomRequestService(Injector.Get<ICommonRoomRequestRepository>());
+        FilteredRequests       = new ObservableCollection<AccessRequestItemViewModel>();
+        FilteredRentalRequests = new ObservableCollection<RoomRentalRequestItemViewModel>();
         LoadAndApply();
     }
-
-    // --- Tabovi ---
 
     public int ActiveTabIndex
     {
@@ -49,13 +42,8 @@ public class AccessRequestsViewModel : BaseViewModel
             }
         }
     }
-
     public bool IsAccessTabActive => _activeTabIndex == 0;
     public bool IsRentalTabActive => _activeTabIndex == 1;
-
-    // ================================================================
-    // --- Access requests: filter, sort, lista, akcije ---
-    // ================================================================
 
     public string StatusFilter
     {
@@ -63,31 +51,15 @@ public class AccessRequestsViewModel : BaseViewModel
         set { if (SetProperty(ref _statusFilter, value)) ApplyFilters(); }
     }
 
-    public bool NewestFirst
-    {
-        get => _newestFirst;
-        private set => SetProperty(ref _newestFirst, value);
-    }
-
     public void ToggleSort()
     {
-        NewestFirst = !NewestFirst;
+        _newestFirst = !_newestFirst;
         ApplyFilters();
     }
 
-    public ObservableCollection<AccessRequestItemViewModel> FilteredRequests
-    {
-        get => _filteredRequests;
-        private set
-        {
-            SetProperty(ref _filteredRequests, value);
-            OnPropertyChanged(nameof(HasRequests));
-            OnPropertyChanged(nameof(HasNoRequests));
-        }
-    }
-
-    public bool HasRequests => _filteredRequests.Count > 0;
-    public bool HasNoRequests => _filteredRequests.Count == 0;
+    public ObservableCollection<AccessRequestItemViewModel> FilteredRequests { get; }
+    public bool HasRequests   => FilteredRequests.Count > 0;
+    public bool HasNoRequests => FilteredRequests.Count == 0;
 
     public void LoadAndApply()
     {
@@ -99,16 +71,16 @@ public class AccessRequestsViewModel : BaseViewModel
     private void ApplyFilters()
     {
         IEnumerable<BuildingAccessRequestDto> filtered = _allRequests;
-
         if (_statusFilter != "Svi")
             filtered = filtered.Where(r => r.Status == _statusFilter);
-
         filtered = _newestFirst
             ? filtered.OrderByDescending(r => r.CreatedAt)
             : filtered.OrderBy(r => r.CreatedAt);
-
-        FilteredRequests = new ObservableCollection<AccessRequestItemViewModel>(
-            filtered.Select(dto => new AccessRequestItemViewModel(dto)));
+        FilteredRequests.Clear();
+        foreach (var dto in filtered)
+            FilteredRequests.Add(new AccessRequestItemViewModel(dto));
+        OnPropertyChanged(nameof(HasRequests));
+        OnPropertyChanged(nameof(HasNoRequests));
     }
 
     public void Approve(long requestId)
@@ -123,41 +95,21 @@ public class AccessRequestsViewModel : BaseViewModel
         LoadAndApply();
     }
 
-    // ================================================================
-    // --- Rental requests: filter, sort, lista, akcije ---
-    // ================================================================
-
     public string RentalStatusFilter
     {
         get => _rentalStatusFilter;
         set { if (SetProperty(ref _rentalStatusFilter, value)) ApplyRentalFilters(); }
     }
 
-    public bool RentalNewestFirst
-    {
-        get => _rentalNewestFirst;
-        private set => SetProperty(ref _rentalNewestFirst, value);
-    }
-
     public void ToggleRentalSort()
     {
-        RentalNewestFirst = !RentalNewestFirst;
+        _rentalNewestFirst = !_rentalNewestFirst;
         ApplyRentalFilters();
     }
 
-    public ObservableCollection<RoomRentalRequestItemViewModel> FilteredRentalRequests
-    {
-        get => _filteredRentalRequests;
-        private set
-        {
-            SetProperty(ref _filteredRentalRequests, value);
-            OnPropertyChanged(nameof(HasRentalRequests));
-            OnPropertyChanged(nameof(HasNoRentalRequests));
-        }
-    }
-
-    public bool HasRentalRequests => _filteredRentalRequests.Count > 0;
-    public bool HasNoRentalRequests => _filteredRentalRequests.Count == 0;
+    public ObservableCollection<RoomRentalRequestItemViewModel> FilteredRentalRequests { get; }
+    public bool HasRentalRequests   => FilteredRentalRequests.Count > 0;
+    public bool HasNoRentalRequests => FilteredRentalRequests.Count == 0;
 
     public void LoadRentalAndApply()
     {
@@ -169,33 +121,27 @@ public class AccessRequestsViewModel : BaseViewModel
     private void ApplyRentalFilters()
     {
         IEnumerable<CommonRoomRequestDto> filtered = _allRentalRequests;
-
         if (_rentalStatusFilter != "Svi")
             filtered = filtered.Where(r => r.Status == _rentalStatusFilter);
-
         filtered = _rentalNewestFirst
             ? filtered.OrderByDescending(r => r.RequestedStartDate)
             : filtered.OrderBy(r => r.RequestedStartDate);
-
-        FilteredRentalRequests = new ObservableCollection<RoomRentalRequestItemViewModel>(
-            filtered.Select(dto => new RoomRentalRequestItemViewModel(dto)));
+        FilteredRentalRequests.Clear();
+        foreach (var dto in filtered)
+            FilteredRentalRequests.Add(new RoomRentalRequestItemViewModel(dto));
+        OnPropertyChanged(nameof(HasRentalRequests));
+        OnPropertyChanged(nameof(HasNoRentalRequests));
     }
 
-    // Vraća zauzete datume za prostoriju — koristi RoomCalendarPage za prikaz
-    public List<DateOnly> GetBookedDatesForRoom(long roomId)
-    {
-        return _rentalService.GetBookedDatesForRoom(roomId);
-    }
+    public List<DateOnly> GetBookedDatesForRoom(long roomId) =>
+        _rentalService.GetBookedDatesForRoom(roomId);
 
-    // Predlaže konkretan termin stanaru za višednevnu prostoriju (status → ProposedCounter)
     public void ProposeDate(long requestId, DateTime proposedStart, DateTime proposedEnd)
     {
         _rentalService.ProposeDate(requestId, proposedStart, proposedEnd);
         LoadRentalAndApply();
     }
 
-    // Odobrava zahtev za jednodnevnu prostoriju sa izabranim danom (status → Approved)
-    // Potpis je kompatibilan sa Action<long, DateTime, DateTime> — drugi parametar se ignoriše
     public void ApproveRentalWithDate(long requestId, DateTime date, DateTime _)
     {
         _rentalService.ApproveWithDate(requestId, date);

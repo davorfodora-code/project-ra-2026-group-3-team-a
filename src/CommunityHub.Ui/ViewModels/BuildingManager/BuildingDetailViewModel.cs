@@ -10,7 +10,6 @@ public class BuildingDetailViewModel : BaseViewModel
     private readonly BuildingService _buildingService;
     private readonly BuildingMembershipsViewModel _membershipsVm;
     private readonly CommonRoomsViewModel _commonRoomsVm;
-
     private BuildingDto _building = null!;
     private int _activeTabIndex;
     private int _imageIndex;
@@ -22,10 +21,7 @@ public class BuildingDetailViewModel : BaseViewModel
         _buildingService = new BuildingService(Injector.Get<IBuildingRepository>());
         _membershipsVm = new BuildingMembershipsViewModel(managerId);
         _commonRoomsVm = new CommonRoomsViewModel();
-
-        // Ucitaj punu zgradu sa spratovima i stanovima
         Building = _buildingService.GetById(building.Id) ?? building;
-
         LoadMembers();
         LoadRooms();
     }
@@ -49,22 +45,14 @@ public class BuildingDetailViewModel : BaseViewModel
         }
     }
 
-    // --- Zaglavlje ---
-
-    public string AddressText => Building.AddressDisplay;
+    public string AddressText        => Building.AddressDisplay;
     public string LocationHeaderText => $"{Building.Neighborhood}, {Building.City}";
-
-    // --- Info tab ---
-
-    public string LocationFullText => $"{Building.City}, {Building.Country}";
+    public string LocationFullText   => $"{Building.City}, {Building.Country}";
     public string NumberOfFloorsText => Building.NumberOfFloors.ToString();
-    public bool HasFloors => Building.Floors.Count > 0;
-
-    // --- Slike (karusel) ---
-
-    public bool HasImages => Building.ImagePaths.Count > 0;
-    public bool HasMultipleImages => Building.ImagePaths.Count > 1;
-    public string? CurrentImagePath => HasImages ? Building.ImagePaths[_imageIndex] : null;
+    public bool   HasFloors          => Building.Floors.Count > 0;
+    public bool   HasImages          => Building.ImagePaths.Count > 0;
+    public bool   HasMultipleImages  => Building.ImagePaths.Count > 1;
+    public string? CurrentImagePath  => HasImages ? Building.ImagePaths[_imageIndex] : null;
 
     public void NextImage()
     {
@@ -86,8 +74,6 @@ public class BuildingDetailViewModel : BaseViewModel
         }
     }
 
-    // --- Tabovi ---
-
     public int ActiveTabIndex
     {
         get => _activeTabIndex;
@@ -103,14 +89,11 @@ public class BuildingDetailViewModel : BaseViewModel
             }
         }
     }
-
     public bool IsInfoTabActive     => _activeTabIndex == 0;
     public bool IsMembersTabActive  => _activeTabIndex == 1;
     public bool IsRoomsTabActive    => _activeTabIndex == 2;
     public bool IsProblemsTabActive => _activeTabIndex == 3;
     public bool IsFabVisible        => IsRoomsTabActive;
-
-    // --- Clanovi ---
 
     public ObservableCollection<BuildingMembershipDto> Members
     {
@@ -122,8 +105,7 @@ public class BuildingDetailViewModel : BaseViewModel
             OnPropertyChanged(nameof(HasNoMembers));
         }
     }
-
-    public bool HasMembers => _members.Count > 0;
+    public bool HasMembers   => _members.Count > 0;
     public bool HasNoMembers => _members.Count == 0;
 
     public void LoadMembers()
@@ -133,13 +115,8 @@ public class BuildingDetailViewModel : BaseViewModel
             List<BuildingMembershipDto> list = _membershipsVm.GetMembershipsByBuildingId(Building.Id);
             Members = new ObservableCollection<BuildingMembershipDto>(list);
         }
-        catch
-        {
-            Members = new ObservableCollection<BuildingMembershipDto>();
-        }
+        catch { Members = new ObservableCollection<BuildingMembershipDto>(); }
     }
-
-    // --- Prostorije ---
 
     public ObservableCollection<CommonRoomDto> Rooms
     {
@@ -151,8 +128,7 @@ public class BuildingDetailViewModel : BaseViewModel
             OnPropertyChanged(nameof(HasNoRooms));
         }
     }
-
-    public bool HasRooms => _rooms.Count > 0;
+    public bool HasRooms   => _rooms.Count > 0;
     public bool HasNoRooms => _rooms.Count == 0;
 
     public void LoadRooms()
@@ -162,9 +138,6 @@ public class BuildingDetailViewModel : BaseViewModel
             List<CommonRoomDto> list = _commonRoomsVm.GetByBuildingId(Building.Id);
             Rooms = new ObservableCollection<CommonRoomDto>(list);
         }
-        catch
-        {
-            Rooms = new ObservableCollection<CommonRoomDto>();
-        }
+        catch { Rooms = new ObservableCollection<CommonRoomDto>(); }
     }
 }
