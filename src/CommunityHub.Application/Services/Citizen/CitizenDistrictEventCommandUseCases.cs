@@ -9,17 +9,20 @@ internal sealed class CitizenDistrictEventCommandUseCases
     private readonly ICitizenDistrictEventApplicationRepository _applicationRepository;
     private readonly ICitizenDistrictMembershipRepository _membershipRepository;
     private readonly ICitizenDistrictRepository _districtRepository;
+    private readonly ICitizenTrustRecordService _trustRecordService;
 
     public CitizenDistrictEventCommandUseCases(
         ICitizenDistrictEventRepository eventRepository,
         ICitizenDistrictEventApplicationRepository applicationRepository,
         ICitizenDistrictMembershipRepository membershipRepository,
-        ICitizenDistrictRepository districtRepository)
+        ICitizenDistrictRepository districtRepository,
+        ICitizenTrustRecordService trustRecordService)
     {
         _eventRepository = eventRepository;
         _applicationRepository = applicationRepository;
         _membershipRepository = membershipRepository;
         _districtRepository = districtRepository;
+        _trustRecordService = trustRecordService;
     }
 
     public EventActionResultDto CreateEvent(long citizenId, CreateDistrictEventDto dto)
@@ -93,10 +96,17 @@ internal sealed class CitizenDistrictEventCommandUseCases
 
         try
         {
+            HashSet<long> affectedCitizenIds = new() { districtEvent.Organizer.Id };
             foreach (VolunteerAttendanceDto attendance in attendances)
             {
                 districtEvent.MarkVolunteerAttendance(organizerId, attendance.VolunteerId, attendance.Attended, DateTime.Now);
                 _applicationRepository.UpsertAttendance(eventId, attendance.VolunteerId, attendance.Attended, DateTime.Now);
+                affectedCitizenIds.Add(attendance.VolunteerId);
+            }
+
+            foreach (long citizenId in affectedCitizenIds)
+            {
+                _trustRecordService.RefreshTrustForCitizen(citizenId, districtEvent.District.Id);
             }
 
             return Success("Prisustvo volontera je uspesno evidentirano.");
@@ -114,6 +124,7 @@ internal sealed class CitizenDistrictEventCommandUseCases
         if (districtEvent.Status != oldStatus)
         {
             _eventRepository.UpdateStatus(districtEvent.Id, districtEvent.Status);
+            _trustRecordService.RefreshTrustForCitizen(districtEvent.Organizer.Id, districtEvent.District.Id);
         }
     }
 

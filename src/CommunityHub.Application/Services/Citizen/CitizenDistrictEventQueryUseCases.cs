@@ -7,13 +7,16 @@ internal sealed class CitizenDistrictEventQueryUseCases
 {
     private readonly ICitizenDistrictEventRepository _eventRepository;
     private readonly ICitizenDistrictMembershipRepository _membershipRepository;
+    private readonly ICitizenTrustRecordService _trustRecordService;
 
     public CitizenDistrictEventQueryUseCases(
         ICitizenDistrictEventRepository eventRepository,
-        ICitizenDistrictMembershipRepository membershipRepository)
+        ICitizenDistrictMembershipRepository membershipRepository,
+        ICitizenTrustRecordService trustRecordService)
     {
         _eventRepository = eventRepository;
         _membershipRepository = membershipRepository;
+        _trustRecordService = trustRecordService;
     }
 
     public long? GetCitizenDistrictId(long citizenId) => _membershipRepository.GetMembershipDistrictId(citizenId);
@@ -84,6 +87,7 @@ internal sealed class CitizenDistrictEventQueryUseCases
         if (districtEvent.Status != oldStatus)
         {
             _eventRepository.UpdateStatus(districtEvent.Id, districtEvent.Status);
+            _trustRecordService.RefreshTrustForCitizen(districtEvent.Organizer.Id, districtEvent.District.Id);
         }
     }
 }

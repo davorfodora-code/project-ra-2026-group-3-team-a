@@ -27,6 +27,8 @@ public class Injector
         { typeof(ICitizenDistrictMembershipRepository),     new CitizenDistrictMembershipDbRepository() },
         { typeof(ICitizenDistrictEventRepository),          new CitizenDistrictEventDbRepository() },
         { typeof(ICitizenDistrictEventApplicationRepository), new CitizenDistrictEventApplicationDbRepository() },
+        { typeof(ICitizenTrustRecordRepository),            new CitizenTrustRecordDbRepository() },
+        { typeof(ICitizenTrustRecordService),               new CitizenTrustRecordService() },
 
         // Tenant
         { typeof(TenantSvc.ITenantBuildingSearchRepository),  new BuildingDbRepository() },
