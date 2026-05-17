@@ -7,7 +7,6 @@ public class NewBuildingViewModel : BaseViewModel
 {
     private readonly BuildingRegistrationViewModel _regVm;
     private readonly long _managerId;
-
     private string _addressInput = string.Empty;
     private string _neighborhood = string.Empty;
     private string _city = string.Empty;
@@ -22,8 +21,6 @@ public class NewBuildingViewModel : BaseViewModel
         Floors = new ObservableCollection<FloorInputViewModel>();
         ImagePaths = new ObservableCollection<string>();
     }
-
-    // --- TwoWay polja forme ---
 
     public string AddressInput
     {
@@ -59,12 +56,8 @@ public class NewBuildingViewModel : BaseViewModel
         }
     }
 
-    // --- Dinamicke kolekcije ---
-
     public ObservableCollection<FloorInputViewModel> Floors { get; }
     public ObservableCollection<string> ImagePaths { get; }
-
-    // --- Greska ---
 
     public string ErrorMessage
     {
@@ -75,10 +68,7 @@ public class NewBuildingViewModel : BaseViewModel
                 OnPropertyChanged(nameof(HasError));
         }
     }
-
     public bool HasError => !string.IsNullOrEmpty(_errorMessage);
-
-    // --- Akcije nad kolekcijama ---
 
     private void RegenerateFloors()
     {
@@ -96,19 +86,14 @@ public class NewBuildingViewModel : BaseViewModel
 
     public void RemoveImage(string path) => ImagePaths.Remove(path);
 
-    // --- Submit ---
-
     public bool TrySubmit()
     {
         ErrorMessage = string.Empty;
-
         if (string.IsNullOrWhiteSpace(_addressInput))
         {
             ErrorMessage = "Unesite adresu zgrade.";
             return false;
         }
-
-        // Poslednja rec u adresi = kucni broj, ostatak = ulica
         string[] parts = _addressInput.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length < 2)
         {
@@ -117,7 +102,6 @@ public class NewBuildingViewModel : BaseViewModel
         }
         string streetNumber = parts[^1];
         string street = string.Join(" ", parts[..^1]);
-
         if (string.IsNullOrWhiteSpace(_neighborhood)) { ErrorMessage = "Unesite naziv naselja."; return false; }
         if (string.IsNullOrWhiteSpace(_city))         { ErrorMessage = "Unesite grad."; return false; }
         if (string.IsNullOrWhiteSpace(_country))      { ErrorMessage = "Unesite drzavu."; return false; }
@@ -126,12 +110,7 @@ public class NewBuildingViewModel : BaseViewModel
             ErrorMessage = "Broj spratova mora biti pozitivan broj.";
             return false;
         }
-        if (ImagePaths.Count == 0)
-        {
-            ErrorMessage = "Dodajte bar jednu sliku zgrade.";
-            return false;
-        }
-
+        if (ImagePaths.Count == 0) { ErrorMessage = "Dodajte bar jednu sliku zgrade."; return false; }
         foreach (FloorInputViewModel floor in Floors)
         {
             if (floor.Apartments.Count == 0)
@@ -140,7 +119,6 @@ public class NewBuildingViewModel : BaseViewModel
                 return false;
             }
         }
-
         CreateBuildingDto dto = new CreateBuildingDto
         {
             Street = street,
@@ -152,7 +130,6 @@ public class NewBuildingViewModel : BaseViewModel
             ManagerId = _managerId,
             ImagePaths = new List<string>(ImagePaths)
         };
-
         foreach (FloorInputViewModel floor in Floors)
         {
             dto.Floors.Add(new FloorInputDto
@@ -161,7 +138,6 @@ public class NewBuildingViewModel : BaseViewModel
                 ApartmentNumbers = floor.Apartments.ToList()
             });
         }
-
         try
         {
             _regVm.RegisterBuilding(dto);
