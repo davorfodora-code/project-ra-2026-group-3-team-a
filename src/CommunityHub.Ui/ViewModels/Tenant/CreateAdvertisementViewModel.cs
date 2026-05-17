@@ -22,46 +22,39 @@ public class CreateAdvertisementViewModel : BaseViewModel
         string category)
     {
         ErrorMessage = string.Empty;
-
-        if (startDate == null || endDate == null)
-        {
-            ErrorMessage = "Molimo izaberite opseg datuma.";
-            return null;
-        }
-
-        if (startDate.Value.Date < DateTime.Today)
-        {
-            ErrorMessage = "Datum početka ne može biti u prošlosti.";
-            return null;
-        }
-
-        if (endDate.Value.Date < DateTime.Today)
-        {
-            ErrorMessage = "Datum kraja ne može biti u prošlosti.";
-            return null;
-        }
-
-        if (endDate.Value.Date < startDate.Value.Date)
-        {
-            ErrorMessage = "Datum kraja mora biti posle datuma početka.";
-            return null;
-        }
-
-        if (string.IsNullOrWhiteSpace(description))
-        {
-            ErrorMessage = "Molimo unesite opis.";
-            return null;
-        }
-
+        string? dateError = ValidateDateRange(startDate, endDate);
+        if (dateError != null) { ErrorMessage = dateError; return null; }
+        string? descError = ValidateDescription(description);
+        if (descError != null) { ErrorMessage = descError; return null; }
         return new CreateAdvertisementDto
         {
-            TenantId = tenantId,
-            BuildingId = buildingId,
+            TenantId    = tenantId,
+            BuildingId  = buildingId,
             Description = description.Trim(),
-            IsOffering = isOffering,
-            StartDate = startDate.Value,
-            EndDate = endDate.Value,
-            Category = category
+            IsOffering  = isOffering,
+            StartDate   = startDate!.Value,
+            EndDate     = endDate!.Value,
+            Category    = category
         };
+    }
+
+    private static string? ValidateDateRange(DateTime? startDate, DateTime? endDate)
+    {
+        if (startDate == null || endDate == null)
+            return "Molimo izaberite opseg datuma.";
+        if (startDate.Value.Date < DateTime.Today)
+            return "Datum početka ne može biti u prošlosti.";
+        if (endDate.Value.Date < DateTime.Today)
+            return "Datum kraja ne može biti u prošlosti.";
+        if (endDate.Value.Date < startDate.Value.Date)
+            return "Datum kraja mora biti posle datuma početka.";
+        return null;
+    }
+
+    private static string? ValidateDescription(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+            return "Molimo unesite opis.";
+        return null;
     }
 }

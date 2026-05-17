@@ -126,6 +126,17 @@ public class AdvertisementDbRepository : IAdvertisementRepository
         DateTime startDate, DateTime endDate, string category, long excludeAdId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = BuildMatchingAdsCommand(connection, bulletinBoardId, isOffering, startDate, endDate, category, excludeAdId);
+        List<Advertisement> ads = new();
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+            ads.Add(MapAdvertisement(reader));
+        return ads;
+    }
+
+    private static IDbCommand BuildMatchingAdsCommand(IDbConnection connection, long bulletinBoardId, bool isOffering,
+        DateTime startDate, DateTime endDate, string category, long excludeAdId)
+    {
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             SELECT a.id, a.description, a.is_offering, a.start_date, a.end_date, a.category, a.status,
@@ -140,20 +151,13 @@ public class AdvertisementDbRepository : IAdvertisementRepository
               AND a.start_date <= @endDate
               AND a.end_date >= @startDate
               AND a.id != @excludeAdId";
-
         AddParameter(cmd, "@bulletinBoardId", bulletinBoardId);
         AddParameter(cmd, "@category", category);
         AddParameter(cmd, "@oppositeOffering", !isOffering);
         AddParameter(cmd, "@startDate", startDate);
         AddParameter(cmd, "@endDate", endDate);
         AddParameter(cmd, "@excludeAdId", excludeAdId);
-
-        List<Advertisement> ads = new();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-            ads.Add(MapAdvertisement(reader));
-
-        return ads;
+        return cmd;
     }
 
     public void ArchiveAd(long adId)
@@ -199,49 +203,64 @@ public class AdvertisementDbRepository : IAdvertisementRepository
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
         using IDbTransaction tx = connection.BeginTransaction();
+        CheckSlotAvailabilityOrThrow(connection, tx, slotId);
+        MarkSlotUnavailable(connection, tx, slotId);
+        long reservationId = InsertReservation(connection, tx, slotId, requesterAdId, tenantId);
+        InsertReservationNotification(connection, tx, slotId, reservationId);
+        tx.Commit();
+    }
 
-        IDbCommand checkCmd = connection.CreateCommand();
-        checkCmd.Transaction = tx;
-        checkCmd.CommandText = "SELECT is_available FROM advertisement_slots WHERE id = @slotId FOR UPDATE";
-        AddParameter(checkCmd, "@slotId", slotId);
-        object? available = checkCmd.ExecuteScalar();
+    private static void CheckSlotAvailabilityOrThrow(IDbConnection connection, IDbTransaction tx, long slotId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.Transaction = tx;
+        cmd.CommandText = "SELECT is_available FROM advertisement_slots WHERE id = @slotId FOR UPDATE";
+        AddParameter(cmd, "@slotId", slotId);
+        object? available = cmd.ExecuteScalar();
         if (available == null || available == DBNull.Value || !(bool)available)
         {
             tx.Rollback();
             throw new InvalidOperationException("Odabrani termin više nije dostupan.");
         }
+    }
 
-        IDbCommand updateCmd = connection.CreateCommand();
-        updateCmd.Transaction = tx;
-        updateCmd.CommandText = "UPDATE advertisement_slots SET is_available = FALSE WHERE id = @slotId";
-        AddParameter(updateCmd, "@slotId", slotId);
-        updateCmd.ExecuteNonQuery();
+    private static void MarkSlotUnavailable(IDbConnection connection, IDbTransaction tx, long slotId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.Transaction = tx;
+        cmd.CommandText = "UPDATE advertisement_slots SET is_available = FALSE WHERE id = @slotId";
+        AddParameter(cmd, "@slotId", slotId);
+        cmd.ExecuteNonQuery();
+    }
 
-        IDbCommand insertCmd = connection.CreateCommand();
-        insertCmd.Transaction = tx;
-        insertCmd.CommandText = @"
+    private static long InsertReservation(IDbConnection connection, IDbTransaction tx, long slotId, long requesterAdId, long tenantId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.Transaction = tx;
+        cmd.CommandText = @"
             INSERT INTO slot_reservations (slot_id, requester_ad_id, tenant_id)
             VALUES (@slotId, @requesterAdId, @tenantId)
             RETURNING id";
-        AddParameter(insertCmd, "@slotId", slotId);
-        AddParameter(insertCmd, "@requesterAdId", requesterAdId);
-        AddParameter(insertCmd, "@tenantId", tenantId);
-        long reservationId = Convert.ToInt64(insertCmd.ExecuteScalar());
+        AddParameter(cmd, "@slotId", slotId);
+        AddParameter(cmd, "@requesterAdId", requesterAdId);
+        AddParameter(cmd, "@tenantId", tenantId);
+        return Convert.ToInt64(cmd.ExecuteScalar());
+    }
 
-        IDbCommand notifCmd = connection.CreateCommand();
-        notifCmd.Transaction = tx;
-        notifCmd.CommandText = @"
+    private static void InsertReservationNotification(IDbConnection connection, IDbTransaction tx, long slotId, long reservationId)
+    {
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.Transaction = tx;
+        cmd.CommandText = @"
             INSERT INTO notifications (tenant_id, type, related_ad_id, related_slot_id, is_read, created_at)
             SELECT a.tenant_id, 'Rezervacija termina', a.id, @reservationId, FALSE, @now
             FROM advertisement_slots s
             JOIN advertisements a ON a.id = s.advertisement_id
             WHERE s.id = @slotId";
-        AddParameter(notifCmd, "@reservationId", reservationId);
-        AddParameter(notifCmd, "@now", DateTime.UtcNow);
-        AddParameter(notifCmd, "@slotId", slotId);
-        notifCmd.ExecuteNonQuery();
-
-        tx.Commit();
+        AddParameter(cmd, "@reservationId", reservationId);
+        AddParameter(cmd, "@now", DateTime.UtcNow);
+        AddParameter(cmd, "@slotId", slotId);
+        cmd.ExecuteNonQuery();
     }
 
     public void ArchiveExpiredAds(long bulletinBoardId)
