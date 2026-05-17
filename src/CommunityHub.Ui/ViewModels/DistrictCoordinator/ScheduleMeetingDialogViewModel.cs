@@ -87,48 +87,40 @@ public class ScheduleMeetingDialogViewModel : ViewModelBase
 
     public event Action<bool>? CloseRequested;
 
+    private bool SetError(string message) { ErrorText = message; return false; }
+
+    private bool TryValidateMeetingForm(out TimeSpan meetingTime)
+    {
+        meetingTime = default;
+        if (!TimeSpan.TryParseExact(_meetingTimeText.Trim(), @"hh\:mm", null, out meetingTime))
+            return SetError("Vreme mora biti u formatu HH:mm (npr. 20:00).");
+        if (_dateRangeStart == null)
+            return SetError("Odaberite početni datum opsega.");
+        if (_dateRangeEnd == null)
+            return SetError("Odaberite krajnji datum opsega.");
+        if (_dateRangeStart.Value <= DateTime.Today)
+            return SetError("Početni datum mora biti u budućnosti.");
+        if (_dateRangeEnd.Value < _dateRangeStart.Value)
+            return SetError("Krajnji datum mora biti posle početnog datuma.");
+        return true;
+    }
+
+    private CreateMeetingDto BuildMeetingDto(TimeSpan meetingTime) => new CreateMeetingDto
+    {
+        DistrictId     = _districtId,
+        MeetingType    = _selectedType,
+        MeetingTime    = meetingTime,
+        DateRangeStart = _dateRangeStart!.Value,
+        DateRangeEnd   = _dateRangeEnd!.Value
+    };
+
     private void OnConfirm()
     {
         ErrorText = string.Empty;
-
-        if (!TimeSpan.TryParseExact(_meetingTimeText.Trim(), @"hh\:mm", null, out TimeSpan meetingTime))
-        {
-            ErrorText = "Vreme mora biti u formatu HH:mm (npr. 20:00).";
-            return;
-        }
-        if (_dateRangeStart == null)
-        {
-            ErrorText = "Odaberite početni datum opsega.";
-            return;
-        }
-        if (_dateRangeEnd == null)
-        {
-            ErrorText = "Odaberite krajnji datum opsega.";
-            return;
-        }
-        if (_dateRangeStart.Value <= DateTime.Today)
-        {
-            ErrorText = "Početni datum mora biti u budućnosti.";
-            return;
-        }
-        if (_dateRangeEnd.Value < _dateRangeStart.Value)
-        {
-            ErrorText = "Krajnji datum mora biti posle početnog datuma.";
-            return;
-        }
-
-        CreateMeetingDto dto = new CreateMeetingDto
-        {
-            DistrictId     = _districtId,
-            MeetingType    = _selectedType,
-            MeetingTime    = meetingTime,
-            DateRangeStart = _dateRangeStart.Value,
-            DateRangeEnd   = _dateRangeEnd.Value
-        };
-
+        if (!TryValidateMeetingForm(out TimeSpan meetingTime)) return;
         try
         {
-            _service.ScheduleMeeting(dto);
+            _service.ScheduleMeeting(BuildMeetingDto(meetingTime));
             CloseRequested?.Invoke(true);
         }
         catch (Exception ex)

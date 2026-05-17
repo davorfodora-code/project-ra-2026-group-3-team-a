@@ -8,6 +8,18 @@ namespace CommunityHub.Application.Database.Repositories.DistrictCoordinator;
 
 public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepository
 {
+    private const string GetByCoordinatorQuery = @"
+        SELECT r.id, r.creation_date, r.status, r.rejection_reason,
+               u.id AS user_id, u.username, u.password, u.name, u.surname, u.birthday, u.role, u.address,
+               d.id AS district_id, d.name AS district_name, d.description, d.budget,
+               l.id AS location_id, l.city, l.country
+        FROM district_access_requests r
+        JOIN users u ON u.id = r.user_id
+        JOIN districts d ON d.id = r.district_id
+        JOIN locations l ON l.id = d.location_id
+        WHERE d.coordinator_id = @coordinatorId
+        ORDER BY r.creation_date DESC";
+
     public long Create(long userId, long districtId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
@@ -18,10 +30,10 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
             VALUES (@userId, @districtId, @creationDate, @status)
             RETURNING id";
 
-        AddParameter(command, "@userId", userId);
-        AddParameter(command, "@districtId", districtId);
+        AddParameter(command, "@userId",       userId);
+        AddParameter(command, "@districtId",   districtId);
         AddParameter(command, "@creationDate", DateTime.Now);
-        AddParameter(command, "@status", DistrictAccessRequestStatus.Pending.ToString());
+        AddParameter(command, "@status",       DistrictAccessRequestStatus.Pending.ToString());
 
         return Convert.ToInt64(command.ExecuteScalar());
     }
@@ -39,12 +51,11 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
               AND status = @status
             LIMIT 1";
 
-        AddParameter(command, "@userId", userId);
+        AddParameter(command, "@userId",     userId);
         AddParameter(command, "@districtId", districtId);
-        AddParameter(command, "@status", DistrictAccessRequestStatus.Pending.ToString());
+        AddParameter(command, "@status",     DistrictAccessRequestStatus.Pending.ToString());
 
-        object? result = command.ExecuteScalar();
-        return result != null;
+        return command.ExecuteScalar() != null;
     }
 
     public List<DistrictAccessRequest> GetByCoordinatorId(long coordinatorId)
@@ -52,141 +63,22 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = BuildGetByCoordinatorQuery();
+        cmd.CommandText = GetByCoordinatorQuery;
         AddParameter(cmd, "@coordinatorId", coordinatorId);
 
         List<DistrictAccessRequest> requests = new List<DistrictAccessRequest>();
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            requests.Add(MapAccessRequest(reader, coordinatorId));
-        }
-
+            requests.Add(DistrictAccessRequestDbMapper.MapAccessRequest(reader, coordinatorId));
         return requests;
-    }
-
-    private static string BuildGetByCoordinatorQuery()
-    {
-        return @"
-            SELECT r.id, r.creation_date, r.status, r.rejection_reason,
-                   u.id AS user_id, u.username, u.password, u.name, u.surname, u.birthday, u.role, u.address,
-                   d.id AS district_id, d.name AS district_name, d.description, d.budget,
-                   l.id AS location_id, l.city, l.country
-            FROM district_access_requests r
-            JOIN users u ON u.id = r.user_id
-            JOIN districts d ON d.id = r.district_id
-            JOIN locations l ON l.id = d.location_id
-            WHERE d.coordinator_id = @coordinatorId
-            ORDER BY r.creation_date DESC";
-    }
-
-    private static DistrictAccessRequest MapAccessRequest(IDataReader reader, long coordinatorId)
-    {
-        User user = MapUserFromReader(reader);
-        District district = MapDistrictFromReader(reader, coordinatorId);
-
-        DistrictAccessRequestStatus status = Enum.Parse<DistrictAccessRequestStatus>(
-            reader.GetString(reader.GetOrdinal("status")));
-        string? rejectionReason = ReadNullableString(reader, "rejection_reason");
-
-        return new DistrictAccessRequest(
-            reader.GetInt64(reader.GetOrdinal("id")),
-            user, district,
-            reader.GetDateTime(reader.GetOrdinal("creation_date")),
-            status, rejectionReason);
-    }
-
-    private static User MapUserFromReader(IDataReader reader)
-    {
-        string? userAddress = ReadNullableString(reader, "address");
-        return new User(
-            reader.GetInt64(reader.GetOrdinal("user_id")),
-            reader.GetString(reader.GetOrdinal("username")),
-            reader.GetString(reader.GetOrdinal("password")),
-            reader.GetString(reader.GetOrdinal("name")),
-            reader.GetString(reader.GetOrdinal("surname")),
-            reader.GetDateTime(reader.GetOrdinal("birthday")),
-            reader.GetString(reader.GetOrdinal("role")),
-            userAddress);
-    }
-
-    private static District MapDistrictFromReader(IDataReader reader, long coordinatorId)
-    {
-        Location location = new Location(
-            reader.GetInt64(reader.GetOrdinal("location_id")),
-            reader.GetString(reader.GetOrdinal("city")),
-            reader.GetString(reader.GetOrdinal("country")));
-
-        User coordinator = new User(coordinatorId, "", "", "", "", DateTime.MinValue, "DistrictCoordinator");
-
-        return new District(
-            reader.GetInt64(reader.GetOrdinal("district_id")),
-            reader.GetString(reader.GetOrdinal("district_name")),
-            reader.GetString(reader.GetOrdinal("description")),
-            location,
-            reader.GetDecimal(reader.GetOrdinal("budget")),
-            coordinator);
-    }
-
-    private static string? ReadNullableString(IDataReader reader, string column)
-    {
-        int ord = reader.GetOrdinal(column);
-        return reader.IsDBNull(ord) ? null : reader.GetString(ord);
     }
 
     public void Approve(long requestId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
-
-        (long userId, long districtId) = GetRequestUserAndDistrict(connection, requestId);
-        UpdateRequestStatus(connection, requestId, "Approved");
-        InsertMembership(connection, districtId, userId);
-    }
-
-    private (long userId, long districtId) GetRequestUserAndDistrict(IDbConnection connection, long requestId)
-    {
-        IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT user_id, district_id
-            FROM district_access_requests
-            WHERE id = @requestId";
-
-        AddParameter(cmd, "@requestId", requestId);
-
-        using IDataReader reader = cmd.ExecuteReader();
-        if (!reader.Read())
-            throw new InvalidOperationException("Zahtev nije pronadjen.");
-
-        long userId = reader.GetInt64(reader.GetOrdinal("user_id"));
-        long districtId = reader.GetInt64(reader.GetOrdinal("district_id"));
-        return (userId, districtId);
-    }
-
-    private void UpdateRequestStatus(IDbConnection connection, long requestId, string status)
-    {
-        IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            UPDATE district_access_requests
-            SET status = @status
-            WHERE id = @requestId";
-
-        AddParameter(cmd, "@requestId", requestId);
-        AddParameter(cmd, "@status", status);
-        cmd.ExecuteNonQuery();
-    }
-
-    private void InsertMembership(IDbConnection connection, long districtId, long userId)
-    {
-        IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            INSERT INTO district_memberships (district_id, user_id, join_date, trust_level)
-            VALUES (@districtId, @userId, @joinDate, @trustLevel)";
-
-        AddParameter(cmd, "@districtId", districtId);
-        AddParameter(cmd, "@userId", userId);
-        AddParameter(cmd, "@joinDate", DateTime.Now);
-        AddParameter(cmd, "@trustLevel", CitizenTrustLevel.Nov.ToString());
-        cmd.ExecuteNonQuery();
+        (long userId, long districtId) = DistrictApprovalHelper.GetRequestUserAndDistrict(connection, requestId);
+        DistrictApprovalHelper.UpdateRequestStatus(connection, requestId, "Approved");
+        DistrictApprovalHelper.InsertMembership(connection, districtId, userId);
     }
 
     public void Reject(long requestId, string? reason)
@@ -223,25 +115,8 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
         List<DistrictMembership> memberships = new List<DistrictMembership>();
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            memberships.Add(MapMembership(reader));
-        }
+            memberships.Add(DistrictAccessRequestDbMapper.MapMembership(reader));
         return memberships;
-    }
-
-    private static DistrictMembership MapMembership(IDataReader reader)
-    {
-        User user = MapUserFromReader(reader);
-        int trustOrd = reader.GetOrdinal("trust_level");
-        CitizenTrustLevel trustLevel = reader.IsDBNull(trustOrd)
-            ? CitizenTrustLevel.Nov
-            : Enum.Parse<CitizenTrustLevel>(reader.GetString(trustOrd));
-        return new DistrictMembership(
-            reader.GetInt64(reader.GetOrdinal("id")),
-            null!,
-            user,
-            reader.GetDateTime(reader.GetOrdinal("join_date")),
-            trustLevel);
     }
 
     public List<District> GetDistrictsByCoordinatorId(long coordinatorId)
@@ -262,28 +137,8 @@ public class DistrictAccessRequestDbRepository : IDistrictAccessRequestRepositor
         List<District> districts = new List<District>();
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            districts.Add(MapDistrictBasic(reader, coordinatorId));
-        }
+            districts.Add(DistrictAccessRequestDbMapper.MapDistrictBasic(reader, coordinatorId));
         return districts;
-    }
-
-    private static District MapDistrictBasic(IDataReader reader, long coordinatorId)
-    {
-        Location location = new Location(
-            reader.GetInt64(reader.GetOrdinal("location_id")),
-            reader.GetString(reader.GetOrdinal("city")),
-            reader.GetString(reader.GetOrdinal("country")));
-
-        User coordinator = new User(coordinatorId, "", "", "", "", DateTime.MinValue, "DistrictCoordinator");
-
-        return new District(
-            reader.GetInt64(reader.GetOrdinal("id")),
-            reader.GetString(reader.GetOrdinal("name")),
-            reader.GetString(reader.GetOrdinal("description")),
-            location,
-            reader.GetDecimal(reader.GetOrdinal("budget")),
-            coordinator);
     }
 
     private void AddParameter(IDbCommand command, string name, object value)

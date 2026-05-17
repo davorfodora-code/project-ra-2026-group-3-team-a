@@ -94,24 +94,24 @@
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,10">
             <Button Style="{StaticResource FilterButtonStyle}" Content="Prikaži sve sastanke"
-                    Command="{Binding SetFilterCommand}" CommandParameter="all"
-                    Background="{Binding ActiveFilter, Converter={StaticResource FilterBg}, ConverterParameter=all}"
-                    Foreground="{Binding ActiveFilter, Converter={StaticResource FilterFg}, ConverterParameter=all}"/>
+                    Command="{Binding MeetingList.SetFilterCommand}" CommandParameter="all"
+                    Background="{Binding MeetingList.ActiveFilter, Converter={StaticResource FilterBg}, ConverterParameter=all}"
+                    Foreground="{Binding MeetingList.ActiveFilter, Converter={StaticResource FilterFg}, ConverterParameter=all}"/>
             <Button Style="{StaticResource FilterButtonStyle}" Content="Prikaži zakazane"
-                    Command="{Binding SetFilterCommand}" CommandParameter="scheduled"
-                    Background="{Binding ActiveFilter, Converter={StaticResource FilterBg}, ConverterParameter=scheduled}"
-                    Foreground="{Binding ActiveFilter, Converter={StaticResource FilterFg}, ConverterParameter=scheduled}"/>
+                    Command="{Binding MeetingList.SetFilterCommand}" CommandParameter="scheduled"
+                    Background="{Binding MeetingList.ActiveFilter, Converter={StaticResource FilterBg}, ConverterParameter=scheduled}"
+                    Foreground="{Binding MeetingList.ActiveFilter, Converter={StaticResource FilterFg}, ConverterParameter=scheduled}"/>
             <Button Style="{StaticResource FilterButtonStyle}" Content="Prikaži u pripremi"
-                    Command="{Binding SetFilterCommand}" CommandParameter="inprogress"
-                    Background="{Binding ActiveFilter, Converter={StaticResource FilterBg}, ConverterParameter=inprogress}"
-                    Foreground="{Binding ActiveFilter, Converter={StaticResource FilterFg}, ConverterParameter=inprogress}"/>
+                    Command="{Binding MeetingList.SetFilterCommand}" CommandParameter="inprogress"
+                    Background="{Binding MeetingList.ActiveFilter, Converter={StaticResource FilterBg}, ConverterParameter=inprogress}"
+                    Foreground="{Binding MeetingList.ActiveFilter, Converter={StaticResource FilterFg}, ConverterParameter=inprogress}"/>
         </StackPanel>
 
         <TextBlock Grid.Row="4" Text="Pregled svih sastanaka"
                    FontSize="13" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,8"/>
 
         <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding FilteredMeetings}">
+            <ItemsControl ItemsSource="{Binding MeetingList.FilteredMeetings}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Columns="2"/>
