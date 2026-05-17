@@ -108,6 +108,7 @@ CREATE TABLE district_meeting_votes (
     meeting_id BIGINT NOT NULL,
     citizen_id BIGINT NOT NULL,
     preferred_date DATE NOT NULL,
+    CONSTRAINT uq_meeting_citizen_vote UNIQUE (meeting_id, citizen_id),
     FOREIGN KEY (meeting_id) REFERENCES district_meetings(id),
     FOREIGN KEY (citizen_id) REFERENCES users(id)
 );
