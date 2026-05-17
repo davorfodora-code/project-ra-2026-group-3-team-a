@@ -1,9 +1,10 @@
 using System.Data;
 using CommunityHub.Application.Domain;
+using CommunityHub.Application.Services;
 
 namespace CommunityHub.Application.Database.Repositories;
 
-public class UserDbRepository
+public class UserDbRepository : IUserRepository
 {
     // Vraća id i ulogu korisnika ako su kredencijali ispravni, inače null
     public (long Id, string Role)? GetByCredentials(string username, string password)

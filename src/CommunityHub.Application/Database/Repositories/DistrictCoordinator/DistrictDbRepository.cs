@@ -51,9 +51,7 @@ public class DistrictDbRepository : IDistrictRepository
     private void InsertStreets(IDbConnection connection, IEnumerable<DistrictStreet> streets, long districtId)
     {
         foreach (DistrictStreet street in streets)
-        {
             InsertSingleStreet(connection, street, districtId);
-        }
     }
 
     private void InsertSingleStreet(IDbConnection connection, DistrictStreet street, long districtId)
@@ -73,9 +71,7 @@ public class DistrictDbRepository : IDistrictRepository
     private void InsertImages(IDbConnection connection, IEnumerable<Image> images, long districtId)
     {
         foreach (Image image in images)
-        {
             InsertSingleImage(connection, image, districtId);
-        }
     }
 
     private void InsertSingleImage(IDbConnection connection, Image image, long districtId)
@@ -90,10 +86,7 @@ public class DistrictDbRepository : IDistrictRepository
         cmd.ExecuteNonQuery();
     }
 
-    public List<District> GetAll()
-    {
-        return Search(null, null, null, null);
-    }
+    public List<District> GetAll() => Search(null, null, null, null);
 
     public List<District> GetByCoordinatorId(long coordinatorId)
     {
@@ -112,7 +105,7 @@ public class DistrictDbRepository : IDistrictRepository
 
         AddParameter(cmd, "@coordinatorId", coordinatorId);
 
-        List<District> districts = ReadDistrictsFromSearchCommand(cmd);
+        List<District> districts = DistrictDbMapper.ReadDistrictsFromCommand(cmd);
         foreach (District district in districts)
         {
             LoadDistrictStreets(connection, district);
@@ -125,8 +118,8 @@ public class DistrictDbRepository : IDistrictRepository
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
-        IDbCommand cmd = CreateDistrictSearchCommand(connection, name, address, city, country);
-        List<District> districts = ReadDistrictsFromSearchCommand(cmd);
+        IDbCommand cmd = DistrictSearchQueryBuilder.Build(connection, name, address, city, country);
+        List<District> districts = DistrictDbMapper.ReadDistrictsFromCommand(cmd);
 
         foreach (District district in districts)
         {
@@ -135,133 +128,6 @@ public class DistrictDbRepository : IDistrictRepository
         }
 
         return districts;
-    }
-
-    private IDbCommand CreateDistrictSearchCommand(
-        IDbConnection connection,
-        string? name,
-        string? address,
-        string? city,
-        string? country)
-    {
-        IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT d.id, d.name, d.description, d.budget,
-                   l.id AS location_id, l.city, l.country,
-                   u.id AS coordinator_id, u.username, u.password, u.name AS coordinator_name, u.surname, u.birthday
-            FROM districts d
-            JOIN locations l ON l.id = d.location_id
-            JOIN users u ON u.id = d.coordinator_id
-            WHERE 1=1";
-
-        AppendDistrictNameFilter(cmd, name);
-        AppendCityFilter(cmd, city);
-        AppendCountryFilter(cmd, country);
-        AppendAddressFilter(cmd, address);
-
-        return cmd;
-    }
-
-    private void AppendDistrictNameFilter(IDbCommand cmd, string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return;
-        }
-
-        cmd.CommandText += " AND d.name ILIKE @name";
-        AddParameter(cmd, "@name", "%" + name.Trim() + "%");
-    }
-
-    private void AppendCityFilter(IDbCommand cmd, string? city)
-    {
-        if (string.IsNullOrWhiteSpace(city))
-        {
-            return;
-        }
-
-        cmd.CommandText += " AND l.city ILIKE @city";
-        AddParameter(cmd, "@city", "%" + city.Trim() + "%");
-    }
-
-    private void AppendCountryFilter(IDbCommand cmd, string? country)
-    {
-        if (string.IsNullOrWhiteSpace(country))
-        {
-            return;
-        }
-
-        cmd.CommandText += " AND l.country ILIKE @country";
-        AddParameter(cmd, "@country", "%" + country.Trim() + "%");
-    }
-
-    private void AppendAddressFilter(IDbCommand cmd, string? address)
-    {
-        if (string.IsNullOrWhiteSpace(address))
-        {
-            return;
-        }
-
-        ParseAddressFilter(address, out string streetPart, out int? number);
-        if (string.IsNullOrWhiteSpace(streetPart))
-        {
-            return;
-        }
-
-        cmd.CommandText += @"
-                    AND EXISTS (
-                        SELECT 1
-                        FROM district_streets ds
-                        WHERE ds.district_id = d.id
-                          AND ds.street_name ILIKE @street";
-
-        AddParameter(cmd, "@street", "%" + streetPart + "%");
-
-        if (number.HasValue)
-        {
-            cmd.CommandText += " AND @addressNumber BETWEEN ds.start_number AND ds.end_number";
-            AddParameter(cmd, "@addressNumber", number.Value);
-        }
-
-        cmd.CommandText += ")";
-    }
-
-    private static List<District> ReadDistrictsFromSearchCommand(IDbCommand cmd)
-    {
-        List<District> districts = new List<District>();
-
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            districts.Add(MapDistrictSearchRow(reader));
-        }
-
-        return districts;
-    }
-
-    private static District MapDistrictSearchRow(IDataReader reader)
-    {
-        Location location = new Location(
-            reader.GetInt64(reader.GetOrdinal("location_id")),
-            reader.GetString(reader.GetOrdinal("city")),
-            reader.GetString(reader.GetOrdinal("country")));
-
-        User coordinator = new User(
-            reader.GetInt64(reader.GetOrdinal("coordinator_id")),
-            reader.GetString(reader.GetOrdinal("username")),
-            reader.GetString(reader.GetOrdinal("password")),
-            reader.GetString(reader.GetOrdinal("coordinator_name")),
-            reader.GetString(reader.GetOrdinal("surname")),
-            reader.GetDateTime(reader.GetOrdinal("birthday")),
-            "DistrictCoordinator");
-
-        return new District(
-            reader.GetInt64(reader.GetOrdinal("id")),
-            reader.GetString(reader.GetOrdinal("name")),
-            reader.GetString(reader.GetOrdinal("description")),
-            location,
-            reader.GetDecimal(reader.GetOrdinal("budget")),
-            coordinator);
     }
 
     private void LoadDistrictStreets(IDbConnection connection, District district)
@@ -302,26 +168,6 @@ public class DistrictDbRepository : IDistrictRepository
                 imageReader.GetInt64(imageReader.GetOrdinal("id")),
                 imageReader.GetString(imageReader.GetOrdinal("url"))));
         }
-    }
-
-    private static void ParseAddressFilter(string input, out string streetPart, out int? number)
-    {
-        string value = input.Trim();
-        number = null;
-
-        int lastSpaceIndex = value.LastIndexOf(' ');
-        if (lastSpaceIndex > 0)
-        {
-            string lastToken = value[(lastSpaceIndex + 1)..];
-            if (int.TryParse(lastToken, out int parsedNumber))
-            {
-                number = parsedNumber;
-                streetPart = value[..lastSpaceIndex].Trim();
-                return;
-            }
-        }
-
-        streetPart = value;
     }
 
     private void AddParameter(IDbCommand command, string name, object value)
