@@ -22,9 +22,13 @@ public partial class MyDistrictWindow : Window
         DistrictListItemDto? district = _viewModel.GetMyDistrict();
         if (district == null)
         {
-            MessageBox.Show("Niste član nijednog kvarta.", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
-            new CitizenHomeWindow(_userId).Show();
-            Close();
+            DistrictNameTextBlock.Text = "Moj kvart";
+            DistrictDescriptionTextBlock.Text = "Niste član nijednog kvarta.";
+            DistrictLocationTextBlock.Text = "-";
+            MyJoinDateTextBlock.Text = "-";
+            StreetsListBox.ItemsSource = new List<string> { "Nema dostupnih podataka." };
+            DistrictImagesListBox.ItemsSource = new List<string> { "Nema dostupnih slika." };
+            TrustRecordsDataGrid.ItemsSource = new List<MyDistrictTrustRowViewModel>();
             return;
         }
 

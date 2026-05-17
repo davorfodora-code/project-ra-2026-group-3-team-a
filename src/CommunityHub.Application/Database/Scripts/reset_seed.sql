@@ -126,6 +126,9 @@ CREATE TABLE district_memberships (
     district_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     join_date TIMESTAMP NOT NULL,
+    trust_level VARCHAR(30) NOT NULL DEFAULT 'Nov',
+    CONSTRAINT chk_trust_level
+        CHECK (trust_level IN ('Nov', 'Neaktivan', 'Aktivan', 'Istaknuti', 'OdPoverenja')),
     FOREIGN KEY (district_id) REFERENCES districts(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -479,8 +482,8 @@ INSERT INTO district_access_requests (id, user_id, district_id, creation_date, s
 (-4, -7, -2, '2025-03-08 11:20:00', 'Rejected', 'Adresa nije u opsegu ulica kvarta.');
 
 -- Članstva u kvartovima (za odobrene zahteve)
-INSERT INTO district_memberships (id, district_id, user_id, join_date) VALUES
-(-1, -2, -8, '2025-03-12 16:45:00');
+INSERT INTO district_memberships (id, district_id, user_id, join_date, trust_level) VALUES
+(-1, -2, -8, '2025-03-12 16:45:00', 'Nov');
 
 -- Dogadjaji gradjana (4.3)
 INSERT INTO district_events (id, district_id, organizer_id, name, description, event_date, start_time, duration_minutes, min_volunteers, status, created_at) VALUES

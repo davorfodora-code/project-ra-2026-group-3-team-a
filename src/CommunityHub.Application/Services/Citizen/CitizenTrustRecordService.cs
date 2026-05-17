@@ -15,6 +15,14 @@ public class CitizenTrustRecordService : ICitizenTrustRecordService
         _membershipRepository = Injector.Get<ICitizenDistrictMembershipRepository>();
     }
 
+    public CitizenTrustRecordService(
+        ICitizenTrustRecordRepository trustRepository,
+        ICitizenDistrictMembershipRepository membershipRepository)
+    {
+        _trustRepository = trustRepository;
+        _membershipRepository = membershipRepository;
+    }
+
     public CitizenTrustRecordDto? GetMyTrustRecord(long citizenId)
     {
         long? districtId = _membershipRepository.GetMembershipDistrictId(citizenId);
