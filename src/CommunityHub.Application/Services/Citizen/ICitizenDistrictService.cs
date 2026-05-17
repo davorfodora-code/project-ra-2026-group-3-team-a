@@ -7,6 +7,6 @@ namespace CommunityHub.Application.Services.Citizen
     {
         List<DistrictListItemDto> GetAll();
         List<DistrictListItemDto> Search(DistrictSearchFilterDto filter);
-
+        DistrictListItemDto? GetById(long districtId);
     }
 }

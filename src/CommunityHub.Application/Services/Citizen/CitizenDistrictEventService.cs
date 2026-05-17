@@ -14,13 +14,15 @@ public class CitizenDistrictEventService : ICitizenDistrictEventService
         ICitizenDistrictEventApplicationRepository applicationRepository = Injector.Get<ICitizenDistrictEventApplicationRepository>();
         ICitizenDistrictMembershipRepository membershipRepository = Injector.Get<ICitizenDistrictMembershipRepository>();
         ICitizenDistrictRepository districtRepository = Injector.Get<ICitizenDistrictRepository>();
+        ICitizenTrustRecordService trustRecordService = Injector.Get<ICitizenTrustRecordService>();
 
-        _queryUseCases = new CitizenDistrictEventQueryUseCases(eventRepository, membershipRepository);
+        _queryUseCases = new CitizenDistrictEventQueryUseCases(eventRepository, membershipRepository, trustRecordService);
         _commandUseCases = new CitizenDistrictEventCommandUseCases(
             eventRepository,
             applicationRepository,
             membershipRepository,
-            districtRepository);
+            districtRepository,
+            trustRecordService);
     }
 
     public long? GetCitizenDistrictId(long citizenId) => _queryUseCases.GetCitizenDistrictId(citizenId);
