@@ -13,6 +13,13 @@ public partial class SchedulingPage : System.Windows.Controls.Page
     private static readonly Brush DarkBrush  = new SolidColorBrush(Color.FromRgb(0x4A, 0x5D, 0x6E));
     private static readonly Brush LightBrush = new SolidColorBrush(Color.FromRgb(0xBD, 0xC3, 0xC7));
 
+    private const double ChartBarW    = 26;
+    private const double ChartBarGap  = 5;
+    private const double ChartDayW    = 90;
+    private const double ChartMaxH    = 80;
+    private const double ChartBaseY   = 90;
+    private const double ChartLeftPad = 8;
+
     public SchedulingPage(TenantWindow shell)
     {
         InitializeComponent();
@@ -48,45 +55,38 @@ public partial class SchedulingPage : System.Windows.Controls.Page
     {
         WeeklyChartCanvas.Children.Clear();
         if (stats.Length == 0) return;
-
-        const double barW    = 26;
-        const double barGap  = 5;
-        const double dayW    = 90;
-        const double maxH    = 80;
-        const double baseY   = 90;
-        const double leftPad = 8;
-
         int maxCount = Math.Max(1, stats.Max(s => Math.Max(s.OfferingCount, s.SeekingCount)));
-
         for (int i = 0; i < stats.Length; i++)
         {
-            var stat   = stats[i];
-            double dayX = leftPad + i * dayW;
-            double pairW = barW * 2 + barGap;
-            double barX0 = dayX + (dayW - pairW) / 2.0;
-
-            double offerH = Math.Max((stat.OfferingCount / (double)maxCount) * maxH, 1);
-            double seekH  = Math.Max((stat.SeekingCount  / (double)maxCount) * maxH, 1);
-
-            // Offering bar (dark, left)
-            AddBar(barX0,          baseY - offerH, barW, offerH, DarkBrush);
-            AddCount(barX0,          baseY - offerH - 18, barW, stat.OfferingCount);
-
-            // Seeking bar (light, right)
-            AddBar(barX0 + barW + barGap, baseY - seekH, barW, seekH, LightBrush);
-            AddCount(barX0 + barW + barGap, baseY - seekH - 18, barW, stat.SeekingCount);
-
-            // Day label
-            var dayLbl = new TextBlock
-            {
-                Text       = stat.DayLabel,
-                FontSize   = 13,
-                Foreground = new SolidColorBrush(Color.FromRgb(0x44, 0x44, 0x44)),
-            };
-            Canvas.SetLeft(dayLbl, dayX + (dayW - 28) / 2.0);
-            Canvas.SetTop(dayLbl, baseY + 6);
-            WeeklyChartCanvas.Children.Add(dayLbl);
+            double dayX = ChartLeftPad + i * ChartDayW;
+            DrawDayBars(stats[i], dayX, maxCount);
+            AddDayLabel(stats[i].DayLabel, dayX);
         }
+    }
+
+    private void DrawDayBars(DayScheduleStat stat, double dayX, int maxCount)
+    {
+        double pairW  = ChartBarW * 2 + ChartBarGap;
+        double barX0  = dayX + (ChartDayW - pairW) / 2.0;
+        double offerH = Math.Max((stat.OfferingCount / (double)maxCount) * ChartMaxH, 1);
+        double seekH  = Math.Max((stat.SeekingCount  / (double)maxCount) * ChartMaxH, 1);
+        AddBar(barX0,                            ChartBaseY - offerH,      ChartBarW, offerH, DarkBrush);
+        AddCount(barX0,                          ChartBaseY - offerH - 18, ChartBarW, stat.OfferingCount);
+        AddBar(barX0 + ChartBarW + ChartBarGap,  ChartBaseY - seekH,       ChartBarW, seekH,  LightBrush);
+        AddCount(barX0 + ChartBarW + ChartBarGap, ChartBaseY - seekH - 18, ChartBarW, stat.SeekingCount);
+    }
+
+    private void AddDayLabel(string label, double dayX)
+    {
+        var dayLbl = new TextBlock
+        {
+            Text       = label,
+            FontSize   = 13,
+            Foreground = new SolidColorBrush(Color.FromRgb(0x44, 0x44, 0x44)),
+        };
+        Canvas.SetLeft(dayLbl, dayX + (ChartDayW - 28) / 2.0);
+        Canvas.SetTop(dayLbl, ChartBaseY + 6);
+        WeeklyChartCanvas.Children.Add(dayLbl);
     }
 
     private void AddBar(double x, double y, double w, double h, Brush fill)

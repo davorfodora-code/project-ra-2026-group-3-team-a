@@ -203,7 +203,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
                     <ComboBox x:Name="StatusFilterComboBox" Width="190" Padding="8,5" FontSize="14"
-                              SelectionChanged="StatusFilter_Changed">
+                              SelectionChanged="RequestFiltersChanged">
                         <ComboBoxItem Content="Svi statusi" IsSelected="True"/>
                         <ComboBoxItem Content="Pending"/>
                         <ComboBoxItem Content="Accepted"/>
@@ -211,7 +211,7 @@
                     </ComboBox>
                     <TextBlock Text="Datum:" VerticalAlignment="Center" Margin="24,0,8,0" FontSize="14"/>
                     <ComboBox x:Name="SortComboBox" Width="165" Padding="8,5" FontSize="14"
-                              SelectionChanged="SortFilter_Changed">
+                              SelectionChanged="RequestFiltersChanged">
                         <ComboBoxItem Content="Najnoviji prvo" IsSelected="True"/>
                         <ComboBoxItem Content="Najstariji prvo"/>
                     </ComboBox>

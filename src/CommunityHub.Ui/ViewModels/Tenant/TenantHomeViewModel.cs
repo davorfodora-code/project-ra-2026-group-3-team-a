@@ -39,8 +39,6 @@ public class TenantHomeViewModel : BaseViewModel
             .Count(r => r.Status == "Pending");
 
         var buildings = _adService.GetBuildingsForTenant(_tenantId);
-        ActiveAdsCount = buildings.Count > 0
-            ? _adService.GetActiveBoardAds(_tenantId, buildings[0].BuildingId).Count
-            : 0;
+        ActiveAdsCount = buildings.Sum(b => _adService.GetActiveBoardAds(_tenantId, b.BuildingId).Count);
     }
 }

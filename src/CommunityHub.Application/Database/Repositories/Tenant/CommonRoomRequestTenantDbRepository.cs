@@ -25,26 +25,27 @@ public class CommonRoomRequestTenantDbRepository : ICommonRoomRequestTenantRepos
         var list = new List<MyCommonRoomRequestDto>();
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            list.Add(new MyCommonRoomRequestDto
-            {
-                RequestId          = reader.GetInt64(reader.GetOrdinal("id")),
-                RoomId             = reader.GetInt64(reader.GetOrdinal("room_id")),
-                RoomName           = reader.GetString(reader.GetOrdinal("room_name")),
-                IsMultiDay         = reader.GetBoolean(reader.GetOrdinal("is_multi_day")),
-                RequestedStartDate = reader.GetDateTime(reader.GetOrdinal("requested_start_date")),
-                RequestedEndDate   = reader.GetDateTime(reader.GetOrdinal("requested_end_date")),
-                ProposedStartDate  = reader.IsDBNull(reader.GetOrdinal("proposed_start_date"))
-                                        ? null : reader.GetDateTime(reader.GetOrdinal("proposed_start_date")),
-                ProposedEndDate    = reader.IsDBNull(reader.GetOrdinal("proposed_end_date"))
-                                        ? null : reader.GetDateTime(reader.GetOrdinal("proposed_end_date")),
-                ApprovedDate       = reader.IsDBNull(reader.GetOrdinal("approved_date"))
-                                        ? null : reader.GetDateTime(reader.GetOrdinal("approved_date")),
-                Status             = reader.GetString(reader.GetOrdinal("status")),
-            });
-        }
+            list.Add(MapCommonRoomRequest(reader));
         return list;
     }
+
+    private static MyCommonRoomRequestDto MapCommonRoomRequest(IDataReader reader) =>
+        new MyCommonRoomRequestDto
+        {
+            RequestId          = reader.GetInt64(reader.GetOrdinal("id")),
+            RoomId             = reader.GetInt64(reader.GetOrdinal("room_id")),
+            RoomName           = reader.GetString(reader.GetOrdinal("room_name")),
+            IsMultiDay         = reader.GetBoolean(reader.GetOrdinal("is_multi_day")),
+            RequestedStartDate = reader.GetDateTime(reader.GetOrdinal("requested_start_date")),
+            RequestedEndDate   = reader.GetDateTime(reader.GetOrdinal("requested_end_date")),
+            ProposedStartDate  = reader.IsDBNull(reader.GetOrdinal("proposed_start_date"))
+                                    ? null : reader.GetDateTime(reader.GetOrdinal("proposed_start_date")),
+            ProposedEndDate    = reader.IsDBNull(reader.GetOrdinal("proposed_end_date"))
+                                    ? null : reader.GetDateTime(reader.GetOrdinal("proposed_end_date")),
+            ApprovedDate       = reader.IsDBNull(reader.GetOrdinal("approved_date"))
+                                    ? null : reader.GetDateTime(reader.GetOrdinal("approved_date")),
+            Status             = reader.GetString(reader.GetOrdinal("status")),
+        };
 
     public void Create(CreateCommonRoomRequestDto dto)
     {
