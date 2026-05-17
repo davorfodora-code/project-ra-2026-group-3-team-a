@@ -14,6 +14,9 @@ public partial class CitizenHomeWindow : Window
         InitializeComponent();
         _viewModel = new CitizenHomeViewModel(userId);
         _membershipService = new CitizenMembershipService();
+        MeetingsButton.Visibility = _membershipService.HasMembership(userId)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
     }
 
     private void DistrictSearchButton_Click(object sender, RoutedEventArgs e)
@@ -26,6 +29,13 @@ public partial class CitizenHomeWindow : Window
     private void MyDistrictRequestsButton_Click(object sender, RoutedEventArgs e)
     {
         MyDistrictRequestsWindow window = new MyDistrictRequestsWindow(_viewModel.UserId);
+        window.Show();
+        Close();
+    }
+
+    private void MeetingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenMeetingsWindow window = new CitizenMeetingsWindow(_viewModel.UserId);
         window.Show();
         Close();
     }
@@ -65,4 +75,3 @@ public partial class CitizenHomeWindow : Window
         Close();
     }
 }
-
