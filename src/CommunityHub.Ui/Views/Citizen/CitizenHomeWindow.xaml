@@ -33,6 +33,12 @@
                         Click="MyDistrictRequestsButton_Click"
                         Margin="0,0,0,10"/>
 
+                <Button Content="Moj kvart"
+                        Padding="14,10"
+                        FontSize="14"
+                        Click="MyDistrictButton_Click"
+                        Margin="0,0,0,10"/>
+
                 <Button Content="Dogadjaji kvarta"
                         Padding="14,10"
                         FontSize="14"

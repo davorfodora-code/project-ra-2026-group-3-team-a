@@ -34,6 +34,13 @@ public partial class CitizenHomeWindow : Window
         Close();
     }
 
+    private void MyDistrictButton_Click(object sender, RoutedEventArgs e)
+    {
+        MyDistrictWindow window = new MyDistrictWindow(_viewModel.UserId);
+        window.Show();
+        Close();
+    }
+
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
         ProfileWindow profileWindow = new ProfileWindow(_viewModel.UserId);
