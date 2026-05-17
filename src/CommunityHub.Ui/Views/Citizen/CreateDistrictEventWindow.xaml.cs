@@ -25,52 +25,12 @@ public partial class CreateDistrictEventWindow : Window
     {
         ErrorTextBlock.Text = string.Empty;
 
-        if (EventDatePicker.SelectedDate == null)
+        if (!TryBuildDto(out CreateDistrictEventDto? dto))
         {
-            ErrorTextBlock.Text = "Morate izabrati datum dogadjaja.";
             return;
         }
 
-        if (!TimeSpan.TryParseExact(StartTimeTextBox.Text.Trim(), "hh\\:mm", CultureInfo.InvariantCulture, out TimeSpan startTime))
-        {
-            ErrorTextBlock.Text = "Vreme pocetka mora biti u formatu HH:mm.";
-            return;
-        }
-
-        if (!int.TryParse(DurationTextBox.Text.Trim(), out int durationMinutes) || durationMinutes <= 0)
-        {
-            ErrorTextBlock.Text = "Trajanje mora biti ceo broj veci od 0.";
-            return;
-        }
-
-        if (!int.TryParse(MinVolunteersTextBox.Text.Trim(), out int minVolunteers) || minVolunteers <= 0)
-        {
-            ErrorTextBlock.Text = "Minimalan broj volontera mora biti veci od 0.";
-            return;
-        }
-
-        string[] lines = RequiredItemsTextBox.Text
-            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-        List<string> requiredItems = lines
-            .Select(l => l.Trim())
-            .Where(l => !string.IsNullOrWhiteSpace(l))
-            .ToList();
-
-        if (requiredItems.Count == 0)
-        {
-            ErrorTextBlock.Text = "Morate uneti bar jednu potrebnu stvar.";
-            return;
-        }
-
-        Dto = _viewModel.BuildDto(
-            _districtId,
-            NameTextBox.Text,
-            DescriptionTextBox.Text,
-            EventDatePicker.SelectedDate.Value,
-            startTime,
-            durationMinutes,
-            minVolunteers,
-            requiredItems);
+        Dto = dto;
 
         DialogResult = true;
         Close();
@@ -80,5 +40,83 @@ public partial class CreateDistrictEventWindow : Window
     {
         DialogResult = false;
         Close();
+    }
+
+    private bool TryBuildDto(out CreateDistrictEventDto? dto)
+    {
+        dto = null;
+
+        if (!TryReadEventDate(out DateTime eventDate) ||
+            !TryReadStartTime(out TimeSpan startTime) ||
+            !TryReadPositiveInt(DurationTextBox.Text, "Trajanje mora biti ceo broj veci od 0.", out int durationMinutes) ||
+            !TryReadPositiveInt(MinVolunteersTextBox.Text, "Minimalan broj volontera mora biti veci od 0.", out int minVolunteers) ||
+            !TryReadRequiredItems(out List<string> requiredItems))
+        {
+            return false;
+        }
+
+        dto = _viewModel.BuildDto(
+            _districtId,
+            NameTextBox.Text,
+            DescriptionTextBox.Text,
+            eventDate,
+            startTime,
+            durationMinutes,
+            minVolunteers,
+            requiredItems);
+
+        return true;
+    }
+
+    private bool TryReadEventDate(out DateTime eventDate)
+    {
+        if (EventDatePicker.SelectedDate == null)
+        {
+            eventDate = default;
+            ErrorTextBlock.Text = "Morate izabrati datum dogadjaja.";
+            return false;
+        }
+
+        eventDate = EventDatePicker.SelectedDate.Value;
+        return true;
+    }
+
+    private bool TryReadStartTime(out TimeSpan startTime)
+    {
+        if (!TimeSpan.TryParseExact(StartTimeTextBox.Text.Trim(), "hh\\:mm", CultureInfo.InvariantCulture, out startTime))
+        {
+            ErrorTextBlock.Text = "Vreme pocetka mora biti u formatu HH:mm.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryReadPositiveInt(string rawValue, string errorMessage, out int value)
+    {
+        if (!int.TryParse(rawValue.Trim(), out value) || value <= 0)
+        {
+            ErrorTextBlock.Text = errorMessage;
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryReadRequiredItems(out List<string> requiredItems)
+    {
+        requiredItems = RequiredItemsTextBox.Text
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToList();
+
+        if (requiredItems.Count == 0)
+        {
+            ErrorTextBlock.Text = "Morate uneti bar jednu potrebnu stvar.";
+            return false;
+        }
+
+        return true;
     }
 }
