@@ -210,16 +210,16 @@
 
         <!-- Overlay dialog -->
         <Grid Panel.ZIndex="20" Background="#99000000"
-              Visibility="{Binding IsOverlayVisible, Converter={StaticResource BoolToVis}}">
+              Visibility="{Binding Overlay.IsVisible, Converter={StaticResource BoolToVis}}">
             <Border Background="White" CornerRadius="8" Padding="28,22"
                     MaxWidth="460" VerticalAlignment="Center" HorizontalAlignment="Center"
                     BorderBrush="#CCCCCC" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="{Binding OverlayTitle}"
+                    <TextBlock Text="{Binding Overlay.Title}"
                                FontSize="16" FontWeight="Bold" Margin="0,0,0,16"
                                Foreground="#2C3E50"/>
 
-                    <Grid Margin="0,0,0,16" DataContext="{Binding PendingRequest}">
+                    <Grid Margin="0,0,0,16" DataContext="{Binding Overlay.PendingRequest}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
@@ -253,31 +253,31 @@
                     </Grid>
 
                     <StackPanel Margin="0,0,0,16"
-                                Visibility="{Binding IsRejectAction, Converter={StaticResource BoolToVis}}">
+                                Visibility="{Binding Overlay.IsRejectAction, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="Razlog odbijanja:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4"/>
                         <TextBlock Text="Polje nije obavezno." FontSize="11" Foreground="#888" Margin="0,0,0,6"/>
-                        <TextBox Text="{Binding RejectionReason, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Text="{Binding Overlay.RejectionReason, UpdateSourceTrigger=PropertyChanged}"
                                  Height="60" TextWrapping="Wrap" AcceptsReturn="True"
                                  VerticalScrollBarVisibility="Auto"
                                  FontSize="13" Padding="6,4"/>
                     </StackPanel>
 
-                    <TextBlock Visibility="{Binding IsApproveAction, Converter={StaticResource BoolToVis}}"
+                    <TextBlock Visibility="{Binding Overlay.IsApproveAction, Converter={StaticResource BoolToVis}}"
                                Text="Prilikom odobravanja, sistem automatski kreira članstvo za datog građanina."
                                FontSize="11" Foreground="#666" Margin="0,0,0,16" TextWrapping="Wrap"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="Otkaži" Width="90" Height="32" Margin="0,0,8,0" FontSize="13"
-                                Command="{Binding CancelOverlayCommand}"/>
+                                Command="{Binding Overlay.CancelCommand}"/>
                         <Button Width="120" Height="32" FontSize="13"
-                                Content="{Binding OverlayConfirmText}"
-                                Command="{Binding ConfirmOverlayCommand}"
+                                Content="{Binding Overlay.ConfirmText}"
+                                Command="{Binding Overlay.ConfirmCommand}"
                                 Foreground="White" BorderThickness="0">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Background" Value="#27AE60"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsRejectAction}" Value="True">
+                                        <DataTrigger Binding="{Binding Overlay.IsRejectAction}" Value="True">
                                             <Setter Property="Background" Value="#E74C3C"/>
                                         </DataTrigger>
                                     </Style.Triggers>

@@ -58,19 +58,19 @@
                         <StackPanel>
                             <TextBlock Text="Naziv kvarta" FontSize="13" Margin="0,0,0,4"/>
                             <TextBox Height="32" FontSize="13" Padding="6,4" Margin="0,0,0,4"
-                                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                                     Text="{Binding BasicInfo.Name, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock Style="{StaticResource ValidationLabelStyle}"
-                                       Text="{Binding NameError}"
-                                       Visibility="{Binding HasNameError, Converter={StaticResource BoolToVis}}"/>
+                                       Text="{Binding BasicInfo.NameError}"
+                                       Visibility="{Binding BasicInfo.HasNameError, Converter={StaticResource BoolToVis}}"/>
 
                             <TextBlock Text="Opis kvarta" FontSize="13" Margin="0,0,0,4"/>
                             <TextBox Height="80" FontSize="13" Padding="6,4" Margin="0,0,0,4"
                                      TextWrapping="Wrap" AcceptsReturn="True"
                                      VerticalScrollBarVisibility="Auto"
-                                     Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"/>
+                                     Text="{Binding BasicInfo.Description, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock Style="{StaticResource ValidationLabelStyle}"
-                                       Text="{Binding DescriptionError}"
-                                       Visibility="{Binding HasDescriptionError, Converter={StaticResource BoolToVis}}"/>
+                                       Text="{Binding BasicInfo.DescriptionError}"
+                                       Visibility="{Binding BasicInfo.HasDescriptionError, Converter={StaticResource BoolToVis}}"/>
 
                             <Grid Margin="0,0,0,4">
                                 <Grid.ColumnDefinitions>
@@ -81,18 +81,18 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="Grad" FontSize="13" Margin="0,0,0,4"/>
                                     <TextBox Height="32" FontSize="13" Padding="6,4"
-                                             Text="{Binding City, UpdateSourceTrigger=PropertyChanged}"/>
+                                             Text="{Binding BasicInfo.City, UpdateSourceTrigger=PropertyChanged}"/>
                                     <TextBlock Style="{StaticResource ValidationLabelStyle}"
-                                               Text="{Binding CityError}"
-                                               Visibility="{Binding HasCityError, Converter={StaticResource BoolToVis}}"/>
+                                               Text="{Binding BasicInfo.CityError}"
+                                               Visibility="{Binding BasicInfo.HasCityError, Converter={StaticResource BoolToVis}}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="Država" FontSize="13" Margin="0,0,0,4"/>
                                     <TextBox Height="32" FontSize="13" Padding="6,4"
-                                             Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}"/>
+                                             Text="{Binding BasicInfo.Country, UpdateSourceTrigger=PropertyChanged}"/>
                                     <TextBlock Style="{StaticResource ValidationLabelStyle}"
-                                               Text="{Binding CountryError}"
-                                               Visibility="{Binding HasCountryError, Converter={StaticResource BoolToVis}}"/>
+                                               Text="{Binding BasicInfo.CountryError}"
+                                               Visibility="{Binding BasicInfo.HasCountryError, Converter={StaticResource BoolToVis}}"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -129,22 +129,22 @@
 
                                 <TextBox Grid.Row="1" Grid.Column="0" Height="32" FontSize="13"
                                          Padding="6,4" Margin="0,0,8,0"
-                                         Text="{Binding StreetName, UpdateSourceTrigger=PropertyChanged}"/>
+                                         Text="{Binding StreetForm.StreetName, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBox Grid.Row="1" Grid.Column="1" Height="32" FontSize="13"
                                          Padding="6,4" Margin="0,0,8,0"
-                                         Text="{Binding StreetStart, UpdateSourceTrigger=PropertyChanged}"/>
+                                         Text="{Binding StreetForm.StreetStart, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBox Grid.Row="1" Grid.Column="2" Height="32" FontSize="13"
                                          Padding="6,4" Margin="0,0,8,0"
-                                         Text="{Binding StreetEnd, UpdateSourceTrigger=PropertyChanged}"/>
+                                         Text="{Binding StreetForm.StreetEnd, UpdateSourceTrigger=PropertyChanged}"/>
                                 <Button Grid.Row="1" Grid.Column="3" Content="Dodaj ulicu"
-                                        Command="{Binding AddStreetCommand}"
+                                        Command="{Binding StreetForm.AddStreetCommand}"
                                         Height="32" Padding="12,0" FontSize="12"
                                         Background="#2C3E50" Foreground="White"
                                         BorderThickness="0" Cursor="Hand"/>
                             </Grid>
                         </Border>
 
-                        <DataGrid Grid.Row="1" ItemsSource="{Binding Streets}"
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding StreetForm.Streets}"
                                   AutoGenerateColumns="False" IsReadOnly="False"
                                   CanUserAddRows="False" HeadersVisibility="Column"
                                   GridLinesVisibility="Horizontal"
@@ -159,7 +159,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Ukloni"
-                                                    Command="{Binding DataContext.RemoveStreetCommand,
+                                                    Command="{Binding DataContext.StreetForm.RemoveStreetCommand,
                                                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}"
                                                     Padding="6,2" FontSize="11"
@@ -174,8 +174,8 @@
 
                         <TextBlock Grid.Row="2" Foreground="Red" FontSize="11" Margin="0,6,0,0"
                                    TextWrapping="Wrap"
-                                   Text="{Binding StreetError}"
-                                   Visibility="{Binding HasStreetError, Converter={StaticResource BoolToVis}}"/>
+                                   Text="{Binding StreetForm.StreetError}"
+                                   Visibility="{Binding StreetForm.HasStreetError, Converter={StaticResource BoolToVis}}"/>
                     </Grid>
 
                     <Grid Visibility="{Binding IsStep3, Converter={StaticResource BoolToVis}}">
