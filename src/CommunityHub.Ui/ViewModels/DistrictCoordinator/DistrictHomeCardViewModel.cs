@@ -19,6 +19,7 @@ public class DistrictHomeCardViewModel : ViewModelBase
     public string Name                => Dto.Name;
     public string LocationDisplay     => Dto.LocationDisplay;
     public string BudgetDisplay       => Dto.BudgetDisplay;
+    public decimal Budget             => Dto.Budget;
     public int MembersCount           => Dto.MembersCount;
     public int StreetsCount           => Dto.StreetsCount;
     public int PendingRequestsCount   => Dto.PendingRequestsCount;

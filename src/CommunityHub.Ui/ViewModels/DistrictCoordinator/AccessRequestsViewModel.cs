@@ -10,26 +10,18 @@ using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
-
 public class AccessRequestsViewModel : ViewModelBase
 {
     private readonly DistrictAccessRequestService _service;
     private readonly long _coordinatorId;
 
-    private List<DistrictAccessRequestDto> _allRequests = new();
+    private List<DistrictAccessRequestDto> _allRequests    = new();
     private List<DistrictMembershipDto>    _allMemberships = new();
 
-    private string _requestFilter = "Svi";
-    private string _trustFilter   = "Svi";
+    private string     _requestFilter    = "Svi";
+    private string     _trustFilter      = "Svi";
     private DistrictDto? _selectedDistrict;
-
-    private bool _isRequestsSection = true;
-
-    private bool _isOverlayVisible;
-    private string _overlayTitle = string.Empty;
-    private bool _isApproveAction;
-    private DistrictAccessRequestDto? _pendingRequest;
-    private string _rejectionReason = string.Empty;
+    private bool       _isRequestsSection = true;
 
     public AccessRequestsViewModel(long coordinatorId)
     {
@@ -42,47 +34,33 @@ public class AccessRequestsViewModel : ViewModelBase
         Districts   = new ObservableCollection<DistrictDto>();
         Memberships = new ObservableCollection<DistrictMembershipDto>();
 
-        SetRequestFilterCommand  = new RelayCommand(p => RequestFilter = p?.ToString() ?? "Svi");
-        SetTrustFilterCommand    = new RelayCommand(p => TrustFilter   = p?.ToString() ?? "Svi");
-        ShowRequestsSectionCommand   = new RelayCommand(_ => IsRequestsSection = true);
-        ShowMembershipsSectionCommand = new RelayCommand(_ => IsRequestsSection = false);
+        Overlay = new RequestOverlayViewModel();
+        Overlay.ConfirmRequested += OnOverlayConfirm;
 
-        ShowApproveOverlayCommand = new RelayCommand(p =>
-        {
-            if (p is DistrictAccessRequestDto dto) ShowApproveOverlay(dto);
-        });
-        ShowRejectOverlayCommand = new RelayCommand(p =>
-        {
-            if (p is DistrictAccessRequestDto dto) ShowRejectOverlay(dto);
-        });
+        SetRequestFilterCommand       = new RelayCommand(p => RequestFilter      = p?.ToString() ?? "Svi");
+        SetTrustFilterCommand         = new RelayCommand(p => TrustFilter        = p?.ToString() ?? "Svi");
+        ShowRequestsSectionCommand    = new RelayCommand(_ => IsRequestsSection  = true);
+        ShowMembershipsSectionCommand = new RelayCommand(_ => IsRequestsSection  = false);
 
-        ConfirmOverlayCommand = new RelayCommand(_ => ConfirmOverlay(), _ => PendingRequest != null);
-        CancelOverlayCommand  = new RelayCommand(_ => CancelOverlay());
+        ShowApproveOverlayCommand = new RelayCommand(p => { if (p is DistrictAccessRequestDto d) Overlay.ShowApprove(d); });
+        ShowRejectOverlayCommand  = new RelayCommand(p => { if (p is DistrictAccessRequestDto d) Overlay.ShowReject(d); });
     }
 
-
-    public ObservableCollection<DistrictAccessRequestDto> Requests { get; }
-    public ObservableCollection<DistrictDto>              Districts { get; }
-    public ObservableCollection<DistrictMembershipDto>    Memberships { get; }
+    public RequestOverlayViewModel                         Overlay     { get; }
+    public ObservableCollection<DistrictAccessRequestDto>  Requests    { get; }
+    public ObservableCollection<DistrictDto>               Districts   { get; }
+    public ObservableCollection<DistrictMembershipDto>     Memberships { get; }
 
     public string RequestFilter
     {
         get => _requestFilter;
-        set
-        {
-            if (SetProperty(ref _requestFilter, value))
-                ApplyRequestFilter();
-        }
+        set { if (SetProperty(ref _requestFilter, value)) ApplyRequestFilter(); }
     }
 
     public string TrustFilter
     {
         get => _trustFilter;
-        set
-        {
-            if (SetProperty(ref _trustFilter, value))
-                ApplyTrustFilter();
-        }
+        set { if (SetProperty(ref _trustFilter, value)) ApplyTrustFilter(); }
     }
 
     public DistrictDto? SelectedDistrict
@@ -93,12 +71,9 @@ public class AccessRequestsViewModel : ViewModelBase
             if (SetProperty(ref _selectedDistrict, value) && value != null)
             {
                 RequestFilter = "Svi";
-                TrustFilter = "Svi";
+                TrustFilter   = "Svi";
                 ApplyRequestFilter();
-                try
-                {
-                    LoadMemberships(value.Id);
-                }
+                try   { LoadMemberships(value.Id); }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[Zahtevi] LoadMemberships error: {ex}");
@@ -108,55 +83,10 @@ public class AccessRequestsViewModel : ViewModelBase
         }
     }
 
-    public bool IsOverlayVisible
-    {
-        get => _isOverlayVisible;
-        private set => SetProperty(ref _isOverlayVisible, value);
-    }
-
-    public string OverlayTitle
-    {
-        get => _overlayTitle;
-        private set => SetProperty(ref _overlayTitle, value);
-    }
-
-    public bool IsApproveAction
-    {
-        get => _isApproveAction;
-        private set
-        {
-            if (SetProperty(ref _isApproveAction, value))
-            {
-                OnPropertyChanged(nameof(IsRejectAction));
-                OnPropertyChanged(nameof(OverlayConfirmText));
-            }
-        }
-    }
-
-    public bool IsRejectAction => !_isApproveAction;
-
-    public string OverlayConfirmText => _isApproveAction ? "Odobri pristup" : "Odbij pristup";
-
-    public DistrictAccessRequestDto? PendingRequest
-    {
-        get => _pendingRequest;
-        private set => SetProperty(ref _pendingRequest, value);
-    }
-
-    public string RejectionReason
-    {
-        get => _rejectionReason;
-        set => SetProperty(ref _rejectionReason, value);
-    }
-
     public bool IsRequestsSection
     {
         get => _isRequestsSection;
-        set
-        {
-            if (SetProperty(ref _isRequestsSection, value))
-                OnPropertyChanged(nameof(IsMembershipsSection));
-        }
+        set { if (SetProperty(ref _isRequestsSection, value)) OnPropertyChanged(nameof(IsMembershipsSection)); }
     }
 
     public bool IsMembershipsSection => !_isRequestsSection;
@@ -167,19 +97,12 @@ public class AccessRequestsViewModel : ViewModelBase
     public ICommand ShowMembershipsSectionCommand { get; }
     public ICommand ShowApproveOverlayCommand     { get; }
     public ICommand ShowRejectOverlayCommand      { get; }
-    public ICommand ConfirmOverlayCommand         { get; }
-    public ICommand CancelOverlayCommand          { get; }
 
-
-    public event Action<string, bool>? NotificationRequested; 
+    public event Action<string, bool>? NotificationRequested;
 
     public void Initialize()
     {
-        try
-        {
-            LoadDistricts();
-            LoadRequests();
-        }
+        try   { LoadDistricts(); LoadRequests(); }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[Zahtevi] Initialize error: {ex}");
@@ -196,31 +119,23 @@ public class AccessRequestsViewModel : ViewModelBase
     private void LoadDistricts()
     {
         Districts.Clear();
-        foreach (var d in _service.GetDistrictsByCoordinatorId(_coordinatorId))
-            Districts.Add(d);
-
-        if (Districts.Count > 0)
-            SelectedDistrict = Districts[0];
+        foreach (DistrictDto d in _service.GetDistrictsByCoordinatorId(_coordinatorId)) Districts.Add(d);
+        if (Districts.Count > 0) SelectedDistrict = Districts[0];
     }
 
     private void LoadMemberships(long districtId)
-    {
-        _allMemberships = _service.GetMembershipsByDistrictId(districtId);
-        ApplyTrustFilter();
-    }
+        { _allMemberships = _service.GetMembershipsByDistrictId(districtId); ApplyTrustFilter(); }
 
     private void ApplyRequestFilter()
     {
         IEnumerable<DistrictAccessRequestDto> filtered = _allRequests;
-
         if (_selectedDistrict != null)
             filtered = filtered.Where(r => r.DistrictName == _selectedDistrict.Name);
-
         if (_requestFilter != "Svi")
             filtered = filtered.Where(r => r.Status == _requestFilter);
 
         Requests.Clear();
-        foreach (var r in filtered.OrderByDescending(r => r.CreatedAt))
+        foreach (DistrictAccessRequestDto r in filtered.OrderByDescending(r => r.CreatedAt))
             Requests.Add(r);
     }
 
@@ -231,49 +146,22 @@ public class AccessRequestsViewModel : ViewModelBase
             filtered = filtered.Where(m => m.TrustLevel == _trustFilter);
 
         Memberships.Clear();
-        foreach (var m in filtered)
-            Memberships.Add(m);
+        foreach (DistrictMembershipDto m in filtered) Memberships.Add(m);
     }
 
-    private void ShowApproveOverlay(DistrictAccessRequestDto dto)
+    private void OnOverlayConfirm(DistrictAccessRequestDto request, bool isApprove, string? reason)
     {
-        PendingRequest   = dto;
-        IsApproveAction  = true;
-        OverlayTitle     = "Odobravanje pristupa";
-        RejectionReason  = string.Empty;
-        IsOverlayVisible = true;
-    }
-
-    private void ShowRejectOverlay(DistrictAccessRequestDto dto)
-    {
-        PendingRequest   = dto;
-        IsApproveAction  = false;
-        OverlayTitle     = "Odbijanje zahteva";
-        RejectionReason  = string.Empty;
-        IsOverlayVisible = true;
-    }
-
-    private void CancelOverlay()
-    {
-        IsOverlayVisible = false;
-        PendingRequest   = null;
-    }
-
-    private void ConfirmOverlay()
-    {
-        if (PendingRequest == null) return;
-
+        bool wasApprove = isApprove;
         try
         {
-            if (IsApproveAction)
+            if (isApprove)
             {
-                _service.Approve(PendingRequest.RequestId);
+                _service.Approve(request.RequestId);
                 NotificationRequested?.Invoke("Zahtev je odobren. Članstvo je kreirano.", true);
             }
             else
             {
-                string? reason = string.IsNullOrWhiteSpace(RejectionReason) ? null : RejectionReason.Trim();
-                _service.Reject(PendingRequest.RequestId, reason);
+                _service.Reject(request.RequestId, reason);
                 NotificationRequested?.Invoke("Zahtev je odbijen.", true);
             }
         }
@@ -283,13 +171,9 @@ public class AccessRequestsViewModel : ViewModelBase
         }
         finally
         {
-            bool wasApprove = IsApproveAction;
-            IsOverlayVisible = false;
-            PendingRequest   = null;
-
+            Overlay.Close();
             LoadRequests();
-            if (wasApprove && SelectedDistrict != null)
-                LoadMemberships(SelectedDistrict.Id);
+            if (wasApprove && SelectedDistrict != null) LoadMemberships(SelectedDistrict.Id);
         }
     }
 }

@@ -10,28 +10,11 @@ using CommunityHub.Ui.ViewModels.Common;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
-
 public class DistrictRegistrationViewModel : ViewModelBase
 {
     private readonly DistrictService _service;
     private readonly long _coordinatorId;
-
     private int _currentStep = 1;
-
-    private string _name = string.Empty;
-    private string _description = string.Empty;
-    private string _city = string.Empty;
-    private string _country = string.Empty;
-
-    private string _nameError = string.Empty;
-    private string _descriptionError = string.Empty;
-    private string _cityError = string.Empty;
-    private string _countryError = string.Empty;
-
-    private string _streetName = string.Empty;
-    private string _streetStart = string.Empty;
-    private string _streetEnd = string.Empty;
-    private string _streetError = string.Empty;
 
     public DistrictRegistrationViewModel(long coordinatorId)
     {
@@ -40,7 +23,8 @@ public class DistrictRegistrationViewModel : ViewModelBase
             Injector.Get<IDistrictRepository>(),
             Injector.Get<IDistrictAccessRequestRepository>());
 
-        Streets    = new ObservableCollection<StreetInputDto>();
+        BasicInfo  = new DistrictBasicInfoViewModel();
+        StreetForm = new DistrictStreetInputViewModel();
         ImageSlots = new ObservableCollection<ImageSlotViewModel>
         {
             new ImageSlotViewModel(1),
@@ -49,20 +33,19 @@ public class DistrictRegistrationViewModel : ViewModelBase
             new ImageSlotViewModel(4),
         };
 
-        NextStepCommand   = new RelayCommand(_ => NextStep());
-        BackStepCommand   = new RelayCommand(_ => BackStep(), _ => _currentStep > 1);
-        CancelCommand     = new RelayCommand(_ => CancelRequested?.Invoke());
-        AddStreetCommand  = new RelayCommand(_ => AddStreet());
-        RemoveStreetCommand = new RelayCommand(p =>
-        {
-            if (p is StreetInputDto s) Streets.Remove(s);
-        });
+        NextStepCommand  = new RelayCommand(_ => NextStep());
+        BackStepCommand  = new RelayCommand(_ => BackStep(), _ => _currentStep > 1);
+        CancelCommand    = new RelayCommand(_ => CancelRequested?.Invoke());
         PickImageCommand = new RelayCommand(p =>
         {
             if (p is ImageSlotViewModel slot)
                 PickImageRequested?.Invoke(slot);
         });
     }
+
+    public DistrictBasicInfoViewModel             BasicInfo  { get; }
+    public DistrictStreetInputViewModel           StreetForm { get; }
+    public ObservableCollection<ImageSlotViewModel> ImageSlots { get; }
 
     public int CurrentStep
     {
@@ -94,105 +77,21 @@ public class DistrictRegistrationViewModel : ViewModelBase
 
     public string NextButtonText => _currentStep == 3 ? "Registruj" : "Sledeći korak";
 
-    public string Name
-    {
-        get => _name;
-        set { if (SetProperty(ref _name, value)) ValidateName(); }
-    }
-
-    public string Description
-    {
-        get => _description;
-        set { if (SetProperty(ref _description, value)) ValidateDescription(); }
-    }
-
-    public string City
-    {
-        get => _city;
-        set { if (SetProperty(ref _city, value)) ValidateCity(); }
-    }
-
-    public string Country
-    {
-        get => _country;
-        set { if (SetProperty(ref _country, value)) ValidateCountry(); }
-    }
-
-    public string NameError
-    {
-        get => _nameError;
-        private set { if (SetProperty(ref _nameError, value)) OnPropertyChanged(nameof(HasNameError)); }
-    }
-    public bool HasNameError => !string.IsNullOrEmpty(_nameError);
-
-    public string DescriptionError
-    {
-        get => _descriptionError;
-        private set { if (SetProperty(ref _descriptionError, value)) OnPropertyChanged(nameof(HasDescriptionError)); }
-    }
-    public bool HasDescriptionError => !string.IsNullOrEmpty(_descriptionError);
-
-    public string CityError
-    {
-        get => _cityError;
-        private set { if (SetProperty(ref _cityError, value)) OnPropertyChanged(nameof(HasCityError)); }
-    }
-    public bool HasCityError => !string.IsNullOrEmpty(_cityError);
-
-    public string CountryError
-    {
-        get => _countryError;
-        private set { if (SetProperty(ref _countryError, value)) OnPropertyChanged(nameof(HasCountryError)); }
-    }
-    public bool HasCountryError => !string.IsNullOrEmpty(_countryError);
-
-    public ObservableCollection<StreetInputDto> Streets { get; }
-
-    public string StreetName
-    {
-        get => _streetName;
-        set => SetProperty(ref _streetName, value);
-    }
-
-    public string StreetStart
-    {
-        get => _streetStart;
-        set => SetProperty(ref _streetStart, value);
-    }
-
-    public string StreetEnd
-    {
-        get => _streetEnd;
-        set => SetProperty(ref _streetEnd, value);
-    }
-
-    public string StreetError
-    {
-        get => _streetError;
-        private set { if (SetProperty(ref _streetError, value)) OnPropertyChanged(nameof(HasStreetError)); }
-    }
-    public bool HasStreetError => !string.IsNullOrEmpty(_streetError);
-
-    public ObservableCollection<ImageSlotViewModel> ImageSlots { get; }
-
-    public ICommand NextStepCommand     { get; }
-    public ICommand BackStepCommand     { get; }
-    public ICommand CancelCommand       { get; }
-    public ICommand AddStreetCommand    { get; }
-    public ICommand RemoveStreetCommand { get; }
-    public ICommand PickImageCommand    { get; }
+    public ICommand NextStepCommand  { get; }
+    public ICommand BackStepCommand  { get; }
+    public ICommand CancelCommand    { get; }
+    public ICommand PickImageCommand { get; }
 
     public event Action<ImageSlotViewModel>? PickImageRequested;
     public event Action? CancelRequested;
     public event Action? RegistrationCompleted;
-    public event Action<string, bool>? NotificationRequested; // (poruka, jeLiUspjeh)
-
+    public event Action<string, bool>? NotificationRequested;
 
     private void NextStep()
     {
         if (_currentStep == 1)
         {
-            if (!ValidateStep1()) return;
+            if (!BasicInfo.ValidateAll()) return;
             CurrentStep = 2;
         }
         else if (_currentStep == 2)
@@ -210,81 +109,6 @@ public class DistrictRegistrationViewModel : ViewModelBase
         if (_currentStep > 1) CurrentStep = _currentStep - 1;
     }
 
-    private void ValidateName()
-    {
-        NameError = string.IsNullOrWhiteSpace(_name) ? "Naziv kvarta je obavezna stavka." : string.Empty;
-    }
-
-    private void ValidateDescription()
-    {
-        string text = _description.Trim();
-        DescriptionError = string.IsNullOrWhiteSpace(text)
-            ? "Opis kvarta je obavezna stavka."
-            : text.Length < 30
-                ? "Opis kvarta mora imati najmanje 30 karaktera."
-                : string.Empty;
-    }
-
-    private void ValidateCity()
-    {
-        CityError = string.IsNullOrWhiteSpace(_city) ? "Grad je obavezna stavka." : string.Empty;
-    }
-
-    private void ValidateCountry()
-    {
-        CountryError = string.IsNullOrWhiteSpace(_country) ? "Država je obavezna stavka." : string.Empty;
-    }
-
-    private bool ValidateStep1()
-    {
-        ValidateName();
-        ValidateDescription();
-        ValidateCity();
-        ValidateCountry();
-        return !HasNameError && !HasDescriptionError && !HasCityError && !HasCountryError;
-    }
-
-    private void AddStreet()
-    {
-        StreetError = string.Empty;
-
-        string name = _streetName.Trim();
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            StreetError = "Naziv ulice ne sme biti prazan.";
-            return;
-        }
-
-        if (!int.TryParse(_streetStart.Trim(), out int start) || start <= 0)
-        {
-            StreetError = "Neispravan početni broj (mora biti pozitivan ceo broj).";
-            return;
-        }
-
-        if (!int.TryParse(_streetEnd.Trim(), out int end) || end <= 0)
-        {
-            StreetError = "Neispravan krajnji broj (mora biti pozitivan ceo broj).";
-            return;
-        }
-
-        if (end < start)
-        {
-            StreetError = "Krajnji broj mora biti veći ili jednak početnom.";
-            return;
-        }
-
-        Streets.Add(new StreetInputDto
-        {
-            StreetName  = name,
-            StartNumber = start,
-            EndNumber   = end
-        });
-
-        StreetName  = string.Empty;
-        StreetStart = string.Empty;
-        StreetEnd   = string.Empty;
-    }
-
     private void TryRegister()
     {
         List<string> imagePaths = ImageSlots
@@ -294,11 +118,11 @@ public class DistrictRegistrationViewModel : ViewModelBase
 
         CreateDistrictDto dto = new CreateDistrictDto
         {
-            Name          = _name.Trim(),
-            Description   = _description.Trim(),
-            City          = _city.Trim(),
-            Country       = _country.Trim(),
-            Streets       = Streets.ToList(),
+            Name          = BasicInfo.Name.Trim(),
+            Description   = BasicInfo.Description.Trim(),
+            City          = BasicInfo.City.Trim(),
+            Country       = BasicInfo.Country.Trim(),
+            Streets       = StreetForm.Streets.ToList(),
             ImagePaths    = imagePaths,
             CoordinatorId = _coordinatorId
         };
