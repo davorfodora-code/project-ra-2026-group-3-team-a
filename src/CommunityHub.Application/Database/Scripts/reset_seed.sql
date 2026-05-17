@@ -428,9 +428,25 @@ CREATE TABLE notifications (
 -- ============================================================
 --  3. Seed podaci
 -- ============================================================
+
+-- Uskladjavanje (4.4 trust_level) — no-op posle CREATE, pomaže starim bazama pre DROP-a
+ALTER TABLE district_memberships
+    ADD COLUMN IF NOT EXISTS trust_level VARCHAR(30) NOT NULL DEFAULT 'Nov';
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'chk_trust_level'
+    ) THEN
+        ALTER TABLE district_memberships
+            ADD CONSTRAINT chk_trust_level
+            CHECK (trust_level IN ('Nov', 'Neaktivan', 'Aktivan', 'Istaknuti', 'OdPoverenja'));
+    END IF;
+END $$;
+
 -- ============================================================
 --  CommunityHub — početni test podaci
---  Pokrenuti POSLE database.sql kroz pgAdmin
 -- ============================================================
 
 
