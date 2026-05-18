@@ -262,7 +262,25 @@
                                   Visibility="{Binding HasRooms, Converter={StaticResource BoolToVisibility}}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource DetailCardStyle}">
+                                <!-- Cela kartica je dugme — klik otvara kalendar zauzetosti -->
+                                <Button Tag="{Binding}" Click="RoomCard_Click"
+                                        Background="White" BorderThickness="0" Padding="0"
+                                        Margin="0,0,0,10" Cursor="Hand"
+                                        HorizontalContentAlignment="Stretch">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="#DDDDDD" BorderThickness="1"
+                                                    CornerRadius="8" Padding="12,10">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#F5F5F5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
                                     <StackPanel>
                                         <TextBlock Text="{Binding Name}"
                                                    FontSize="14" FontWeight="SemiBold"
@@ -278,7 +296,7 @@
                                                    Margin="0,4,0,0"
                                                    Visibility="{Binding IsMultiDay, Converter={StaticResource BoolToVisibility}}"/>
                                     </StackPanel>
-                                </Border>
+                                </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
