@@ -94,4 +94,16 @@ public partial class MyDistrictRequestsWindow : Window
 
         return Enum.Parse<DistrictAccessRequestStatus>(value);
     }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenHomeWindow(_userId).Show();
+        Close();
+    }
+
+    private void SearchNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new DistrictSearchWindow(_userId).Show();
+        Close();
+    }
 }

@@ -9,10 +9,22 @@ internal sealed class CitizenDistrictEventDetailsDbRepository
     {
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, item_name, assigned_volunteer_id
-            FROM district_event_required_items
-            WHERE event_id = @eventId
-            ORDER BY id";
+            SELECT
+                ri.id,
+                ri.item_name,
+                COALESCE(
+                    ri.assigned_volunteer_id,
+                    (
+                        SELECT a.citizen_id
+                        FROM district_event_application_items ai
+                        JOIN district_event_applications a ON a.id = ai.application_id
+                        WHERE ai.required_item_id = ri.id
+                        LIMIT 1
+                    )
+                ) AS assigned_volunteer_id
+            FROM district_event_required_items ri
+            WHERE ri.event_id = @eventId
+            ORDER BY ri.id";
         AddParameter(cmd, "@eventId", eventId);
 
         List<DistrictEventRequiredItem> items = new();

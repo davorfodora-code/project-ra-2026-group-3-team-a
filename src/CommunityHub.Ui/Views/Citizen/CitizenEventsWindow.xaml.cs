@@ -122,4 +122,22 @@ public partial class CitizenEventsWindow : Window
         MessageBox.Show(result.Message, result.Success ? "Uspeh" : "Greška", MessageBoxButton.OK,
             result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
     }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenHomeWindow(_userId).Show();
+        Close();
+    }
+
+    private void MyDistrictNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new MyDistrictWindow(_userId).Show();
+        Close();
+    }
+
+    private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenMeetingsWindow(_userId).Show();
+        Close();
+    }
 }
