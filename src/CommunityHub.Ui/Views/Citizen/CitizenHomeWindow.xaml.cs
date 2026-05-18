@@ -98,8 +98,9 @@ public partial class CitizenHomeWindow : Window
 
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        ProfileWindow profileWindow = new ProfileWindow(_viewModel.UserId);
+        CitizenProfileWindow profileWindow = new CitizenProfileWindow(_viewModel.UserId);
         profileWindow.Show();
+        Close();
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)

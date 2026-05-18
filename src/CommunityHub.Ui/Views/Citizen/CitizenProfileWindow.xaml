@@ -1,0 +1,238 @@
+<Window x:Class="CommunityHub.Ui.Views.Citizen.CitizenProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SIMS - Građanin - Profil"
+        Height="720"
+        Width="1280"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Win11WindowBackgroundBrush}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CitizenTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="255"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="Moj profil"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           FontSize="30"/>
+                <TextBlock Text="Pregled osnovnih podataka i evidencije poverenja."
+                           Foreground="{StaticResource Win11TextMutedBrush}"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button Content="Nazad"
+                        Style="{StaticResource Win11SecondaryButtonStyle}"
+                        Padding="14,8"
+                        Margin="0,0,8,0"
+                        Click="BackButton_Click"/>
+                <Button Content="Odjavi se"
+                        Style="{StaticResource Win11PrimaryButtonStyle}"
+                        Padding="14,8"
+                        Click="LogoutButton_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource Win11CardStyle}" Margin="0,0,6,0">
+                        <StackPanel>
+                            <TextBlock Text="Osnovni podaci"
+                                       Style="{StaticResource Win11HeadingTextStyle}"
+                                       FontSize="17"
+                                       Margin="0,0,0,10"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Ime i prezime:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" x:Name="UserFullNameTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Username:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="UsernameTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Datum rođenja:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" x:Name="BirthDateTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Adresa:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" x:Name="AddressTextBlock" TextWrapping="Wrap" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Kvart:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" x:Name="DistrictTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Uloga:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,0"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" x:Name="RoleTextBlock"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource Win11CardStyle}" Margin="6,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Evidencija poverenja"
+                                       Style="{StaticResource Win11HeadingTextStyle}"
+                                       FontSize="17"
+                                       Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="190"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Datum priključenja:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TrustJoinDateTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Organizovani događaji:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TrustOrganizedCountTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Potvrđena volontiranja:" Style="{StaticResource Win11HeadingTextStyle}" Margin="0,0,8,7"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TrustVolunteerCountTextBlock" Margin="0,0,0,7"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Nivo poverenja:" Style="{StaticResource Win11HeadingTextStyle}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" x:Name="TrustLevelTextBlock"/>
+                            </Grid>
+                            <TextBlock x:Name="TrustInfoTextBlock"
+                                       Foreground="{StaticResource Win11TextMutedBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,10,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Style="{StaticResource Win11CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Objave"
+                                   Style="{StaticResource Win11HeadingTextStyle}"
+                                   FontSize="17"
+                                   Margin="0,0,0,10"/>
+                        <ItemsControl x:Name="PostsItemsControl">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource Win11CardBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="12"
+                                            Margin="0,0,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="15"/>
+                                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Margin="0,4,0,6"/>
+                                            <TextBlock Text="{Binding CreatedAt, StringFormat='dd.MM.yyyy. HH:mm'}"
+                                                       Foreground="{StaticResource Win11TextMutedBrush}"
+                                                       FontSize="12"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="NoPostsTextBlock"
+                                   Text="Nemate objava."
+                                   Visibility="Collapsed"
+                                   Foreground="{StaticResource Win11TextMutedBrush}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="0"
+                Grid.RowSpan="3"
+                Grid.Column="1"
+                Margin="12,0,0,0"
+                Style="{StaticResource Win11CardStyle}">
+            <StackPanel>
+                <TextBlock Text="Navigacija"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           FontSize="18"
+                           Margin="0,0,0,10"/>
+
+                <StackPanel x:Name="NonMemberNavPanel">
+                    <Button Content="🏠  Početna"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="HomeNavButton_Click"/>
+                    <Button Content="🔎  Pretraga kvartova"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="SearchNavButton_Click"/>
+                    <Button Content="📄  Moji zahtevi"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="RequestsNavButton_Click"/>
+                    <Button Content="👤  Profil"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            IsEnabled="False"/>
+                </StackPanel>
+
+                <StackPanel x:Name="MemberNavPanel" Visibility="Collapsed">
+                    <TextBlock Text="OSNOVNO" Style="{StaticResource CitizenNavGroupTitleStyle}" Margin="0,0,0,6"/>
+                    <Button Content="🏠  Početna"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="HomeNavButton_Click"/>
+                    <Button Content="📍  Moj kvart"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="MyDistrictNavButton_Click"/>
+                    <Button Content="👤  Profil"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            IsEnabled="False"/>
+
+                    <TextBlock Text="AKTIVNOSTI U KVARTU" Style="{StaticResource CitizenNavGroupTitleStyle}"/>
+                    <Button Content="🗓  Događaji"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="EventsNavButton_Click"/>
+                    <Button Content="📊  Izveštaji"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="ReportsNotImplementedButton_Click"/>
+                    <Button Content="🤝  Sastanci"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="MeetingsNavButton_Click"/>
+                    <Button Content="🏛  Gradski objekti"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="ObjectsNotImplementedButton_Click"/>
+                    <Button Content="⭐  Recenzije"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="ReviewsNotImplementedButton_Click"/>
+                    <Button Content="💙  Donacije"
+                            Style="{StaticResource CitizenNavButtonStyle}"
+                            Click="DonationsNotImplementedButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
