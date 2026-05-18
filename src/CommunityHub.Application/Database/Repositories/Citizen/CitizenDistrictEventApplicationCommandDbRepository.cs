@@ -105,17 +105,30 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
         updateItemCmd.Transaction = transaction;
         updateItemCmd.CommandText = allowReassignToSameCitizen
             ? @"
-                UPDATE district_event_required_items
+                UPDATE district_event_required_items ri
                 SET assigned_volunteer_id = @citizenId
-                WHERE id = @itemId
-                  AND event_id = @eventId
-                  AND (assigned_volunteer_id IS NULL OR assigned_volunteer_id = @citizenId)"
+                WHERE ri.id = @itemId
+                  AND ri.event_id = @eventId
+                  AND (ri.assigned_volunteer_id IS NULL OR ri.assigned_volunteer_id = @citizenId)
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM district_event_application_items ai
+                      JOIN district_event_applications a ON a.id = ai.application_id
+                      WHERE ai.required_item_id = ri.id
+                        AND a.event_id = @eventId
+                        AND a.citizen_id <> @citizenId
+                  )"
             : @"
-                UPDATE district_event_required_items
+                UPDATE district_event_required_items ri
                 SET assigned_volunteer_id = @citizenId
-                WHERE id = @itemId
-                  AND event_id = @eventId
-                  AND assigned_volunteer_id IS NULL";
+                WHERE ri.id = @itemId
+                  AND ri.event_id = @eventId
+                  AND ri.assigned_volunteer_id IS NULL
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM district_event_application_items ai
+                      WHERE ai.required_item_id = ri.id
+                  )";
 
         AddParameter(updateItemCmd, "@citizenId", citizenId);
         AddParameter(updateItemCmd, "@itemId", itemId);
@@ -135,13 +148,18 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
         long itemId,
         bool allowDuplicateLink)
     {
+        if (!allowDuplicateLink && IsItemLinkedToAnotherApplication(connection, transaction, applicationId, itemId))
+        {
+            throw new InvalidOperationException("Nije moguce preuzeti stavku jer je vec preuzeta ili ne postoji.");
+        }
+
         IDbCommand linkCmd = connection.CreateCommand();
         linkCmd.Transaction = transaction;
         linkCmd.CommandText = allowDuplicateLink
             ? @"
                 INSERT INTO district_event_application_items (application_id, required_item_id)
                 VALUES (@applicationId, @requiredItemId)
-                ON CONFLICT DO NOTHING"
+                ON CONFLICT (required_item_id) DO NOTHING"
             : @"
                 INSERT INTO district_event_application_items (application_id, required_item_id)
                 VALUES (@applicationId, @requiredItemId)";
@@ -149,6 +167,25 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
         AddParameter(linkCmd, "@applicationId", applicationId);
         AddParameter(linkCmd, "@requiredItemId", itemId);
         linkCmd.ExecuteNonQuery();
+    }
+
+    private static bool IsItemLinkedToAnotherApplication(
+        IDbConnection connection,
+        IDbTransaction transaction,
+        long applicationId,
+        long itemId)
+    {
+        IDbCommand checkCmd = connection.CreateCommand();
+        checkCmd.Transaction = transaction;
+        checkCmd.CommandText = @"
+            SELECT 1
+            FROM district_event_application_items
+            WHERE required_item_id = @requiredItemId
+              AND application_id <> @applicationId
+            LIMIT 1";
+        AddParameter(checkCmd, "@requiredItemId", itemId);
+        AddParameter(checkCmd, "@applicationId", applicationId);
+        return checkCmd.ExecuteScalar() != null;
     }
 
     private static void AddParameter(IDbCommand command, string name, object value)

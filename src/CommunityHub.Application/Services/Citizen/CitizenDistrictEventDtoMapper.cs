@@ -53,13 +53,27 @@ internal static class CitizenDistrictEventDtoMapper
                 g => g.Key,
                 g => $"{g.First().Citizen.Name} {g.First().Citizen.Surname}".Trim());
 
+        Dictionary<long, long> itemOwnerFromApplications = districtEvent.VolunteerApplications
+            .SelectMany(a => a.SelectedItemIds.Select(itemId => (itemId, a.Citizen.Id)))
+            .GroupBy(x => x.itemId)
+            .ToDictionary(g => g.Key, g => g.First().Item2);
+
         return districtEvent.RequiredItems
-            .Select(item => new EventRequiredItemDto
+            .Select(item =>
             {
-                ItemId = item.Id,
-                Name = item.Name,
-                AssignedVolunteerId = item.AssignedVolunteerId,
-                AssignedVolunteerName = ResolveVolunteerName(citizenNames, item.AssignedVolunteerId)
+                long? volunteerId = item.AssignedVolunteerId;
+                if (!volunteerId.HasValue && itemOwnerFromApplications.TryGetValue(item.Id, out long ownerId))
+                {
+                    volunteerId = ownerId;
+                }
+
+                return new EventRequiredItemDto
+                {
+                    ItemId = item.Id,
+                    Name = item.Name,
+                    AssignedVolunteerId = volunteerId,
+                    AssignedVolunteerName = ResolveVolunteerName(citizenNames, volunteerId)
+                };
             })
             .ToList();
     }
