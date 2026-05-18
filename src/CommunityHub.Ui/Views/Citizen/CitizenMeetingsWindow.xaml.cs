@@ -49,4 +49,22 @@ public partial class CitizenMeetingsWindow : Window
             LoadMeetings();
         }
     }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenHomeWindow(_userId).Show();
+        Close();
+    }
+
+    private void MyDistrictNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new MyDistrictWindow(_userId).Show();
+        Close();
+    }
+
+    private void EventsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenEventsWindow(_userId).Show();
+        Close();
+    }
 }

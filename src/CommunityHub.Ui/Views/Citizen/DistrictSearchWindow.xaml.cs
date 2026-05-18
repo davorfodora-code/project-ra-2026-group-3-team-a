@@ -146,5 +146,17 @@ public partial class DistrictSearchWindow : Window
         MessageBox.Show(text, caption, MessageBoxButton.OK, image);
     }
 
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenHomeWindow(_userId).Show();
+        Close();
+    }
+
+    private void RequestsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new MyDistrictRequestsWindow(_userId).Show();
+        Close();
+    }
+
 }
 

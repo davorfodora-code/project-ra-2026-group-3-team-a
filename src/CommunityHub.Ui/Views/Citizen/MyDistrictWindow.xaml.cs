@@ -63,4 +63,22 @@ public partial class MyDistrictWindow : Window
         new CitizenHomeWindow(_userId).Show();
         Close();
     }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenHomeWindow(_userId).Show();
+        Close();
+    }
+
+    private void EventsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenEventsWindow(_userId).Show();
+        Close();
+    }
+
+    private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        new CitizenMeetingsWindow(_userId).Show();
+        Close();
+    }
 }
