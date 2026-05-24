@@ -5,7 +5,7 @@ using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class DistrictSearchWindow : Window
+public partial class DistrictSearchWindow : Page
 {
     private readonly long _userId;
     private readonly DistrictSearchViewModel _viewModel;
@@ -45,9 +45,7 @@ public partial class DistrictSearchWindow : Window
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
-        CitizenHomeWindow homeWindow = new CitizenHomeWindow(_userId);
-        homeWindow.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -148,14 +146,12 @@ public partial class DistrictSearchWindow : Window
 
     private void HomeNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void RequestsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new MyDistrictRequestsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new MyDistrictRequestsWindow(_userId));
     }
 
 }

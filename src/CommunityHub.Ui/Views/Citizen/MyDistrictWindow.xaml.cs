@@ -1,10 +1,11 @@
 using System.Windows;
+using System.Windows.Controls;
 using CommunityHub.Application.Dto.Citizen;
 using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class MyDistrictWindow : Window
+public partial class MyDistrictWindow : Page
 {
     private readonly long _userId;
     private readonly MyDistrictViewModel _viewModel;
@@ -60,25 +61,21 @@ public partial class MyDistrictWindow : Window
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void HomeNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void EventsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenEventsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenEventsWindow(_userId));
     }
 
     private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenMeetingsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_userId));
     }
 }

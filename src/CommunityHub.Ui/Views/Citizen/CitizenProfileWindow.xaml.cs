@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using CommunityHub.Application;
 using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Application.Domain;
@@ -9,7 +10,7 @@ using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class CitizenProfileWindow : Window
+public partial class CitizenProfileWindow : Page
 {
     private readonly long _userId;
     private readonly UserDbRepository _userRepository;
@@ -32,8 +33,7 @@ public partial class CitizenProfileWindow : Window
         if (user == null)
         {
             MessageBox.Show("Korisnik nije pronađen.", "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
-            new CitizenHomeWindow(_userId).Show();
-            Close();
+            CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
             return;
         }
 
@@ -79,54 +79,42 @@ public partial class CitizenProfileWindow : Window
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
-        List<Window> toClose = System.Windows.Application.Current.Windows.Cast<Window>().ToList();
-        new LogInForm().Show();
-        foreach (Window window in toClose)
-        {
-            window.Close();
-        }
+        CitizenShellNavigation.Logout(this);
     }
 
     private void HomeNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void SearchNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new DistrictSearchWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new DistrictSearchWindow(_userId));
     }
 
     private void RequestsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new MyDistrictRequestsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new MyDistrictRequestsWindow(_userId));
     }
 
     private void MyDistrictNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new MyDistrictWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new MyDistrictWindow(_userId));
     }
 
     private void EventsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenEventsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenEventsWindow(_userId));
     }
 
     private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenMeetingsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_userId));
     }
 
     private static void ShowUnavailableMessage(string moduleName)

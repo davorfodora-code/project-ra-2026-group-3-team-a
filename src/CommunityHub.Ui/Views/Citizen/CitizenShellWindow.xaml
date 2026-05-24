@@ -1,0 +1,12 @@
+<Window x:Class="CommunityHub.Ui.Views.Citizen.CitizenShellWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SIMS - Građanin"
+        Height="720"
+        Width="1280"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F8FF">
+    <Frame x:Name="MainFrame"
+           NavigationUIVisibility="Hidden"/>
+</Window>

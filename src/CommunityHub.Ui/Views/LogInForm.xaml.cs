@@ -39,7 +39,7 @@ public partial class LogInForm : Window
             "BuildingManager" => new BuildingManagerWindow(userId),
             "Tenant" => new TenantWindow(userId),
             "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
-            "Citizen" => new CitizenHomeWindow(userId),
+            "Citizen" => new CitizenShellWindow(userId),
             _ => null
         };
 
