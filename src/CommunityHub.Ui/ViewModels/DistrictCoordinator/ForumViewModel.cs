@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using CommunityHub.Application;
 using CommunityHub.Application.Services.DistrictCoordinator;
@@ -13,9 +12,6 @@ namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 public class ForumViewModel : ViewModelBase
 {
     private readonly ForumService _forumService;
-    public long CoordinatorId { get; }
-    private readonly long _coordinatorId;
-
     private string _searchText = string.Empty;
     private ForumDto? _selectedForum;
     private string _newCommentText = string.Empty;
@@ -23,32 +19,28 @@ public class ForumViewModel : ViewModelBase
 
     public ForumViewModel(long coordinatorId)
     {
-        _coordinatorId = coordinatorId;
         CoordinatorId = coordinatorId;
-        _forumService = new ForumService(Injector.Get<IForumRepository>());
+        _forumService  = new ForumService(Injector.Get<IForumRepository>());
 
-        Forums = new ObservableCollection<ForumDto>();
+        Forums   = new ObservableCollection<ForumDto>();
         Comments = new ObservableCollection<ForumCommentDto>();
 
-        SearchCommand = new RelayCommand(_ => DoSearch());
-        OpenForumCommand = new RelayCommand(p =>
-        {
-            if (p is ForumDto dto) OpenForumDetail(dto);
-        });
-        BackToListCommand = new RelayCommand(_ => BackToList());
-        CloseForumCommand = new RelayCommand(_ => DoCloseForum(), _ => SelectedForum?.IsOwner == true && !SelectedForum.IsClosed);
-        PostCommentCommand = new RelayCommand(_ => DoPostComment(), _ => CanPostComment());
-        LikeCommand = new RelayCommand(p =>
-        {
-            if (p is ForumCommentDto c) DoToggleReaction(c.Id, true);
-        });
-        DislikeCommand = new RelayCommand(p =>
-        {
-            if (p is ForumCommentDto c) DoToggleReaction(c.Id, false);
-        });
+        SearchCommand    = new RelayCommand(_ => LoadForums());
+        OpenForumCommand = new RelayCommand(p => { if (p is ForumDto dto) OpenForumDetail(dto); });
+        BackToListCommand  = new RelayCommand(_ => BackToList());
+        CloseForumCommand  = new RelayCommand(_ => DoCloseForum(),
+            _ => SelectedForum?.IsOwner == true && !SelectedForum.IsClosed);
+        PostCommentCommand = new RelayCommand(_ => DoPostComment(),
+            _ => SelectedForum != null && !SelectedForum.IsClosed && !string.IsNullOrWhiteSpace(_newCommentText));
+        LikeCommand    = new RelayCommand(p => { if (p is ForumCommentDto c) DoToggleReaction(c.Id, true); });
+        DislikeCommand = new RelayCommand(p => { if (p is ForumCommentDto c) DoToggleReaction(c.Id, false); });
+        OpenCreateForumCommand = new RelayCommand(_ =>
+            CreateForumDialogRequested?.Invoke(success => { if (success) LoadForums(); }));
     }
 
-    public ObservableCollection<ForumDto> Forums { get; }
+    public long CoordinatorId { get; }
+
+    public ObservableCollection<ForumDto>        Forums   { get; }
     public ObservableCollection<ForumCommentDto> Comments { get; }
 
     public string SearchText
@@ -80,63 +72,50 @@ public class ForumViewModel : ViewModelBase
     public bool IsDetailView
     {
         get => _isDetailView;
-        private set
-        {
-            if (SetProperty(ref _isDetailView, value))
-                OnPropertyChanged(nameof(IsListView));
-        }
+        private set { if (SetProperty(ref _isDetailView, value)) OnPropertyChanged(nameof(IsListView)); }
     }
 
-    public bool IsListView => !_isDetailView;
-    public bool CanClose => _selectedForum?.IsOwner == true && !(_selectedForum?.IsClosed ?? true);
-    public bool CanComment => !(_selectedForum?.IsClosed ?? true);
+    public bool IsListView    => !_isDetailView;
+    public bool CanClose      => _selectedForum?.IsOwner == true && !(_selectedForum?.IsClosed ?? true);
+    public bool CanComment    => !(_selectedForum?.IsClosed ?? true);
     public bool IsForumClosed => _selectedForum?.IsClosed ?? false;
 
-    public ICommand SearchCommand { get; }
-    public ICommand OpenForumCommand { get; }
-    public ICommand BackToListCommand { get; }
-    public ICommand CloseForumCommand { get; }
-    public ICommand PostCommentCommand { get; }
-    public ICommand LikeCommand { get; }
-    public ICommand DislikeCommand { get; }
+    public ICommand SearchCommand          { get; }
+    public ICommand OpenForumCommand       { get; }
+    public ICommand BackToListCommand      { get; }
+    public ICommand CloseForumCommand      { get; }
+    public ICommand PostCommentCommand     { get; }
+    public ICommand LikeCommand            { get; }
+    public ICommand DislikeCommand         { get; }
+    public ICommand OpenCreateForumCommand { get; }
 
     public event Action<Action<bool>>? CreateForumDialogRequested;
-    public event Action<string, bool>? NotificationRequested;
-
-    private ICommand? _openCreateForumCommand;
-    public ICommand OpenCreateForumCommand => _openCreateForumCommand ??= new RelayCommand(_ => RequestCreateForum());
+    public event Action<string, bool>?  NotificationRequested;
 
     public void Initialize()
     {
-        try
-        {
-            LoadForums();
-        }
+        try   { LoadForums(); }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[Forum] Initialize error for user {_coordinatorId}: {ex.Message}");
-            NotificationRequested?.Invoke($"Greška pri učitavanju foruma:\n{ex.Message}\n\nProverite da li je pokrenuta migracija (migration_forum_34.sql).", false);
+            System.Diagnostics.Debug.WriteLine($"[Forum] Initialize error for user {CoordinatorId}: {ex.Message}");
+            NotificationRequested?.Invoke(
+                $"Greška pri učitavanju foruma:\n{ex.Message}\n\nProverite da li je pokrenuta migracija (migration_forum_34.sql).", false);
         }
     }
 
     private void LoadForums()
     {
         List<ForumDto> forums = string.IsNullOrWhiteSpace(_searchText)
-            ? _forumService.GetVisibleForums(_coordinatorId)
-            : _forumService.Search(_coordinatorId, _searchText);
+            ? _forumService.GetVisibleForums(CoordinatorId)
+            : _forumService.Search(CoordinatorId, _searchText);
 
         Forums.Clear();
         foreach (ForumDto f in forums) Forums.Add(f);
     }
 
-    private void DoSearch()
-    {
-        LoadForums();
-    }
-
     private void OpenForumDetail(ForumDto forum)
     {
-        SelectedForum = _forumService.GetById(forum.Id, _coordinatorId);
+        SelectedForum = _forumService.GetById(forum.Id, CoordinatorId);
         if (SelectedForum == null) return;
         LoadComments();
         IsDetailView = true;
@@ -144,8 +123,8 @@ public class ForumViewModel : ViewModelBase
 
     private void BackToList()
     {
-        IsDetailView = false;
-        SelectedForum = null;
+        IsDetailView   = false;
+        SelectedForum  = null;
         Comments.Clear();
         NewCommentText = string.Empty;
         LoadForums();
@@ -155,7 +134,7 @@ public class ForumViewModel : ViewModelBase
     {
         if (SelectedForum == null) return;
         List<ForumCommentDto> comments = _forumService.GetComments(
-            SelectedForum.Id, _coordinatorId, SelectedForum.AuthorId);
+            SelectedForum.Id, CoordinatorId, SelectedForum.AuthorId);
         Comments.Clear();
         foreach (ForumCommentDto c in comments) Comments.Add(c);
     }
@@ -166,20 +145,11 @@ public class ForumViewModel : ViewModelBase
         try
         {
             _forumService.CloseForum(SelectedForum.Id);
-            SelectedForum = _forumService.GetById(SelectedForum.Id, _coordinatorId);
+            SelectedForum = _forumService.GetById(SelectedForum.Id, CoordinatorId);
             LoadComments();
             NotificationRequested?.Invoke("Forum je uspešno zatvoren.", true);
         }
-        catch (Exception ex)
-        {
-            NotificationRequested?.Invoke($"Greška: {ex.Message}", false);
-        }
-    }
-
-    private bool CanPostComment()
-    {
-        return SelectedForum != null && !SelectedForum.IsClosed
-               && !string.IsNullOrWhiteSpace(_newCommentText);
+        catch (Exception ex) { NotificationRequested?.Invoke($"Greška: {ex.Message}", false); }
     }
 
     private void DoPostComment()
@@ -187,35 +157,21 @@ public class ForumViewModel : ViewModelBase
         if (SelectedForum == null || string.IsNullOrWhiteSpace(_newCommentText)) return;
         try
         {
-            _forumService.AddComment(SelectedForum.Id, _coordinatorId, _newCommentText.Trim());
+            _forumService.AddComment(SelectedForum.Id, CoordinatorId, _newCommentText.Trim());
             NewCommentText = string.Empty;
-            SelectedForum = _forumService.GetById(SelectedForum.Id, _coordinatorId);
+            SelectedForum  = _forumService.GetById(SelectedForum.Id, CoordinatorId);
             LoadComments();
         }
-        catch (Exception ex)
-        {
-            NotificationRequested?.Invoke($"Greška: {ex.Message}", false);
-        }
+        catch (Exception ex) { NotificationRequested?.Invoke($"Greška: {ex.Message}", false); }
     }
 
     private void DoToggleReaction(long commentId, bool isPositive)
     {
         try
         {
-            _forumService.ToggleReaction(commentId, _coordinatorId, isPositive);
+            _forumService.ToggleReaction(commentId, CoordinatorId, isPositive);
             LoadComments();
         }
-        catch (Exception ex)
-        {
-            NotificationRequested?.Invoke($"Greška: {ex.Message}", false);
-        }
-    }
-
-    private void RequestCreateForum()
-    {
-        CreateForumDialogRequested?.Invoke(success =>
-        {
-            if (success) LoadForums();
-        });
+        catch (Exception ex) { NotificationRequested?.Invoke($"Greška: {ex.Message}", false); }
     }
 }
