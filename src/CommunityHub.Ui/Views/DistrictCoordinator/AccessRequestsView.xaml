@@ -98,24 +98,24 @@
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
-                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Svi"
-                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
-                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
+                            Command="{Binding RequestList.SetRequestFilterCommand}" CommandParameter="Svi"
+                            Background="{Binding RequestList.RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
+                            Foreground="{Binding RequestList.RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Na čekanju"
-                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Pending"
-                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Pending}"
-                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Pending}"/>
+                            Command="{Binding RequestList.SetRequestFilterCommand}" CommandParameter="Pending"
+                            Background="{Binding RequestList.RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Pending}"
+                            Foreground="{Binding RequestList.RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Pending}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Prihvaćeni"
-                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Approved"
-                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Approved}"
-                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Approved}"/>
+                            Command="{Binding RequestList.SetRequestFilterCommand}" CommandParameter="Approved"
+                            Background="{Binding RequestList.RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Approved}"
+                            Foreground="{Binding RequestList.RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Approved}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Odbijeni"
-                            Command="{Binding SetRequestFilterCommand}" CommandParameter="Rejected"
-                            Background="{Binding RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Rejected}"
-                            Foreground="{Binding RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Rejected}"/>
+                            Command="{Binding RequestList.SetRequestFilterCommand}" CommandParameter="Rejected"
+                            Background="{Binding RequestList.RequestFilter, Converter={StaticResource FilterBg}, ConverterParameter=Rejected}"
+                            Foreground="{Binding RequestList.RequestFilter, Converter={StaticResource FilterFg}, ConverterParameter=Rejected}"/>
                 </StackPanel>
 
-                <DataGrid Grid.Row="2" ItemsSource="{Binding Requests}"
+                <DataGrid Grid.Row="2" ItemsSource="{Binding RequestList.Requests}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           CanUserAddRows="False" SelectionMode="Single"
                           HeadersVisibility="Column" GridLinesVisibility="Horizontal"
@@ -133,7 +133,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Button Content="Prihvati"
-                                                Command="{Binding DataContext.ShowApproveOverlayCommand,
+                                                Command="{Binding DataContext.RequestList.ShowApproveOverlayCommand,
                                                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Visibility="{Binding IsPending, Converter={StaticResource BoolToVis}}"
@@ -141,7 +141,7 @@
                                                 Background="#27AE60" Foreground="White"
                                                 BorderThickness="0" Cursor="Hand"/>
                                         <Button Content="Odbij"
-                                                Command="{Binding DataContext.ShowRejectOverlayCommand,
+                                                Command="{Binding DataContext.RequestList.ShowRejectOverlayCommand,
                                                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Visibility="{Binding IsPending, Converter={StaticResource BoolToVis}}"
@@ -170,28 +170,28 @@
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Svi"
-                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Svi"
-                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
-                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
+                            Command="{Binding MembershipList.SetTrustFilterCommand}" CommandParameter="Svi"
+                            Background="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Svi}"
+                            Foreground="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Svi}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Nov u kvartu"
-                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Nov"
-                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Nov}"
-                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Nov}"/>
+                            Command="{Binding MembershipList.SetTrustFilterCommand}" CommandParameter="Nov"
+                            Background="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Nov}"
+                            Foreground="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Nov}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Neaktivan"
-                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Neaktivan"
-                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Neaktivan}"
-                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Neaktivan}"/>
+                            Command="{Binding MembershipList.SetTrustFilterCommand}" CommandParameter="Neaktivan"
+                            Background="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Neaktivan}"
+                            Foreground="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Neaktivan}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Aktivan"
-                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Aktivan"
-                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Aktivan}"
-                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Aktivan}"/>
+                            Command="{Binding MembershipList.SetTrustFilterCommand}" CommandParameter="Aktivan"
+                            Background="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Aktivan}"
+                            Foreground="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Aktivan}"/>
                     <Button Style="{StaticResource FilterButtonStyle}" Content="Istaknut"
-                            Command="{Binding SetTrustFilterCommand}" CommandParameter="Istaknuti"
-                            Background="{Binding TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Istaknuti}"
-                            Foreground="{Binding TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Istaknuti}"/>
+                            Command="{Binding MembershipList.SetTrustFilterCommand}" CommandParameter="Istaknuti"
+                            Background="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterBg}, ConverterParameter=Istaknuti}"
+                            Foreground="{Binding MembershipList.TrustFilter, Converter={StaticResource FilterFg}, ConverterParameter=Istaknuti}"/>
                 </StackPanel>
 
-                <DataGrid Grid.Row="2" ItemsSource="{Binding Memberships}"
+                <DataGrid Grid.Row="2" ItemsSource="{Binding MembershipList.Memberships}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           CanUserAddRows="False" HeadersVisibility="Column"
                           GridLinesVisibility="Horizontal"

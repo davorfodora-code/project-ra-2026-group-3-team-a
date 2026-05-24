@@ -1,9 +1,5 @@
 using System;
-using System.Globalization;
-using System.Linq;
 using System.Windows.Input;
-using CommunityHub.Application;
-using CommunityHub.Application.Domain;
 using CommunityHub.Application.Services;
 using CommunityHub.Ui.ViewModels.Common;
 
@@ -11,42 +7,29 @@ namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 public class CoordinatorShellViewModel : ViewModelBase
 {
-    public const string TabHome     = "home";
-    public const string TabRequests = "requests";
-    public const string TabStats    = "stats";
-    public const string TabForum    = "forum";
+    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum";
 
-    private readonly IUserRepository _userRepository;
     private readonly RegistrationOverlayController _overlayCtrl;
-
     private string _currentTab = TabHome;
     private ViewModelBase _currentTabContent;
     private ViewModelBase? _activeOverlay;
-    private (string Name, string Initials) _coordinator = (string.Empty, "??");
-    private string _savedAtText = string.Empty;
 
     public CoordinatorShellViewModel(long coordinatorId)
     {
-        CoordinatorId   = coordinatorId;
-        _userRepository = Injector.Get<IUserRepository>();
-
+        CoordinatorId = coordinatorId;
         Home     = new HomeContentViewModel(coordinatorId);
         Requests = new AccessRequestsViewModel(coordinatorId);
         Stats    = new StatisticsViewModel(coordinatorId);
         Forum    = new ForumViewModel(coordinatorId);
-
+        Header   = new CoordinatorHeaderViewModel(coordinatorId, Home);
         _currentTabContent = Home;
-
-        _overlayCtrl = new RegistrationOverlayController(
-            coordinatorId,
+        _overlayCtrl = new RegistrationOverlayController(coordinatorId,
             v => ActiveOverlay = v,
-            () => { Home.Refresh(); OnPropertyChanged(nameof(TotalBudgetDisplay)); OnPropertyChanged(nameof(FooterCoordinatorInfo)); },
+            () => { Home.Refresh(); Header.RefreshDisplayProps(); },
             m => NotificationRequested?.Invoke(m));
-
         Home.RegisterDistrictRequested += () => _overlayCtrl.Open();
-        Home.FinanceRequested          += d  => NotificationRequested?.Invoke($"Finansije za kvart '{d}' — još nije implementirano.");
-        Home.SelectionChanged          += _  => OnPropertyChanged(nameof(FooterCoordinatorInfo));
-
+        Home.FinanceRequested          += d => NotificationRequested?.Invoke($"Finansije za kvart '{d}' — još nije implementirano.");
+        Home.SelectionChanged          += _ => Header.RefreshDisplayProps();
         SwitchTabCommand         = new RelayCommand(p => CurrentTab = p?.ToString() ?? TabHome);
         LogoutCommand            = new RelayCommand(_ => LogoutRequested?.Invoke());
         NotImplementedTabCommand = new RelayCommand(p => NotificationRequested?.Invoke($"Sekcija '{p}' još nije implementirana."));
@@ -54,11 +37,11 @@ public class CoordinatorShellViewModel : ViewModelBase
     }
 
     public long CoordinatorId { get; }
-
-    public HomeContentViewModel    Home     { get; }
-    public AccessRequestsViewModel Requests { get; }
-    public StatisticsViewModel     Stats    { get; }
-    public ForumViewModel          Forum    { get; }
+    public HomeContentViewModel       Home     { get; }
+    public AccessRequestsViewModel    Requests { get; }
+    public StatisticsViewModel        Stats    { get; }
+    public ForumViewModel             Forum    { get; }
+    public CoordinatorHeaderViewModel Header   { get; }
 
     public string CurrentTab
     {
@@ -67,13 +50,7 @@ public class CoordinatorShellViewModel : ViewModelBase
         {
             if (SetProperty(ref _currentTab, value))
             {
-                CurrentTabContent = value switch
-                {
-                    TabRequests => Requests,
-                    TabStats    => Stats,
-                    TabForum    => Forum,
-                    _           => Home,
-                };
+                CurrentTabContent = value switch { TabRequests => Requests, TabStats => Stats, TabForum => Forum, _ => Home };
                 OnPropertyChanged(nameof(IsHomeTab));
                 OnPropertyChanged(nameof(IsRequestsTab));
                 OnPropertyChanged(nameof(IsStatsTab));
@@ -82,12 +59,7 @@ public class CoordinatorShellViewModel : ViewModelBase
         }
     }
 
-    public ViewModelBase CurrentTabContent
-    {
-        get => _currentTabContent;
-        private set => SetProperty(ref _currentTabContent, value);
-    }
-
+    public ViewModelBase CurrentTabContent { get => _currentTabContent; private set => SetProperty(ref _currentTabContent, value); }
     public bool IsHomeTab     => _currentTab == TabHome;
     public bool IsRequestsTab => _currentTab == TabRequests;
     public bool IsStatsTab    => _currentTab == TabStats;
@@ -98,48 +70,7 @@ public class CoordinatorShellViewModel : ViewModelBase
         get => _activeOverlay;
         private set { if (SetProperty(ref _activeOverlay, value)) OnPropertyChanged(nameof(HasOverlay)); }
     }
-
     public bool HasOverlay => _activeOverlay != null;
-
-    public string CoordinatorFullName
-    {
-        get => _coordinator.Name;
-        private set { _coordinator.Name = value; OnPropertyChanged(); }
-    }
-
-    public string CoordinatorInitials
-    {
-        get => _coordinator.Initials;
-        private set { _coordinator.Initials = value; OnPropertyChanged(); }
-    }
-
-    public string SavedAtText
-    {
-        get => _savedAtText;
-        private set => SetProperty(ref _savedAtText, value);
-    }
-
-    public string TotalBudgetDisplay
-    {
-        get
-        {
-            decimal total = Home.DistrictCards.Sum(c => c.Budget);
-            return total.ToString("N0", CultureInfo.GetCultureInfo("sr-Latn-RS")) + " RSD";
-        }
-    }
-
-    public string FooterCoordinatorInfo
-    {
-        get
-        {
-            string placeLine = Home.SelectedCard != null
-                ? $"{Home.SelectedCard.Name}, {Home.SelectedCard.LocationDisplay.Split(',')[0].Trim()}"
-                : string.Empty;
-            return string.Join(Environment.NewLine,
-                new[] { _coordinator.Name, "Koordinator", placeLine }
-                    .Where(s => !string.IsNullOrWhiteSpace(s)));
-        }
-    }
 
     public ICommand SwitchTabCommand         { get; }
     public ICommand LogoutCommand            { get; }
@@ -151,21 +82,8 @@ public class CoordinatorShellViewModel : ViewModelBase
 
     public void Initialize()
     {
-        SavedAtText = $"Sačuvano u {DateTime.Now:HH:mm}";
-        LoadCoordinator();
+        Header.Initialize();
         Home.EnsureLoaded();
-        OnPropertyChanged(nameof(TotalBudgetDisplay));
-        OnPropertyChanged(nameof(FooterCoordinatorInfo));
+        Header.RefreshDisplayProps();
     }
-
-    private void LoadCoordinator()
-    {
-        User? user = _userRepository.GetById(CoordinatorId);
-        if (user == null) { CoordinatorFullName = "Nepoznat korisnik"; CoordinatorInitials = "?"; return; }
-        CoordinatorFullName = $"{user.Name} {user.Surname}";
-        CoordinatorInitials = $"{InitialOf(user.Name)}{InitialOf(user.Surname)}";
-    }
-
-    private static char InitialOf(string s) =>
-        string.IsNullOrWhiteSpace(s) ? '?' : char.ToUpper(s.Trim()[0]);
 }
