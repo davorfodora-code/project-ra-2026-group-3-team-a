@@ -69,29 +69,22 @@ public class BuildingAccessRequestDbRepository : IBuildingAccessRequestRepositor
 
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
             requests.Add(MapRequest(reader));
-        }
 
         return requests;
     }
 
     private static BuildingAccessRequest MapRequest(IDataReader reader)
     {
-        User tenant = MapTenant(reader);
-        Building building = MapBuilding(reader);
-        string? rejectionReason = reader.IsDBNull(reader.GetOrdinal("rejection_reason"))
-            ? null
-            : reader.GetString(reader.GetOrdinal("rejection_reason"));
-
         return new BuildingAccessRequest(
             reader.GetInt64(reader.GetOrdinal("id")),
-            tenant,
-            building,
+            MapTenant(reader),
+            MapBuilding(reader),
             reader.GetInt32(reader.GetOrdinal("apartment_number")),
             reader.GetDateTime(reader.GetOrdinal("created_at")),
             reader.GetString(reader.GetOrdinal("status")),
-            rejectionReason);
+            reader.IsDBNull(reader.GetOrdinal("rejection_reason"))
+                ? null : reader.GetString(reader.GetOrdinal("rejection_reason")));
     }
 
     private static User MapTenant(IDataReader reader)
@@ -108,21 +101,17 @@ public class BuildingAccessRequestDbRepository : IBuildingAccessRequestRepositor
 
     private static Building MapBuilding(IDataReader reader)
     {
-        Address address = new Address(
-            reader.GetInt64(reader.GetOrdinal("address_id")),
-            reader.GetString(reader.GetOrdinal("street")),
-            reader.GetString(reader.GetOrdinal("street_number")));
-
-        Location location = new Location(
-            reader.GetInt64(reader.GetOrdinal("location_id")),
-            reader.GetString(reader.GetOrdinal("city")),
-            reader.GetString(reader.GetOrdinal("country")));
-
         return new Building(
             reader.GetInt64(reader.GetOrdinal("building_id")),
-            address,
+            new Address(
+                reader.GetInt64(reader.GetOrdinal("address_id")),
+                reader.GetString(reader.GetOrdinal("street")),
+                reader.GetString(reader.GetOrdinal("street_number"))),
             reader.GetString(reader.GetOrdinal("neighborhood")),
-            location,
+            new Location(
+                reader.GetInt64(reader.GetOrdinal("location_id")),
+                reader.GetString(reader.GetOrdinal("city")),
+                reader.GetString(reader.GetOrdinal("country"))),
             reader.GetInt32(reader.GetOrdinal("number_of_floors")),
             reader.GetInt64(reader.GetOrdinal("manager_id")));
     }
