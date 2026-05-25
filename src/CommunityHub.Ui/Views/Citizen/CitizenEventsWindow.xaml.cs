@@ -61,6 +61,11 @@ public partial class CitizenEventsWindow : Page
         }
     }
 
+    public void OpenCreateEventDialog()
+    {
+        CreateEventButton_Click(this, new RoutedEventArgs());
+    }
+
     private void VolunteerSignupButton_Click(object sender, RoutedEventArgs e)
     {
         if (EventsDataGrid.SelectedItem is not DistrictEventListItemDto selected)

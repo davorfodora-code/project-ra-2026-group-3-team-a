@@ -9,7 +9,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
-    <Grid Margin="24">
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
@@ -21,30 +21,15 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="255"/>
+            <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <TextBlock x:Name="DistrictNameTextBlock"
-                           FontSize="30"
-                           Style="{StaticResource Win11HeadingTextStyle}"/>
-                <TextBlock x:Name="DistrictDescriptionTextBlock"
-                           Foreground="{StaticResource Win11TextMutedBrush}"
-                           TextWrapping="Wrap"
-                           Margin="0,4,0,0"/>
-            </StackPanel>
-            <Button Grid.Column="1"
-                    Content="Nazad"
-                    Style="{StaticResource Win11SecondaryButtonStyle}"
-                    Padding="14,8"
-                    Click="BackButton_Click"
-                    VerticalAlignment="Top"/>
-        </Grid>
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <TextBlock x:Name="DistrictNameTextBlock"
+                       Style="{StaticResource CitizenPageTitleStyle}"/>
+            <TextBlock x:Name="DistrictDescriptionTextBlock"
+                       Style="{StaticResource CitizenPageSubtitleStyle}"/>
+        </StackPanel>
 
         <Grid Grid.Row="2" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -55,9 +40,7 @@
             <Border Grid.Column="0" Style="{StaticResource Win11CardStyle}" Margin="0,0,8,0">
                 <StackPanel>
                     <TextBlock Text="Osnovne informacije"
-                               Style="{StaticResource Win11HeadingTextStyle}"
-                               FontSize="16"
-                               Margin="0,0,0,10"/>
+                               Style="{StaticResource CitizenSectionTitleStyle}"/>
                     <TextBlock Text="Lokacija:"
                                Style="{StaticResource Win11HeadingTextStyle}"/>
                     <TextBlock x:Name="DistrictLocationTextBlock" Margin="0,0,0,8"/>
@@ -70,8 +53,7 @@
             <Border Grid.Column="1" Style="{StaticResource Win11CardStyle}" Margin="8,0,0,0">
                 <StackPanel>
                     <TextBlock Text="Ulice i opsezi brojeva"
-                               Style="{StaticResource Win11HeadingTextStyle}"
-                               FontSize="16"
+                               Style="{StaticResource CitizenSectionTitleStyle}"
                                Margin="0,0,0,8"/>
                     <ListBox x:Name="StreetsListBox" Height="110"/>
                 </StackPanel>
@@ -83,10 +65,52 @@
                 Style="{StaticResource Win11CardStyle}">
             <StackPanel>
                 <TextBlock Text="Slike kvarta"
-                           Style="{StaticResource Win11HeadingTextStyle}"
-                           FontSize="16"
+                           Style="{StaticResource CitizenSectionTitleStyle}"
                            Margin="0,0,0,8"/>
-                <ListBox x:Name="DistrictImagesListBox" Height="90"/>
+                <ListBox x:Name="DistrictImagesListBox"
+                         Height="132"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,10,0"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="200"
+                                    Height="120"
+                                    Background="#EEF4FC"
+                                    BorderBrush="{StaticResource Win11CardBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    ClipToBounds="True">
+                                <Image Source="{Binding Converter={StaticResource ImagePathConverter}}"
+                                       MaxWidth="196"
+                                       MaxHeight="116"
+                                       Stretch="Uniform"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock x:Name="NoDistrictImagesTextBlock"
+                           Text="Nema dostupnih slika."
+                           Foreground="{StaticResource Win11TextMutedBrush}"
+                           Visibility="Collapsed"/>
             </StackPanel>
         </Border>
 
@@ -95,8 +119,7 @@
                 Style="{StaticResource Win11CardStyle}">
             <StackPanel>
                 <TextBlock Text="Evidencija poverenja građana u kvartu"
-                           Style="{StaticResource Win11HeadingTextStyle}"
-                           FontSize="16"
+                           Style="{StaticResource CitizenSectionTitleStyle}"
                            Margin="0,0,0,8"/>
                 <DataGrid x:Name="TrustRecordsDataGrid"
                           Style="{StaticResource Win11DataGridStyle}"

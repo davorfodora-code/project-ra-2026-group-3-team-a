@@ -28,7 +28,7 @@ public partial class MyDistrictWindow : Page
             DistrictLocationTextBlock.Text = "-";
             MyJoinDateTextBlock.Text = "-";
             StreetsListBox.ItemsSource = new List<string> { "Nema dostupnih podataka." };
-            DistrictImagesListBox.ItemsSource = new List<string> { "Nema dostupnih slika." };
+            SetDistrictImages(Array.Empty<string>());
             TrustRecordsDataGrid.ItemsSource = new List<MyDistrictTrustRowViewModel>();
             return;
         }
@@ -41,8 +41,23 @@ public partial class MyDistrictWindow : Page
         MyJoinDateTextBlock.Text = myTrustRecord == null ? "-" : myTrustRecord.JoinDate.ToString("dd.MM.yyyy.");
 
         StreetsListBox.ItemsSource = ParseStreetRows(district.StreetsDisplay);
-        DistrictImagesListBox.ItemsSource = district.ImageUrls.Count == 0 ? new List<string> { "Nema dostupnih slika." } : district.ImageUrls;
+        SetDistrictImages(district.ImageUrls);
         TrustRecordsDataGrid.ItemsSource = _viewModel.GetDistrictTrustRows();
+    }
+
+    private void SetDistrictImages(IReadOnlyList<string> imageUrls)
+    {
+        if (imageUrls.Count == 0)
+        {
+            DistrictImagesListBox.ItemsSource = null;
+            DistrictImagesListBox.Visibility = Visibility.Collapsed;
+            NoDistrictImagesTextBlock.Visibility = Visibility.Visible;
+            return;
+        }
+
+        DistrictImagesListBox.ItemsSource = imageUrls;
+        DistrictImagesListBox.Visibility = Visibility.Visible;
+        NoDistrictImagesTextBlock.Visibility = Visibility.Collapsed;
     }
 
     private static List<string> ParseStreetRows(string streetsDisplay)
@@ -57,11 +72,6 @@ public partial class MyDistrictWindow : Page
             .Select(s => s.Trim())
             .Where(s => !string.IsNullOrWhiteSpace(s))
             .ToList();
-    }
-
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void HomeNavButton_Click(object sender, RoutedEventArgs e)

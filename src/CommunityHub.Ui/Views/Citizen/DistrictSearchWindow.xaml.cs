@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Dto.Citizen;
+using CommunityHub.Application.Services.Citizen;
 using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
@@ -97,8 +98,9 @@ public partial class DistrictSearchWindow : Page
 
         try
         {
+            bool wasMember = new CitizenMembershipService().HasMembership(_userId);
             AccessResultDto result = _viewModel.RequestDistrictAccess(selectedDistrict.DistrictId);
-            ShowResult(result);
+            ShowResult(result, wasMember);
         }
         catch (Exception ex)
         {
@@ -120,7 +122,7 @@ public partial class DistrictSearchWindow : Page
         return true;
     }
 
-    private void ShowResult(AccessResultDto result)
+    private void ShowResult(AccessResultDto result, bool wasMember)
     {
         MessageBoxImage image = result.Type switch
         {
@@ -136,7 +138,24 @@ public partial class DistrictSearchWindow : Page
             _ => "Greška"
         };
 
-        ShowMessageBox(result.Message, caption, image);
+        MessageBoxResult dialogResult = MessageBox.Show(
+            result.Message,
+            caption,
+            MessageBoxButton.OK,
+            image);
+
+        if (dialogResult != MessageBoxResult.OK ||
+            result.Type != AccessResultType.Success ||
+            wasMember)
+        {
+            return;
+        }
+
+        bool isMemberNow = new CitizenMembershipService().HasMembership(_userId);
+        if (isMemberNow)
+        {
+            CitizenShellNavigation.RefreshMembershipState(this);
+        }
     }
 
     private static void ShowMessageBox(string text, string caption, MessageBoxImage image)

@@ -9,7 +9,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
-    <Grid Margin="24">
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="255"/>
+            <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.Column="0">
@@ -142,10 +142,21 @@
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding}"
-                                   Height="100"
-                                   Margin="5,0"
-                                   Stretch="Uniform"/>
+                            <Border Width="200"
+                                    Height="100"
+                                    Margin="0,0,10,0"
+                                    Background="#EEF4FC"
+                                    BorderBrush="{StaticResource Win11CardBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    ClipToBounds="True">
+                                <Image Source="{Binding Converter={StaticResource ImagePathConverter}}"
+                                       MaxWidth="196"
+                                       MaxHeight="96"
+                                       Stretch="Uniform"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

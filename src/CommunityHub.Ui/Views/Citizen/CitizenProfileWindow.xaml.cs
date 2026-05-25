@@ -77,11 +77,6 @@ public partial class CitizenProfileWindow : Page
         MemberNavPanel.Visibility = Visibility.Visible;
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
-    }
-
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
         CitizenShellNavigation.Logout(this);
