@@ -8,6 +8,7 @@ namespace CommunityHub.Ui.Views.Tenant.Pages;
 
 public partial class BuildingSearchPage : System.Windows.Controls.Page
 {
+    private readonly TenantWindow _shell;
     private readonly long _userId;
     private readonly BuildingSearchViewModel _searchVm;
     private readonly MyBuildingRequestsViewModel _requestsVm;
@@ -15,6 +16,7 @@ public partial class BuildingSearchPage : System.Windows.Controls.Page
     public BuildingSearchPage(TenantWindow shell)
     {
         InitializeComponent();
+        _shell = shell;
         _userId = shell.UserId;
 
         _searchVm = new BuildingSearchViewModel();
@@ -25,16 +27,21 @@ public partial class BuildingSearchPage : System.Windows.Controls.Page
         _searchVm.LoadAll();
         PopulateCombos();
         RefreshCards();
+        _shell.SetBreadcrumb("Pretraga zgrada");
     }
 
-    private void TabSearch_Click(object sender, RoutedEventArgs e) =>
+    private void TabSearch_Click(object sender, RoutedEventArgs e)
+    {
         SwitchTab(TabSearchBtn, TabSearchText, SearchPanel, TabRequestsBtn, TabRequestsText, RequestsPanel);
+        _shell.SetBreadcrumb("Pretraga zgrada");
+    }
 
     private void TabRequests_Click(object sender, RoutedEventArgs e)
     {
         SwitchTab(TabRequestsBtn, TabRequestsText, RequestsPanel, TabSearchBtn, TabSearchText, SearchPanel);
         _requestsVm.LoadRequests();
         ApplyRequestFilters();
+        _shell.SetBreadcrumb("Moji zahtevi");
     }
 
     private static void SwitchTab(
@@ -118,9 +125,10 @@ public partial class BuildingSearchPage : System.Windows.Controls.Page
 
     private void ApplyRequestFilters()
     {
-        string status = (StatusFilterComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Svi statusi";
+        var selectedItem = StatusFilterComboBox.SelectedItem as ComboBoxItem;
+        string? tagValue = selectedItem?.Tag?.ToString();
+        string filterStatus = string.IsNullOrEmpty(tagValue) ? "Svi" : tagValue;
         bool newestFirst = (SortComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() != "Najstariji prvo";
-        string filterStatus = status == "Svi statusi" ? "Svi" : status;
         _requestsVm.ApplyFilters(filterStatus, newestFirst);
     }
 

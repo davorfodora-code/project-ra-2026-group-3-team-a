@@ -25,16 +25,18 @@ internal static class PieChartHelper
         int total = stats.Sum(s => s.Count);
         if (total == 0) return;
 
-        const double cx = 60, cy = 60, r = 54;
+        const double cx = 80, cy = 80, r = 72;
 
         // ArcSegment ne renderuje kad su start == end (sweep = 360°)
         if (stats.Count == 1)
         {
             var circle = new Ellipse
             {
-                Width = r * 2, Height = r * 2,
-                Fill = stats[0].Color,
-                Stroke = Brushes.White, StrokeThickness = 1.5
+                Width  = r * 2,
+                Height = r * 2,
+                Fill   = stats[0].Color,
+                Stroke = Brushes.White,
+                StrokeThickness = 1.5
             };
             Canvas.SetLeft(circle, cx - r);
             Canvas.SetTop(circle, cy - r);

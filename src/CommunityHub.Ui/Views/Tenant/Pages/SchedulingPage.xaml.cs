@@ -8,6 +8,7 @@ namespace CommunityHub.Ui.Views.Tenant.Pages;
 
 public partial class SchedulingPage : System.Windows.Controls.Page
 {
+    private readonly TenantWindow _shell;
     private readonly SchedulingViewModel _viewModel;
 
     private static readonly Brush DarkBrush  = new SolidColorBrush(Color.FromRgb(0x4A, 0x5D, 0x6E));
@@ -23,9 +24,11 @@ public partial class SchedulingPage : System.Windows.Controls.Page
     public SchedulingPage(TenantWindow shell)
     {
         InitializeComponent();
+        _shell = shell;
         _viewModel = new SchedulingViewModel(shell.UserId);
         _viewModel.Load();
         Refresh();
+        _shell.SetBreadcrumb("Moje rezervacije");
     }
 
     private void Refresh()
@@ -124,12 +127,13 @@ public partial class SchedulingPage : System.Windows.Controls.Page
         TabBookedOnPostBtn.Tag  = null;
         TabMyBookingsText.FontWeight  = FontWeights.SemiBold;
         TabMyBookingsText.Foreground  = Brushes.Black;
-        TabMyBookingsText.FontSize    = 19;
+        TabMyBookingsText.FontSize    = 24;
         TabBookedOnPostText.FontWeight = FontWeights.Normal;
         TabBookedOnPostText.Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
-        TabBookedOnPostText.FontSize   = 18;
+        TabBookedOnPostText.FontSize   = 22;
         MyBookingsPanel.Visibility  = Visibility.Visible;
         BookedOnPostPanel.Visibility = Visibility.Collapsed;
+        _shell.SetBreadcrumb("Moje rezervacije");
     }
 
     private void TabBookedOnPost_Click(object sender, RoutedEventArgs e)
@@ -138,11 +142,12 @@ public partial class SchedulingPage : System.Windows.Controls.Page
         TabMyBookingsBtn.Tag    = null;
         TabBookedOnPostText.FontWeight = FontWeights.SemiBold;
         TabBookedOnPostText.Foreground = Brushes.Black;
-        TabBookedOnPostText.FontSize   = 19;
+        TabBookedOnPostText.FontSize   = 24;
         TabMyBookingsText.FontWeight  = FontWeights.Normal;
         TabMyBookingsText.Foreground  = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
-        TabMyBookingsText.FontSize    = 18;
+        TabMyBookingsText.FontSize    = 22;
         BookedOnPostPanel.Visibility  = Visibility.Visible;
         MyBookingsPanel.Visibility   = Visibility.Collapsed;
+        _shell.SetBreadcrumb("Rezervisano na mom oglasu");
     }
 }

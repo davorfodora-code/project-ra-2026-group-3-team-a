@@ -12,6 +12,7 @@ public partial class TenantWindow : Window
 {
     public readonly long UserId;
 
+    private string _currentSectionTitle = "Početna";
     private (Border Highlight, IconBlock Icon, TextBlock Text, string Title)[] _navItems = null!;
 
     public TenantWindow(long userId)
@@ -24,7 +25,7 @@ public partial class TenantWindow : Window
 
         _navItems =
         [
-            (NavHomeHighlight,        NavHomeIcon,         NavHomeText,         "Home"),
+            (NavHomeHighlight,        NavHomeIcon,         NavHomeText,         "Početna"),
             (NavZgradeHighlight,      NavZgradeIcon,       NavZgradeText,       "Zgrade"),
             (NavOglasnaHighlight,     NavOglasnaIcon,      NavOglasnaText,      "Oglasna tabla"),
             (NavZakazivanjeHighlight, NavZakazivanjeIcon,  NavZakazivanjeText,  "Zakazivanje"),
@@ -46,7 +47,13 @@ public partial class TenantWindow : Window
             _navItems[i].Icon.Foreground = color;
             _navItems[i].Text.Foreground = color;
         }
-        TopBarTitle.Text = _navItems[index].Title;
+        _currentSectionTitle = _navItems[index].Title;
+        TopBarTitle.Text = _currentSectionTitle;
+    }
+
+    public void SetBreadcrumb(string subSection)
+    {
+        TopBarTitle.Text = $"{_currentSectionTitle}  ›  {subSection}";
     }
 
     private void NavHome_Click(object sender, RoutedEventArgs e)

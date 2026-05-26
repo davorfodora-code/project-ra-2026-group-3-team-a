@@ -18,10 +18,10 @@
                             <TextBlock x:Name="AssembliesCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nadolazeće skupštine" FontSize="14"
+                            <TextBlock Text="Nadolazeće skupštine" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
@@ -36,10 +36,10 @@
                             <TextBlock x:Name="HelpPostsCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Aktivni oglasi za pomoć" FontSize="14"
+                            <TextBlock Text="Aktivni oglasi za pomoć" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
@@ -54,10 +54,10 @@
                             <TextBlock x:Name="IssuesCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nerešeni problemi" FontSize="14"
+                            <TextBlock Text="Nerešeni problemi" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
@@ -72,10 +72,10 @@
                             <TextBlock x:Name="PendingRequestsCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Zahtev za pristup na čekanju" FontSize="14"
+                            <TextBlock Text="Zahtev za pristup na čekanju" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
