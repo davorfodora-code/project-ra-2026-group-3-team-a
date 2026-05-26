@@ -7,7 +7,7 @@
         MinHeight="600" MinWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="260"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -22,11 +22,11 @@
                         </Border>
                         <Button Style="{StaticResource SideNavStyle}" Click="NavHome_Click">
                             <StackPanel Orientation="Horizontal" Margin="20,16">
-                                <fa:IconBlock x:Name="NavHomeIcon" Icon="House" FontSize="22"
+                                <fa:IconBlock x:Name="NavHomeIcon" Icon="House" FontSize="26"
                                               Foreground="White" VerticalAlignment="Center"
-                                              Width="32" TextAlignment="Center"/>
-                                <TextBlock x:Name="NavHomeText" Text="Home" Foreground="White"
-                                           FontSize="18" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                              Width="36" TextAlignment="Center"/>
+                                <TextBlock x:Name="NavHomeText" Text="Početna" Foreground="White"
+                                           FontSize="22" VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -39,11 +39,11 @@
                         </Border>
                         <Button Style="{StaticResource SideNavStyle}" Click="NavZgrade_Click">
                             <StackPanel Orientation="Horizontal" Margin="20,16">
-                                <fa:IconBlock x:Name="NavZgradeIcon" Icon="Building" FontSize="22"
+                                <fa:IconBlock x:Name="NavZgradeIcon" Icon="Building" FontSize="26"
                                               Foreground="#B0BEC5" VerticalAlignment="Center"
-                                              Width="32" TextAlignment="Center"/>
+                                              Width="36" TextAlignment="Center"/>
                                 <TextBlock x:Name="NavZgradeText" Text="Zgrade" Foreground="#B0BEC5"
-                                           FontSize="18" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                           FontSize="22" VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -56,12 +56,12 @@
                         </Border>
                         <Button Style="{StaticResource SideNavStyle}" Click="NavOglasna_Click">
                             <StackPanel Orientation="Horizontal" Margin="20,16">
-                                <fa:IconBlock x:Name="NavOglasnaIcon" Icon="CircleInfo" FontSize="22"
+                                <fa:IconBlock x:Name="NavOglasnaIcon" Icon="CircleInfo" FontSize="26"
                                               Foreground="#B0BEC5" VerticalAlignment="Center"
-                                              Width="32" TextAlignment="Center"/>
+                                              Width="36" TextAlignment="Center"/>
                                 <TextBlock x:Name="NavOglasnaText" Text="Oglasna tabla"
-                                           Foreground="#B0BEC5" FontSize="18"
-                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                           Foreground="#B0BEC5" FontSize="22"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -74,12 +74,12 @@
                         </Border>
                         <Button Style="{StaticResource SideNavStyle}" Click="NavZakazivanje_Click">
                             <StackPanel Orientation="Horizontal" Margin="20,16">
-                                <fa:IconBlock x:Name="NavZakazivanjeIcon" Icon="CalendarCheck" FontSize="22"
+                                <fa:IconBlock x:Name="NavZakazivanjeIcon" Icon="CalendarCheck" FontSize="26"
                                               Foreground="#B0BEC5" VerticalAlignment="Center"
-                                              Width="32" TextAlignment="Center"/>
+                                              Width="36" TextAlignment="Center"/>
                                 <TextBlock x:Name="NavZakazivanjeText" Text="Zakazivanje"
-                                           Foreground="#B0BEC5" FontSize="18"
-                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                           Foreground="#B0BEC5" FontSize="22"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -91,32 +91,32 @@
                         </Border>
                         <Button Style="{StaticResource SideNavStyle}" Click="NavZajednicke_Click">
                             <StackPanel Orientation="Horizontal" Margin="20,16">
-                                <fa:IconBlock x:Name="NavZajednickeIcon" Icon="DoorOpen" FontSize="22"
+                                <fa:IconBlock x:Name="NavZajednickeIcon" Icon="DoorOpen" FontSize="26"
                                               Foreground="#B0BEC5" VerticalAlignment="Center"
-                                              Width="32" TextAlignment="Center"/>
+                                              Width="36" TextAlignment="Center"/>
                                 <TextBlock x:Name="NavZajednickeText" Text="Zajedničke sobe"
-                                           Foreground="#B0BEC5" FontSize="18"
-                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                           Foreground="#B0BEC5" FontSize="22"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
                             </StackPanel>
                         </Button>
                     </Grid>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="CircleExclamation" FontSize="22" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="32" TextAlignment="Center"/>
-                        <TextBlock Text="Problemi" Foreground="#B0BEC5" FontSize="18"
-                                   VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <fa:IconBlock Icon="CircleExclamation" FontSize="26" Foreground="#B0BEC5"
+                                      VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
+                        <TextBlock Text="Problemi" Foreground="#B0BEC5" FontSize="22"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="PeopleGroup" FontSize="22" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="32" TextAlignment="Center"/>
-                        <TextBlock Text="Skupštine" Foreground="#B0BEC5" FontSize="18"
-                                   VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <fa:IconBlock Icon="PeopleGroup" FontSize="26" Foreground="#B0BEC5"
+                                      VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
+                        <TextBlock Text="Skupštine" Foreground="#B0BEC5" FontSize="22"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="FileLines" FontSize="22" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="32" TextAlignment="Center"/>
-                        <TextBlock Text="Izveštaji" Foreground="#B0BEC5" FontSize="18"
-                                   VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        <fa:IconBlock Icon="FileLines" FontSize="26" Foreground="#B0BEC5"
+                                      VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
+                        <TextBlock Text="Izveštaji" Foreground="#B0BEC5" FontSize="22"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
                     </StackPanel>
             </StackPanel>
         </Border>
@@ -124,14 +124,14 @@
         <!-- Desna strana: top bar + Frame -->
         <Grid Grid.Column="1" Background="#F5F5F5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="56"/>
+                <RowDefinition Height="68"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" Background="White"
                     BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
-                <Grid Margin="24,0">
-                    <TextBlock x:Name="TopBarTitle" Text="Home" FontSize="24" FontWeight="SemiBold"
+                <Grid Margin="28,0">
+                    <TextBlock x:Name="TopBarTitle" Text="Početna" FontSize="28" FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                                 VerticalAlignment="Center">

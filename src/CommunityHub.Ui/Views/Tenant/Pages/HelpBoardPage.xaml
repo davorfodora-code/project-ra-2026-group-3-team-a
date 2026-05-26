@@ -10,39 +10,40 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar: tabovi + zgrada + kreiraj -->
-        <Border Grid.Row="0" Background="White" Padding="24,12"
+        <Border Grid.Row="0" Background="White" Padding="24,14,24,0"
                 BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
-            <Grid>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <StackPanel>
+                <!-- Red 1: tabovi -->
+                <StackPanel Orientation="Horizontal">
                     <Button x:Name="TabBoardBtn" Tag="active" Style="{StaticResource TabBtnStyle}"
-                            Click="TabBoard_Click" Margin="0,0,28,0" Padding="0,0,0,4">
+                            Click="TabBoard_Click" Margin="0,0,32,0" Padding="0,0,0,12">
                         <TextBlock x:Name="TabBoardText" Text="Oglasi na tabli"
-                                   FontSize="19" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+                                   FontSize="24" FontWeight="SemiBold" Foreground="#1A1A1A"/>
                     </Button>
                     <Button x:Name="TabMyPostsBtn" Style="{StaticResource TabBtnStyle}"
-                            Click="TabMyPosts_Click" Padding="0,0,0,4">
+                            Click="TabMyPosts_Click" Padding="0,0,0,12">
                         <TextBlock x:Name="TabMyPostsText" Text="Moji oglasi"
-                                   FontSize="18" Foreground="#888888"/>
+                                   FontSize="22" Foreground="#888888"/>
                     </Button>
                 </StackPanel>
-
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Text="Zgrada:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                <!-- Red 2: zgrada + kreiraj -->
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,12">
+                    <TextBlock Text="Zgrada:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="16"/>
                     <ComboBox x:Name="BuildingCombo"
                               DisplayMemberPath="DisplayName"
                               SelectionChanged="BuildingCombo_SelectionChanged"
-                              MinWidth="220" Padding="8,5" FontSize="14"
+                              MinWidth="240" Padding="8,6" FontSize="15"
                               VerticalAlignment="Center"/>
                     <Button Style="{StaticResource PrimaryBtnStyle}"
-                            Padding="14,7" Margin="16,0,0,0" Click="CreateAdButton_Click">
+                            Padding="16,8" Margin="16,0,0,0" Click="CreateAdButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconBlock Icon="Plus" FontSize="14" Foreground="White"
                                           Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Kreiraj oglas" FontSize="14" VerticalAlignment="Center"/>
+                            <TextBlock Text="Kreiraj oglas" FontSize="15" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
-            </Grid>
+            </StackPanel>
         </Border>
 
         <!-- ===== TAB: Oglasi na tabli ===== -->
@@ -59,21 +60,21 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Oglasi po kategoriji" FontSize="14" FontWeight="SemiBold"
+                            <TextBlock Text="Oglasi po kategoriji" FontSize="16" FontWeight="SemiBold"
                                        Margin="0,0,0,10"/>
-                            <Canvas x:Name="PieChartCanvas" Width="120" Height="120"/>
+                            <Canvas x:Name="PieChartCanvas" Width="160" Height="160"/>
                         </StackPanel>
                         <ItemsControl Grid.Column="1" x:Name="CategoryLegend"
-                                      Margin="20,28,0,0" VerticalAlignment="Top">
+                                      Margin="20,36,0,0" VerticalAlignment="Top">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <Border Width="12" Height="12" CornerRadius="2"
-                                                Background="{Binding Color}" Margin="0,1,8,0"
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Border Width="14" Height="14" CornerRadius="2"
+                                                Background="{Binding Color}" Margin="0,2,10,0"
                                                 VerticalAlignment="Top"/>
-                                        <TextBlock Text="{Binding Category}" FontSize="13"
-                                                   Foreground="#555555" Width="110"/>
-                                        <TextBlock Text="{Binding Count}" FontSize="13"
+                                        <TextBlock Text="{Binding Category}" FontSize="15"
+                                                   Foreground="#555555" Width="130"/>
+                                        <TextBlock Text="{Binding Count}" FontSize="15"
                                                    FontWeight="SemiBold"/>
                                     </StackPanel>
                                 </DataTemplate>
@@ -82,12 +83,12 @@
                     </Grid>
                 </Border>
 
-                <TextBlock Text="Aktivni oglasi" FontSize="19" FontWeight="SemiBold"
+                <TextBlock Text="Aktivni oglasi" FontSize="22" FontWeight="SemiBold"
                            Margin="0,0,0,10"/>
 
                 <TextBlock x:Name="NoBoardAdsText"
                            Text="Nema aktivnih oglasa za ovu zgradu."
-                           Foreground="#AAAAAA" FontSize="14"
+                           Foreground="#AAAAAA" FontSize="16"
                            HorizontalAlignment="Center" Margin="0,20,0,0"
                            Visibility="Collapsed"/>
 
@@ -97,13 +98,13 @@
                             <Border Style="{StaticResource AdCardStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="44"/>
+                                        <ColumnDefinition Width="52"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="36" Height="36"
-                                            CornerRadius="18" Background="#ECF0F1"
-                                            VerticalAlignment="Top" Margin="0,0,12,0">
+                                    <Border Grid.Column="0" Width="38" Height="38"
+                                            CornerRadius="19" Background="#ECF0F1"
+                                            VerticalAlignment="Top" Margin="0,0,14,0">
                                         <TextBlock Text="{Binding TenantName, Converter={StaticResource NameToInitials}}"
                                                    FontSize="13" FontWeight="SemiBold" Foreground="#555555"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -111,27 +112,27 @@
                                     <StackPanel Grid.Column="1">
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                             <TextBlock Text="{Binding TenantName}"
-                                                       FontSize="19" FontWeight="SemiBold"/>
-                                            <TextBlock Text=" [VI]" FontSize="14" Foreground="#888888"
+                                                       FontSize="20" FontWeight="SemiBold"/>
+                                            <TextBlock Text=" [VI]" FontSize="15" Foreground="#888888"
                                                        Visibility="{Binding IsOwn, Converter={StaticResource BoolToVisibility}}"/>
                                         </StackPanel>
                                         <TextBlock Text="{Binding TypeDisplay}"
-                                                   FontSize="13" Foreground="#888888" Margin="0,0,0,6"/>
+                                                   FontSize="15" Foreground="#888888" Margin="0,0,0,6"/>
                                         <StackPanel Orientation="Horizontal">
-                                            <fa:IconBlock Icon="CalendarDays" FontSize="13" Foreground="#AAAAAA"
+                                            <fa:IconBlock Icon="CalendarDays" FontSize="14" Foreground="#AAAAAA"
                                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding DateRangeDisplay}" FontSize="13"
+                                            <TextBlock Text="{Binding DateRangeDisplay}" FontSize="15"
                                                        Foreground="#666666" VerticalAlignment="Center" Margin="0,0,14,0"/>
-                                            <fa:IconBlock Icon="Tag" FontSize="13" Foreground="#AAAAAA"
+                                            <fa:IconBlock Icon="Tag" FontSize="14" Foreground="#AAAAAA"
                                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Category}" FontSize="13"
+                                            <TextBlock Text="{Binding Category}" FontSize="15"
                                                        Foreground="#666666" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                         <Button Content="Arhiviraj" Tag="{Binding Id}"
-                                                Click="ArchiveButton_Click" Padding="12,6"
-                                                FontSize="13" Cursor="Hand"
+                                                Click="ArchiveButton_Click" Padding="14,8"
+                                                FontSize="14" Cursor="Hand"
                                                 Visibility="{Binding IsOwn, Converter={StaticResource BoolToVisibility}}"/>
                                     </StackPanel>
                                 </Grid>
@@ -148,11 +149,11 @@
                       VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="24,16,24,24">
 
-                <TextBlock Text="Moji aktivni oglasi" FontSize="19" FontWeight="SemiBold"
+                <TextBlock Text="Moji aktivni oglasi" FontSize="22" FontWeight="SemiBold"
                            Margin="0,0,0,10"/>
 
                 <TextBlock x:Name="NoMyAdsText" Text="Nemate aktivnih oglasa."
-                           Foreground="#AAAAAA" FontSize="14"
+                           Foreground="#AAAAAA" FontSize="16"
                            HorizontalAlignment="Center" Margin="0,20,0,0"
                            Visibility="Collapsed"/>
 
@@ -168,29 +169,29 @@
                                     </Grid.RowDefinitions>
                                     <Grid Grid.Row="0" Margin="0,0,0,6">
                                         <TextBlock Text="{Binding TypeDisplay}"
-                                                   FontSize="19" FontWeight="SemiBold"/>
+                                                   FontSize="20" FontWeight="SemiBold"/>
                                         <Button Content="Arhiviraj" Tag="{Binding Id}"
                                                 Click="ArchiveButton_Click"
                                                 HorizontalAlignment="Right"
-                                                Padding="12,5" FontSize="13" Cursor="Hand"/>
+                                                Padding="14,7" FontSize="15" Cursor="Hand"/>
                                     </Grid>
                                     <TextBlock Grid.Row="1" Text="{Binding Description}"
-                                               FontSize="14" Foreground="#444444"
+                                               FontSize="15" Foreground="#444444"
                                                TextWrapping="Wrap" Margin="0,0,0,8"/>
                                     <StackPanel Grid.Row="2" Orientation="Horizontal">
-                                        <fa:IconBlock Icon="CalendarDays" FontSize="13" Foreground="#AAAAAA"
+                                        <fa:IconBlock Icon="CalendarDays" FontSize="14" Foreground="#AAAAAA"
                                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding DateRangeDisplay}" FontSize="13"
+                                        <TextBlock Text="{Binding DateRangeDisplay}" FontSize="15"
                                                    Foreground="#666666" VerticalAlignment="Center" Margin="0,0,14,0"/>
-                                        <fa:IconBlock Icon="Tag" FontSize="13" Foreground="#AAAAAA"
+                                        <fa:IconBlock Icon="Tag" FontSize="14" Foreground="#AAAAAA"
                                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Category}" FontSize="13"
+                                        <TextBlock Text="{Binding Category}" FontSize="15"
                                                    Foreground="#666666" VerticalAlignment="Center" Margin="0,0,14,0"/>
-                                        <Border Background="#D4EDDA" CornerRadius="8" Padding="8,3">
+                                        <Border Background="#D4EDDA" CornerRadius="8" Padding="8,4">
                                             <StackPanel Orientation="Horizontal">
-                                                <fa:IconBlock Icon="CircleCheck" FontSize="12" Foreground="#155724"
+                                                <fa:IconBlock Icon="CircleCheck" FontSize="13" Foreground="#155724"
                                                               Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                <TextBlock Text="Aktivan" FontSize="12"
+                                                <TextBlock Text="Aktivan" FontSize="14"
                                                            Foreground="#155724" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Border>

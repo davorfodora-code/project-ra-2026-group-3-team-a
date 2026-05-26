@@ -10,28 +10,28 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar: tabovi + zgrada -->
-        <Border Grid.Row="0" Background="White" Padding="24,12"
+        <Border Grid.Row="0" Background="White" Padding="24,16"
                 BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Button x:Name="TabRoomsBtn" Tag="active" Style="{StaticResource TabBtnStyle}"
-                            Click="TabRooms_Click" Margin="0,0,28,0" Padding="0,0,0,4">
+                            Click="TabRooms_Click" Margin="0,0,32,0" Padding="0,0,0,12">
                         <TextBlock x:Name="TabRoomsText" Text="Prostorije"
-                                   FontSize="19" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+                                   FontSize="24" FontWeight="SemiBold" Foreground="#1A1A1A"/>
                     </Button>
                     <Button x:Name="TabRequestsBtn" Style="{StaticResource TabBtnStyle}"
-                            Click="TabRequests_Click" Padding="0,0,0,4">
+                            Click="TabRequests_Click" Padding="0,0,0,12">
                         <TextBlock x:Name="TabRequestsText" Text="Moji zahtevi"
-                                   FontSize="18" Foreground="#888888"/>
+                                   FontSize="22" Foreground="#888888"/>
                     </Button>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Text="Zgrada:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                    <TextBlock Text="Zgrada:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="16"/>
                     <ComboBox x:Name="BuildingCombo"
                               DisplayMemberPath="DisplayName"
                               SelectionChanged="BuildingCombo_SelectionChanged"
-                              MinWidth="220" Padding="8,5" FontSize="14"
+                              MinWidth="240" Padding="8,6" FontSize="15"
                               VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
@@ -43,7 +43,7 @@
 
                 <TextBlock x:Name="NoRoomsText"
                            Text="Ova zgrada nema zajedničkih prostorija."
-                           Foreground="#AAAAAA" FontSize="14"
+                           Foreground="#AAAAAA" FontSize="16"
                            HorizontalAlignment="Center" Margin="0,20,0,0"
                            Visibility="Collapsed"/>
 
@@ -67,18 +67,18 @@
                                         <TextBlock Text="{Binding Name}"
                                                    FontSize="20" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                         <TextBlock Text="{Binding Description}"
-                                                   FontSize="14" Foreground="#555555"
+                                                   FontSize="15" Foreground="#555555"
                                                    TextWrapping="Wrap" Margin="0,0,0,12"/>
                                         <StackPanel Orientation="Horizontal">
-                                            <fa:IconBlock Icon="House" FontSize="13" Foreground="#AAAAAA"
+                                            <fa:IconBlock Icon="House" FontSize="14" Foreground="#AAAAAA"
                                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding FloorDisplay}"
-                                                       FontSize="13" Foreground="#666666"
+                                                       FontSize="15" Foreground="#666666"
                                                        VerticalAlignment="Center" Margin="0,0,18,0"/>
-                                            <fa:IconBlock Icon="Clock" FontSize="13" Foreground="#AAAAAA"
+                                            <fa:IconBlock Icon="Clock" FontSize="14" Foreground="#AAAAAA"
                                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding RentalTypeDisplay}"
-                                                       FontSize="13" Foreground="#666666"
+                                                       FontSize="15" Foreground="#666666"
                                                        VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </StackPanel>
@@ -88,7 +88,7 @@
                                             Content="Iznajmi"
                                             Tag="{Binding RoomId}"
                                             Style="{StaticResource PrimaryBtnStyle}"
-                                            Padding="18,10" FontSize="14"
+                                            Padding="18,10" FontSize="15"
                                             VerticalAlignment="Center"
                                             Click="RentButton_Click"/>
                                 </Grid>
@@ -107,7 +107,7 @@
 
                 <TextBlock x:Name="NoRequestsText"
                            Text="Nemate zahteva za iznajmljivanje."
-                           Foreground="#AAAAAA" FontSize="14"
+                           Foreground="#AAAAAA" FontSize="16"
                            HorizontalAlignment="Center" Margin="0,20,0,0"
                            Visibility="Collapsed"/>
 
@@ -148,7 +148,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="13">
+                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="14">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="#856404"/>
@@ -174,19 +174,19 @@
 
                                     <!-- Tip iznajmljivanja -->
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                        <fa:IconBlock Icon="Clock" FontSize="13" Foreground="#AAAAAA"
+                                        <fa:IconBlock Icon="Clock" FontSize="14" Foreground="#AAAAAA"
                                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding RentalTypeDisplay}"
-                                                   FontSize="13" Foreground="#666666"
+                                                   FontSize="15" Foreground="#666666"
                                                    VerticalAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Zahtevani opseg (za sve osim ProposedCounter) -->
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                        <fa:IconBlock Icon="CalendarDays" FontSize="13" Foreground="#AAAAAA"
+                                        <fa:IconBlock Icon="CalendarDays" FontSize="14" Foreground="#AAAAAA"
                                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding RequestedDateRangeDisplay}"
-                                                   FontSize="13" Foreground="#444444"
+                                                   FontSize="15" Foreground="#444444"
                                                    VerticalAlignment="Center"/>
                                     </StackPanel>
 
@@ -195,7 +195,7 @@
                                                     Converter={StaticResource BoolToVisibility}}"
                                                 Margin="0,6,0,8">
                                         <TextBlock Text="Upravnik je predložio nove termine:"
-                                                   FontSize="13" Foreground="#555555" Margin="0,0,0,6"/>
+                                                   FontSize="15" Foreground="#555555" Margin="0,0,0,6"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{Binding RequestedDateRangeDisplay}"
                                                        FontSize="15" Foreground="#888888">
@@ -215,9 +215,9 @@
                                             Background="#EAF7ED" CornerRadius="6" Padding="12,6"
                                             HorizontalAlignment="Left" Margin="0,6,0,6">
                                         <StackPanel Orientation="Horizontal">
-                                            <fa:IconBlock Icon="CircleCheck" FontSize="13" Foreground="#155724"
+                                            <fa:IconBlock Icon="CircleCheck" FontSize="14" Foreground="#155724"
                                                           Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                            <TextBlock FontSize="13" Foreground="#155724" VerticalAlignment="Center"
+                                            <TextBlock FontSize="15" Foreground="#155724" VerticalAlignment="Center"
                                                        Text="{Binding ApprovedDateDisplay,
                                                            StringFormat='Odobreni datum: {0}'}"/>
                                         </StackPanel>
@@ -231,7 +231,7 @@
                                         <Button Content="Prihvati novi termin"
                                                 Tag="{Binding RequestId}"
                                                 Style="{StaticResource PrimaryBtnStyle}"
-                                                Padding="14,7" FontSize="13"
+                                                Padding="14,8" FontSize="15"
                                                 Margin="0,0,10,0"
                                                 Visibility="{Binding IsProposedCounter,
                                                     Converter={StaticResource BoolToVisibility}}"
@@ -240,7 +240,7 @@
                                         <Button Content="Otkaži zahtev"
                                                 Tag="{Binding RequestId}"
                                                 Style="{StaticResource SecondaryBtnStyle}"
-                                                Padding="14,7" FontSize="13"
+                                                Padding="14,8" FontSize="15"
                                                 Click="CancelRequest_Click"/>
                                     </StackPanel>
 

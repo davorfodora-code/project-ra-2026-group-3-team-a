@@ -31,6 +31,7 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
         BuildingCombo.ItemsSource = _viewModel.Buildings;
         BuildingCombo.SelectedIndex = 0;
         RefreshAll();
+        _shell.SetBreadcrumb("Oglasi na tabli");
     }
 
     private void RefreshAll()
@@ -66,11 +67,17 @@ public partial class HelpBoardPage : System.Windows.Controls.Page
         PieChartHelper.Draw(PieChartCanvas, groups);
     }
 
-    private void TabBoard_Click(object sender, RoutedEventArgs e) =>
+    private void TabBoard_Click(object sender, RoutedEventArgs e)
+    {
         SwitchTab(TabBoardBtn, TabBoardText, BoardPanel, TabMyPostsBtn, TabMyPostsText, MyPostsPanel);
+        _shell.SetBreadcrumb("Oglasi na tabli");
+    }
 
-    private void TabMyPosts_Click(object sender, RoutedEventArgs e) =>
+    private void TabMyPosts_Click(object sender, RoutedEventArgs e)
+    {
         SwitchTab(TabMyPostsBtn, TabMyPostsText, MyPostsPanel, TabBoardBtn, TabBoardText, BoardPanel);
+        _shell.SetBreadcrumb("Moji oglasi");
+    }
 
     private static void SwitchTab(
         Button activeBtn, TextBlock activeText, UIElement showPanel,

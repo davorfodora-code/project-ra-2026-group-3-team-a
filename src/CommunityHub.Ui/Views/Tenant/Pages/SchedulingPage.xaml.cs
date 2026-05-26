@@ -8,6 +8,7 @@ namespace CommunityHub.Ui.Views.Tenant.Pages;
 
 public partial class SchedulingPage : System.Windows.Controls.Page
 {
+    private readonly TenantWindow _shell;
     private readonly SchedulingViewModel _viewModel;
 
     private static readonly Brush DarkBrush  = new SolidColorBrush(Color.FromRgb(0x4A, 0x5D, 0x6E));
@@ -23,9 +24,11 @@ public partial class SchedulingPage : System.Windows.Controls.Page
     public SchedulingPage(TenantWindow shell)
     {
         InitializeComponent();
+        _shell = shell;
         _viewModel = new SchedulingViewModel(shell.UserId);
         _viewModel.Load();
         Refresh();
+        _shell.SetBreadcrumb("Moje rezervacije");
     }
 
     private void Refresh()
@@ -130,6 +133,7 @@ public partial class SchedulingPage : System.Windows.Controls.Page
         TabBookedOnPostText.FontSize   = 18;
         MyBookingsPanel.Visibility  = Visibility.Visible;
         BookedOnPostPanel.Visibility = Visibility.Collapsed;
+        _shell.SetBreadcrumb("Moje rezervacije");
     }
 
     private void TabBookedOnPost_Click(object sender, RoutedEventArgs e)
@@ -144,5 +148,6 @@ public partial class SchedulingPage : System.Windows.Controls.Page
         TabMyBookingsText.FontSize    = 18;
         BookedOnPostPanel.Visibility  = Visibility.Visible;
         MyBookingsPanel.Visibility   = Visibility.Collapsed;
+        _shell.SetBreadcrumb("Rezervisano na mom oglasu");
     }
 }
