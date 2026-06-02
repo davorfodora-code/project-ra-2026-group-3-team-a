@@ -1,9 +1,10 @@
-﻿using System.Windows;
-using CommunityHub.Application.Database.Repositories;
+﻿using CommunityHub.Application.Database.Repositories;
 using CommunityHub.Ui.Views.BuildingManager;
 using CommunityHub.Ui.Views.Citizen;
 using CommunityHub.Ui.Views.DistrictCoordinator;
 using CommunityHub.Ui.Views.Tenant;
+using System.Windows;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace CommunityHub.Ui.Views;
 
@@ -22,6 +23,11 @@ public partial class LogInForm : Window
         string username = UsernameTextBox.Text;
         string password = PasswordBox.Password;
 
+        login(username, password);
+    }
+
+    private void login(string username, string password)
+    {
         var credentials = _userRepository.GetByCredentials(username, password);
 
         if (credentials == null)
@@ -39,7 +45,7 @@ public partial class LogInForm : Window
             "BuildingManager" => new BuildingManagerWindow(userId),
             "Tenant" => new TenantWindow(userId),
             "DistrictCoordinator" => new CoordinatorHomeWindow(userId),
-            "Citizen" => new CitizenHomeWindow(userId),
+            "Citizen" => new CitizenShellWindow(userId),
             _ => null
         };
 
