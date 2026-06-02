@@ -241,6 +241,31 @@ INSERT INTO district_event_volunteer_attendances (id, event_id, volunteer_id, at
 
 
 -- ============================================================
+--  Gradski objekti (4.6)
+-- ============================================================
+INSERT INTO city_facilities (id, district_id, name, description, address) VALUES
+(-1, -2, 'Muzej savremene umetnosti', 'Muzej sa stalnim i tematskim izlozbama.', 'Usce 10, Beograd'),
+(-2, -2, 'Sportski centar Novi Beograd', 'Sportski kompleks za rekreaciju i grupne posete.', 'Bulevar Zorana Djindjica 44, Beograd'),
+(-3, -2, 'Dom kulture Studentski grad', 'Kulturni centar sa predstavama, projekcijama i radionicama.', 'Bulevar Zorana Djindjica 179, Beograd'),
+(-4, -1, 'Zemunski kej', 'Setaliste i prostor za organizovane obilaske.', 'Kej oslobodjenja, Beograd'),
+(-5, -1, 'Zavicajni muzej Zemun', 'Muzej posvecen istoriji Zemuna.', 'Glavna 9, Beograd');
+
+INSERT INTO city_facility_interest_votes (id, facility_id, citizen_id, voted_at) VALUES
+(-1, -1, -8,  '2026-05-01 10:00:00'),
+(-2, -1, -10, '2026-05-02 11:00:00'),
+(-3, -2, -11, '2026-05-03 12:00:00'),
+(-4, -3, -14, '2026-05-04 13:00:00'),
+(-5, -4, -22, '2026-05-05 14:00:00');
+
+INSERT INTO city_facility_reservations (id, facility_id, district_id, reserved_at, note) VALUES
+(-1, -1, -2, '2026-01-15 11:00:00', 'Grupni obilazak muzeja.'),
+(-2, -1, -2, '2026-03-20 12:00:00', 'Tematska izlozba za gradjane kvarta.'),
+(-3, -2, -2, '2026-02-10 17:00:00', 'Sportski dan za clanove kvarta.'),
+(-4, -3, -2, '2025-12-05 19:00:00', 'Kulturno vece.'),
+(-5, -4, -1, '2026-04-12 10:00:00', 'Setnja i obilazak keja.');
+
+
+-- ============================================================
 --  Adrese
 -- ============================================================
 INSERT INTO addresses (id, street, street_number) VALUES
