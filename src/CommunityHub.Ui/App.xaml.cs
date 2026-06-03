@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Threading;
 using CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -11,12 +12,22 @@ public partial class App
 
     public App()
     {
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+
         _meetingTimer = new DispatcherTimer
         {
             Interval = System.TimeSpan.FromHours(1)
         };
         _meetingTimer.Tick += OnMeetingTimerTick;
         _meetingTimer.Start();
+    }
+
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        MessageBox.Show(
+            $"Neočekivana greška:\n\n{e.Exception.GetType().Name}: {e.Exception.Message}\n\n{e.Exception.StackTrace}",
+            "Greška aplikacije", MessageBoxButton.OK, MessageBoxImage.Error);
+        e.Handled = true;
     }
 
     private void OnMeetingTimerTick(object? sender, System.EventArgs e)
