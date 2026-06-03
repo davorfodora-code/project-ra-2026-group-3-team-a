@@ -161,6 +161,16 @@ public class AssemblyDbRepository : IAssemblyRepository
         cmd.ExecuteNonQuery();
     }
 
+    // Brise predlog teme (nakon sto je dodat kao dodatna tema)
+    public void RemoveSuggestion(long suggestionId)
+    {
+        using IDbConnection conn = PostgresConnection.CreateConnection();
+        IDbCommand cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM assembly_topic_suggestions WHERE id = @id";
+        AddParam(cmd, "@id", suggestionId);
+        cmd.ExecuteNonQuery();
+    }
+
     // Vraca prisustvo po stanovima (svi stanovi zgrade + da li je potvrdjeno za tu skupstinu)
     public List<(int ApartmentNumber, bool IsConfirmed)> GetAttendanceSummary(long assemblyId, long buildingId)
     {

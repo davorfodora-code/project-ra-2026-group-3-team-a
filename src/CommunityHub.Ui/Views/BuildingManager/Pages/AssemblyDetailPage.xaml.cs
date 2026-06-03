@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Application.Services.BuildingManager.Dto;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -21,6 +22,13 @@ public partial class AssemblyDetailPage : Page
     {
         if (NavigationService?.CanGoBack == true)
             NavigationService.GoBack();
+    }
+
+    // Dodaje predlozenu temu kao dodatnu temu skupstine (1.7)
+    private void AddSuggestion_Click(object sender, RoutedEventArgs e)
+    {
+        TopicSuggestionDto suggestion = (TopicSuggestionDto)((Button)sender).Tag;
+        _vm.AddSuggestedTopic(suggestion);
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)

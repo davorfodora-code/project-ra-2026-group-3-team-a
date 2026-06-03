@@ -63,7 +63,8 @@ public class AssemblyService
         return MapToSummary(created);
     }
 
-    public void AddTopic(long assemblyId, string topicText)
+    // Dodaje predlozenu temu i uklanja je iz predloga (sprecava duplikate)
+    public void AddSuggestedTopic(long assemblyId, long suggestionId, string topicText)
     {
         TenantAssembly? assembly = _repository.GetById(assemblyId);
         if (assembly == null)
@@ -71,6 +72,7 @@ public class AssemblyService
         if (!assembly.CanEditTopics())
             throw new InvalidOperationException("Teme se ne mogu menjati unutar 24h pred skupštinu.");
         _repository.AddTopic(assemblyId, topicText.Trim());
+        _repository.RemoveSuggestion(suggestionId);
     }
 
     private AssemblySummaryDto MapToSummary(TenantAssembly a) => new AssemblySummaryDto
