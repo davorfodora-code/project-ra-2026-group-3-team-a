@@ -129,6 +129,48 @@ public class AssemblyDbRepository : IAssemblyRepository
         return created;
     }
 
+    // Vraca sve predlozene teme za skupstinu
+    public List<(long Id, string TenantFullName, string Topic)> GetSuggestions(long assemblyId)
+    {
+        using IDbConnection conn = PostgresConnection.CreateConnection();
+        IDbCommand cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT s.id, u.name || ' ' || u.surname AS full_name, s.topic
+            FROM assembly_topic_suggestions s
+            JOIN users u ON u.id = s.tenant_id
+            WHERE s.assembly_id = @assemblyId
+            ORDER BY s.id";
+        AddParam(cmd, "@assemblyId", assemblyId);
+        var result = new List<(long, string, string)>();
+        using IDataReader r = cmd.ExecuteReader();
+        while (r.Read())
+            result.Add((r.GetInt64(0), r.GetString(1), r.GetString(2)));
+        return result;
+    }
+
+    // Dodaje novu dodatnu temu za skupstinu
+    public void AddTopic(long assemblyId, string topicText)
+    {
+        using IDbConnection conn = PostgresConnection.CreateConnection();
+        IDbCommand cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO assembly_topics (assembly_id, text, is_additional)
+            VALUES (@assemblyId, @text, true)";
+        AddParam(cmd, "@assemblyId", assemblyId);
+        AddParam(cmd, "@text", topicText);
+        cmd.ExecuteNonQuery();
+    }
+
+    // Brise predlog teme (nakon sto je dodat kao dodatna tema)
+    public void RemoveSuggestion(long suggestionId)
+    {
+        using IDbConnection conn = PostgresConnection.CreateConnection();
+        IDbCommand cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM assembly_topic_suggestions WHERE id = @id";
+        AddParam(cmd, "@id", suggestionId);
+        cmd.ExecuteNonQuery();
+    }
+
     // Vraca prisustvo po stanovima (svi stanovi zgrade + da li je potvrdjeno za tu skupstinu)
     public List<(int ApartmentNumber, bool IsConfirmed)> GetAttendanceSummary(long assemblyId, long buildingId)
     {

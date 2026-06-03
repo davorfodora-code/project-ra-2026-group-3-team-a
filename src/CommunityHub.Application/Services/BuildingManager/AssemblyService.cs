@@ -26,6 +26,7 @@ public class AssemblyService
         TenantAssembly? assembly = _repository.GetById(assemblyId);
         if (assembly == null) return null;
 
+        var suggestions = _repository.GetSuggestions(assemblyId);
         var attendances = _repository.GetAttendanceSummary(assemblyId, assembly.Building.Id);
 
         return new AssemblyDetailDto
@@ -36,6 +37,8 @@ public class AssemblyService
             ScheduledAt     = assembly.ScheduledAt,
             Status          = assembly.Status,
             Topics          = assembly.Topics.Select(MapToTopicDto).ToList(),
+            Suggestions     = suggestions.Select(s => new TopicSuggestionDto
+                              { Id = s.Id, TenantFullName = s.TenantFullName, Topic = s.Topic }).ToList(),
             Attendances     = attendances.Select(a => new AttendanceItemDto
                               { ApartmentNumber = a.ApartmentNumber, IsConfirmed = a.IsConfirmed }).ToList()
         };
@@ -58,6 +61,18 @@ public class AssemblyService
 
         TenantAssembly created = _repository.Create(assembly);
         return MapToSummary(created);
+    }
+
+    // Dodaje predlozenu temu i uklanja je iz predloga (sprecava duplikate)
+    public void AddSuggestedTopic(long assemblyId, long suggestionId, string topicText)
+    {
+        TenantAssembly? assembly = _repository.GetById(assemblyId);
+        if (assembly == null)
+            throw new InvalidOperationException("Skupština nije pronađena.");
+        if (!assembly.CanEditTopics())
+            throw new InvalidOperationException("Teme se ne mogu menjati unutar 24h pred skupštinu.");
+        _repository.AddTopic(assemblyId, topicText.Trim());
+        _repository.RemoveSuggestion(suggestionId);
     }
 
     private AssemblySummaryDto MapToSummary(TenantAssembly a) => new AssemblySummaryDto

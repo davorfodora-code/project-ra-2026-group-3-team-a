@@ -54,6 +54,91 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
+                <!-- Predlozene teme (1.7) -->
+                <StackPanel Visibility="{Binding HasSuggestions, Converter={StaticResource BoolToVisibility}}"
+                            Margin="0,16,0,0">
+                    <TextBlock FontSize="14" FontWeight="SemiBold" Margin="0,0,0,4">
+                        <Run Text="Predložene teme:"/>
+                        <Run Text="*" Foreground="#C62828"/>
+                    </TextBlock>
+
+                    <ItemsControl ItemsSource="{Binding Suggestions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="#DDDDDD" BorderThickness="1"
+                                        CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Opacity" Value="1"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DataContext.CanEditTopics,
+                                                    RelativeSource={RelativeSource AncestorType=Page}}"
+                                                    Value="False">
+                                                    <Setter Property="Opacity" Value="0.4"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding TenantFullName}"
+                                                       FontSize="13" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                                            <TextBlock FontSize="12" Foreground="#555555" TextWrapping="Wrap">
+                                                <Run Text="&quot;"/>
+                                                <Run Text="{Binding Topic, Mode=OneWay}"/>
+                                                <Run Text="&quot;"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Tag="{Binding}"
+                                                Click="AddSuggestion_Click"
+                                                VerticalAlignment="Center"
+                                                Margin="10,0,0,0" Padding="10,6"
+                                                Background="White" BorderBrush="#2E7D32"
+                                                BorderThickness="1" Cursor="Hand"
+                                                Visibility="{Binding DataContext.CanEditTopics,
+                                                    RelativeSource={RelativeSource AncestorType=Page},
+                                                    Converter={StaticResource BoolToVisibility}}">
+                                            <TextBlock Text="Dodaj" FontSize="12" Foreground="#2E7D32"/>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="* Obavezno dodati bar jednu predloženu temu."
+                               FontSize="12" Foreground="#C62828" Margin="0,0,0,4"
+                               Visibility="{Binding MustAddSuggestion, Converter={StaticResource BoolToVisibility}}"/>
+                    <TextBlock Text="{Binding EditDeadlineLine}"
+                               FontSize="12" FontStyle="Italic">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#E65C00"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanEditTopics}" Value="False">
+                                        <Setter Property="Foreground" Value="#C62828"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="Rok za izmenu je istekao — teme su zaključane."
+                               FontSize="12" Foreground="#C62828" Margin="0,4,0,0"
+                               Visibility="{Binding CanNotEditTopics, Converter={StaticResource BoolToVisibility}}"/>
+                </StackPanel>
+
+                <!-- Greska -->
+                <Border Background="#FFEBEE" CornerRadius="6" Padding="10,8" Margin="0,10,0,0"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#C62828"
+                               FontSize="13" TextWrapping="Wrap"/>
+                </Border>
+
                 <!-- Prisustvo po stanovima -->
                 <TextBlock Text="Prisustvo po stanovima:" FontSize="14" FontWeight="SemiBold"
                            Margin="0,20,0,8"/>
