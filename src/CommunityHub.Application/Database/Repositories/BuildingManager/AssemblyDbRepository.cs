@@ -81,17 +81,18 @@ public class AssemblyDbRepository : IAssemblyRepository
         return assembly;
     }
 
-    // Proverava da li vec postoji skupstina u istom terminu sa statusom Scheduled/Confirmed
-    public bool HasTimeConflict(long buildingId, DateTime scheduledAt)
+    // Proverava da li vec postoji skupstina u istom terminu za bilo koju zgradu ovog upravnika
+    public bool HasTimeConflict(long managerId, DateTime scheduledAt)
     {
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT COUNT(*) FROM tenant_assemblies
-            WHERE building_id = @buildingId
-              AND scheduled_at = @scheduledAt
-              AND status IN ('Scheduled', 'Confirmed')";
-        AddParam(cmd, "@buildingId", buildingId);
+            SELECT COUNT(*) FROM tenant_assemblies ta
+            JOIN buildings b ON b.id = ta.building_id
+            WHERE b.manager_id = @managerId
+              AND ta.scheduled_at = @scheduledAt
+              AND ta.status IN ('Scheduled', 'Confirmed')";
+        AddParam(cmd, "@managerId", managerId);
         AddParam(cmd, "@scheduledAt", scheduledAt);
         return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
     }

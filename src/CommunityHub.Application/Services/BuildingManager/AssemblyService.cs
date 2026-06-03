@@ -45,12 +45,12 @@ public class AssemblyService
     {
         if (dto.ScheduledAt <= DateTime.Now)
             throw new InvalidOperationException("Datum i vreme skupštine moraju biti u budućnosti.");
-        if (_repository.HasTimeConflict(dto.BuildingId, dto.ScheduledAt))
-            throw new InvalidOperationException("Već postoji zakazana ili potvrđena skupština u tom terminu.");
 
         Building? building = _buildingRepository.GetById(dto.BuildingId);
         if (building == null)
             throw new InvalidOperationException("Zgrada nije pronađena.");
+        if (_repository.HasTimeConflict(building.ManagerId, dto.ScheduledAt))
+            throw new InvalidOperationException("Već postoji zakazana ili potvrđena skupština u tom terminu.");
 
         TenantAssembly assembly = new TenantAssembly(building, dto.ScheduledAt, "Scheduled");
         foreach (string text in dto.Topics)
