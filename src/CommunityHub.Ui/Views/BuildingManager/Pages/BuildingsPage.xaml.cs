@@ -14,7 +14,7 @@ public partial class BuildingsPage : Page
     {
         InitializeComponent();
         _shell = shell;
-        _vm = new BuildingsViewModel();
+        _vm = new BuildingsViewModel(shell.UserId);
         DataContext = _vm;
         _vm.Load();
     }
