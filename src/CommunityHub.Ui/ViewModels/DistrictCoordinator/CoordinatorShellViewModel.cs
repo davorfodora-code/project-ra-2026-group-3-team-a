@@ -7,7 +7,7 @@ namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 public class CoordinatorShellViewModel : ViewModelBase
 {
-    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum";
+    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum", TabReservations = "reservations";
 
     private readonly RegistrationOverlayController _overlayCtrl;
     private string _currentTab = TabHome;
@@ -17,11 +17,12 @@ public class CoordinatorShellViewModel : ViewModelBase
     public CoordinatorShellViewModel(long coordinatorId)
     {
         CoordinatorId = coordinatorId;
-        Home     = new HomeContentViewModel(coordinatorId);
-        Requests = new AccessRequestsViewModel(coordinatorId);
-        Stats    = new StatisticsViewModel(coordinatorId);
-        Forum    = new ForumViewModel(coordinatorId);
-        Header   = new CoordinatorHeaderViewModel(coordinatorId, Home);
+        Home         = new HomeContentViewModel(coordinatorId);
+        Requests     = new AccessRequestsViewModel(coordinatorId);
+        Stats        = new StatisticsViewModel(coordinatorId);
+        Forum        = new ForumViewModel(coordinatorId);
+        Reservations = new ReservationsViewModel(coordinatorId);
+        Header       = new CoordinatorHeaderViewModel(coordinatorId, Home);
         _currentTabContent = Home;
         _overlayCtrl = new RegistrationOverlayController(coordinatorId,
             v => ActiveOverlay = v,
@@ -37,11 +38,12 @@ public class CoordinatorShellViewModel : ViewModelBase
     }
 
     public long CoordinatorId { get; }
-    public HomeContentViewModel       Home     { get; }
-    public AccessRequestsViewModel    Requests { get; }
-    public StatisticsViewModel        Stats    { get; }
-    public ForumViewModel             Forum    { get; }
-    public CoordinatorHeaderViewModel Header   { get; }
+    public HomeContentViewModel       Home         { get; }
+    public AccessRequestsViewModel    Requests     { get; }
+    public StatisticsViewModel        Stats        { get; }
+    public ForumViewModel             Forum        { get; }
+    public ReservationsViewModel      Reservations { get; }
+    public CoordinatorHeaderViewModel Header       { get; }
 
     public string CurrentTab
     {
@@ -50,20 +52,29 @@ public class CoordinatorShellViewModel : ViewModelBase
         {
             if (SetProperty(ref _currentTab, value))
             {
-                CurrentTabContent = value switch { TabRequests => Requests, TabStats => Stats, TabForum => Forum, _ => Home };
+                CurrentTabContent = value switch
+                {
+                    TabRequests     => Requests,
+                    TabStats        => Stats,
+                    TabForum        => Forum,
+                    TabReservations => Reservations,
+                    _               => Home
+                };
                 OnPropertyChanged(nameof(IsHomeTab));
                 OnPropertyChanged(nameof(IsRequestsTab));
                 OnPropertyChanged(nameof(IsStatsTab));
                 OnPropertyChanged(nameof(IsForumTab));
+                OnPropertyChanged(nameof(IsReservationsTab));
             }
         }
     }
 
     public ViewModelBase CurrentTabContent { get => _currentTabContent; private set => SetProperty(ref _currentTabContent, value); }
-    public bool IsHomeTab     => _currentTab == TabHome;
-    public bool IsRequestsTab => _currentTab == TabRequests;
-    public bool IsStatsTab    => _currentTab == TabStats;
-    public bool IsForumTab    => _currentTab == TabForum;
+    public bool IsHomeTab         => _currentTab == TabHome;
+    public bool IsRequestsTab     => _currentTab == TabRequests;
+    public bool IsStatsTab        => _currentTab == TabStats;
+    public bool IsForumTab        => _currentTab == TabForum;
+    public bool IsReservationsTab => _currentTab == TabReservations;
 
     public ViewModelBase? ActiveOverlay
     {
