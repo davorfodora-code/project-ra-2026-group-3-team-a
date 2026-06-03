@@ -25,6 +25,12 @@
         <DataTemplate DataType="{x:Type vm:ForumViewModel}">
             <local:ForumView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReservationsViewModel}">
+            <local:ReservationsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReservationDialogViewModel}">
+            <local:ReservationDialogView/>
+        </DataTemplate>
 
         <Style x:Key="NavTabStyle" TargetType="Button">
             <Setter Property="Background"      Value="Transparent"/>
@@ -81,6 +87,9 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsForumTab}" Value="True">
                                 <Setter Property="Text" Value="Forum"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsReservationsTab}" Value="True">
+                                <Setter Property="Text" Value="Rezervacije"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -181,8 +190,22 @@
                     <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
                             Visibility="{Binding IsForumTab, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
-                <Button Content="Rezervacije"  Style="{StaticResource NavTabStyle}"
-                        Command="{Binding NotImplementedTabCommand}" CommandParameter="Rezervacije"/>
+                <Grid>
+                    <Button Content="Rezervacije"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="reservations">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavTabStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsReservationsTab}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                            Visibility="{Binding IsReservationsTab, Converter={StaticResource BoolToVis}}"/>
+                </Grid>
                 <Button Content="Recenzije"    Style="{StaticResource NavTabStyle}"
                         Command="{Binding NotImplementedTabCommand}" CommandParameter="Recenzije"/>
                 <Button Content="Poklon grada" Style="{StaticResource NavTabStyle}"
