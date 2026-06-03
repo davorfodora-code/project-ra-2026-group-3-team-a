@@ -6,11 +6,9 @@ namespace CommunityHub.Application.Database.Repositories.BuildingManager;
 
 public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
 {
-    // Vraća sve zahteve za iznajmljivanje prostorija u zgradama kojima upravlja dati upravnik
     public List<CommonRoomRequest> GetByManagerId(long managerId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
-
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             SELECT r.id, r.requested_start_date, r.requested_end_date,
@@ -28,51 +26,46 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
             JOIN locations l ON l.id = b.location_id
             WHERE b.manager_id = @managerId
             ORDER BY r.requested_start_date DESC";
-
         AddParameter(cmd, "@managerId", managerId);
-
         List<CommonRoomRequest> requests = new();
-
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            User tenant = ReadUserFromReader(reader);
-            Building building = ReadBuildingFromReader(reader);
-            CommonRoom room = new CommonRoom(
-                reader.GetInt64(reader.GetOrdinal("room_id")),
-                building,
-                reader.GetString(reader.GetOrdinal("room_name")),
-                reader.GetString(reader.GetOrdinal("description")),
-                reader.GetInt32(reader.GetOrdinal("floor_number")),
-                reader.GetBoolean(reader.GetOrdinal("is_multi_day")));
-
-            DateTime? proposedStart = reader.IsDBNull(reader.GetOrdinal("proposed_start_date"))
-                ? null : reader.GetDateTime(reader.GetOrdinal("proposed_start_date"));
-            DateTime? proposedEnd = reader.IsDBNull(reader.GetOrdinal("proposed_end_date"))
-                ? null : reader.GetDateTime(reader.GetOrdinal("proposed_end_date"));
-            DateTime? approvedDate = reader.IsDBNull(reader.GetOrdinal("approved_date"))
-                ? null : reader.GetDateTime(reader.GetOrdinal("approved_date"));
-
-            requests.Add(new CommonRoomRequest(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                tenant,
-                room,
-                reader.GetDateTime(reader.GetOrdinal("requested_start_date")),
-                reader.GetDateTime(reader.GetOrdinal("requested_end_date")),
-                proposedStart,
-                proposedEnd,
-                approvedDate,
-                reader.GetString(reader.GetOrdinal("status"))));
-        }
-
+            requests.Add(ReadCommonRoomRequest(reader));
         return requests;
     }
 
-    // Postavlja predloženi termin i menja status na ProposedCounter
+    private CommonRoomRequest ReadCommonRoomRequest(IDataReader reader)
+    {
+        User tenant       = ReadUserFromReader(reader);
+        Building building = ReadBuildingFromReader(reader);
+        CommonRoom room = new CommonRoom(
+            reader.GetInt64(reader.GetOrdinal("room_id")),
+            building,
+            reader.GetString(reader.GetOrdinal("room_name")),
+            reader.GetString(reader.GetOrdinal("description")),
+            reader.GetInt32(reader.GetOrdinal("floor_number")),
+            reader.GetBoolean(reader.GetOrdinal("is_multi_day")));
+        DateTime? proposedStart = reader.IsDBNull(reader.GetOrdinal("proposed_start_date"))
+            ? null : reader.GetDateTime(reader.GetOrdinal("proposed_start_date"));
+        DateTime? proposedEnd = reader.IsDBNull(reader.GetOrdinal("proposed_end_date"))
+            ? null : reader.GetDateTime(reader.GetOrdinal("proposed_end_date"));
+        DateTime? approvedDate = reader.IsDBNull(reader.GetOrdinal("approved_date"))
+            ? null : reader.GetDateTime(reader.GetOrdinal("approved_date"));
+        return new CommonRoomRequest(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            tenant,
+            room,
+            reader.GetDateTime(reader.GetOrdinal("requested_start_date")),
+            reader.GetDateTime(reader.GetOrdinal("requested_end_date")),
+            proposedStart,
+            proposedEnd,
+            approvedDate,
+            reader.GetString(reader.GetOrdinal("status")));
+    }
+
     public void ProposeDate(long requestId, DateTime proposedStart, DateTime proposedEnd)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
-
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             UPDATE common_room_requests
@@ -80,18 +73,15 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
                 proposed_start_date  = @proposedStart,
                 proposed_end_date    = @proposedEnd
             WHERE id = @requestId";
-
         AddParameter(cmd, "@requestId", requestId);
         AddParameter(cmd, "@proposedStart", proposedStart);
         AddParameter(cmd, "@proposedEnd", proposedEnd);
         cmd.ExecuteNonQuery();
     }
 
-    // Odobrava zahtev za jednodnevnu prostoriju — postavlja izabrani dan i status Approved
     public void ApproveWithDate(long requestId, DateTime date)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
-
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             UPDATE common_room_requests
@@ -100,18 +90,14 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
                 proposed_end_date   = @date,
                 approved_date       = NOW()
             WHERE id = @requestId";
-
         AddParameter(cmd, "@requestId", requestId);
-        AddParameter(cmd, "@date",      date.Date);
+        AddParameter(cmd, "@date", date.Date);
         cmd.ExecuteNonQuery();
     }
 
-    // Vraća zauzete periode za datu prostoriju (Approved i ProposedCounter)
-    // Koristi predložene datume ako postoje, inače originalno tražene
     public List<(DateTime Start, DateTime End)> GetBookedRangesForRoom(long roomId)
     {
         using IDbConnection connection = PostgresConnection.CreateConnection();
-
         IDbCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"
             SELECT COALESCE(proposed_start_date, requested_start_date) AS booked_start,
@@ -119,19 +105,14 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
             FROM common_room_requests
             WHERE common_room_id = @roomId
               AND status IN ('Approved', 'ProposedCounter')";
-
         AddParameter(cmd, "@roomId", roomId);
-
         List<(DateTime, DateTime)> ranges = new();
-
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
             ranges.Add((reader.GetDateTime(0), reader.GetDateTime(1)));
-
         return ranges;
     }
 
-    // Čita User iz reader-a (koristi fiksne kolone iz JOIN-a)
     private User ReadUserFromReader(IDataReader reader) => new User(
         reader.GetInt64(reader.GetOrdinal("tenant_id")),
         reader.GetString(reader.GetOrdinal("username")),
@@ -141,19 +122,16 @@ public class CommonRoomRequestDbRepository : ICommonRoomRequestRepository
         reader.GetDateTime(reader.GetOrdinal("birthday")),
         reader.GetString(reader.GetOrdinal("role")));
 
-    // Čita Building (sa Address i Location) iz reader-a
     private Building ReadBuildingFromReader(IDataReader reader)
     {
         Address address = new Address(
             reader.GetInt64(reader.GetOrdinal("address_id")),
             reader.GetString(reader.GetOrdinal("street")),
             reader.GetString(reader.GetOrdinal("street_number")));
-
         Location location = new Location(
             reader.GetInt64(reader.GetOrdinal("location_id")),
             reader.GetString(reader.GetOrdinal("city")),
             reader.GetString(reader.GetOrdinal("country")));
-
         return new Building(
             reader.GetInt64(reader.GetOrdinal("building_id")),
             address,

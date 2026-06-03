@@ -42,4 +42,10 @@ public partial class BuildingDetailPage : Page
     {
         NavigationService?.Navigate(new NewCommonRoomPage(_shell, _vm.Building, _vm.LoadRooms));
     }
+
+    private void RoomCard_Click(object sender, RoutedEventArgs e)
+    {
+        CommonRoomDto room = (CommonRoomDto)((Button)sender).Tag;
+        NavigationService?.Navigate(new CommonRoomCalendarPage(_shell, room, _vm.Building));
+    }
 }

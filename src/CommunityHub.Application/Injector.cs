@@ -21,23 +21,32 @@ public class Injector
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
         { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
         { typeof(IBulletinBoardStatsRepository),    new BulletinBoardStatsDbRepository() },
+        { typeof(IAssemblyRepository),              new AssemblyDbRepository() },
 
         // Citizen
-        { typeof(ICitizenDistrictRepository),               new CitizenDistrictDbRepository() },
-        { typeof(ICitizenDistrictAccessRequestRepository),  new CitizenDistrictAccessRequestDbRepository() },
-        { typeof(ICitizenUserProfileRepository),            new CitizenUserProfileDbRepository()  },
-        { typeof(ICitizenDistrictMembershipRepository),     new CitizenDistrictMembershipDbRepository() },
-        { typeof(ICitizenDistrictEventRepository),          new CitizenDistrictEventDbRepository() },
+        { typeof(ICitizenDistrictRepository),                 new CitizenDistrictDbRepository() },
+        { typeof(ICitizenDistrictAccessRequestRepository),    new CitizenDistrictAccessRequestDbRepository() },
+        { typeof(ICitizenUserProfileRepository),              new CitizenUserProfileDbRepository() },
+        { typeof(ICitizenDistrictMembershipRepository),       new CitizenDistrictMembershipDbRepository() },
+        { typeof(ICitizenDistrictEventRepository),            new CitizenDistrictEventDbRepository() },
         { typeof(ICitizenDistrictEventApplicationRepository), new CitizenDistrictEventApplicationDbRepository() },
+        { typeof(ICitizenTrustRecordRepository),              new CitizenTrustRecordDbRepository() },
+        { typeof(ICitizenTrustRecordService),                 new CitizenTrustRecordService(
+                                                                new CitizenTrustRecordDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenMeetingRepository),                  new CitizenMeetingDbRepository() },
+        { typeof(ICitizenMeetingService),                     new CitizenMeetingService(
+                                                                new CitizenMeetingDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
 
         // Tenant
-        { typeof(TenantSvc.ITenantBuildingSearchRepository),  new BuildingDbRepository() },
-        { typeof(TenantSvc.IBuildingAccessRequestRepository), new TenantDb.BuildingAccessRequestDbRepository() },
-        { typeof(TenantSvc.IBuildingMembershipRepository),    new TenantDb.BuildingMembershipDbRepository() },
+        { typeof(TenantSvc.ITenantBuildingSearchRepository),         new BuildingDbRepository() },
+        { typeof(TenantSvc.IBuildingAccessRequestRepository),        new TenantDb.BuildingAccessRequestDbRepository() },
+        { typeof(TenantSvc.IBuildingMembershipRepository),           new TenantDb.BuildingMembershipDbRepository() },
         { typeof(TenantSvc.IAdvertisementRepository),                new TenantDb.AdvertisementDbRepository() },
-        { typeof(TenantSvc.ISchedulingRepository),                new TenantDb.SchedulingDbRepository() },
-        { typeof(TenantSvc.ICommonRoomTenantRepository),          new TenantDb.CommonRoomTenantDbRepository() },
-        { typeof(TenantSvc.ICommonRoomRequestTenantRepository),   new TenantDb.CommonRoomRequestTenantDbRepository() },
+        { typeof(TenantSvc.ISchedulingRepository),                   new TenantDb.SchedulingDbRepository() },
+        { typeof(TenantSvc.ICommonRoomTenantRepository),             new TenantDb.CommonRoomTenantDbRepository() },
+        { typeof(TenantSvc.ICommonRoomRequestTenantRepository),      new TenantDb.CommonRoomRequestTenantDbRepository() },
 
         // User
         { typeof(IUserRepository),                      new UserDbRepository() },
@@ -49,6 +58,9 @@ public class Injector
         { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
         { typeof(IForumRepository), new ForumDbRepository() },
         { typeof(ICityObjectRepository), new CityObjectDbRepository() },
+        { typeof(IDistrictMeetingRepository),           new DistrictMeetingDbRepository() },
+        { typeof(ICitizenTrustStatisticRepository),     new CitizenTrustStatisticDbRepository() },
+        { typeof(IForumRepository),                     new ForumDbRepository() },
     };
 
     public static T Get<T>()

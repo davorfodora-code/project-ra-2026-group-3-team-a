@@ -1,10 +1,11 @@
 using System.Windows;
+using System.Windows.Controls;
 using CommunityHub.Application.Dto.Citizen;
 using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class CitizenEventsWindow : Window
+public partial class CitizenEventsWindow : Page
 {
     private readonly long _userId;
     private readonly CitizenEventsViewModel _viewModel;
@@ -24,8 +25,7 @@ public partial class CitizenEventsWindow : Window
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -44,7 +44,7 @@ public partial class CitizenEventsWindow : Window
         }
 
         CreateDistrictEventWindow createWindow = new CreateDistrictEventWindow(districtId.Value);
-        createWindow.Owner = this;
+        createWindow.Owner = Window.GetWindow(this);
         bool? dialogResult = createWindow.ShowDialog();
         if (dialogResult != true || createWindow.Dto == null)
         {
@@ -59,6 +59,11 @@ public partial class CitizenEventsWindow : Window
         {
             LoadEvents();
         }
+    }
+
+    public void OpenCreateEventDialog()
+    {
+        CreateEventButton_Click(this, new RoutedEventArgs());
     }
 
     private void VolunteerSignupButton_Click(object sender, RoutedEventArgs e)
@@ -77,7 +82,7 @@ public partial class CitizenEventsWindow : Window
         }
 
         VolunteerSignupWindow signupWindow = new VolunteerSignupWindow(details);
-        signupWindow.Owner = this;
+        signupWindow.Owner = Window.GetWindow(this);
         bool? dialogResult = signupWindow.ShowDialog();
         if (dialogResult != true || signupWindow.Dto == null)
         {
@@ -111,7 +116,7 @@ public partial class CitizenEventsWindow : Window
         }
 
         EventAttendanceWindow attendanceWindow = new EventAttendanceWindow(candidates);
-        attendanceWindow.Owner = this;
+        attendanceWindow.Owner = Window.GetWindow(this);
         bool? dialogResult = attendanceWindow.ShowDialog();
         if (dialogResult != true)
         {
@@ -121,5 +126,20 @@ public partial class CitizenEventsWindow : Window
         EventActionResultDto result = _viewModel.ConfirmAttendance(selected.EventId, attendanceWindow.Attendances);
         MessageBox.Show(result.Message, result.Success ? "Uspeh" : "Greška", MessageBoxButton.OK,
             result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
+    }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
+    }
+
+    private void MyDistrictNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new MyDistrictWindow(_userId));
+    }
+
+    private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_userId));
     }
 }

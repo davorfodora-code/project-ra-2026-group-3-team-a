@@ -7,4 +7,5 @@ public interface IBuildingRepository
     Building Create(Building building);
     Building? GetById(long buildingId);
     List<Building> Search(string? address, string? neighborhood, string? city, string? country);
+    List<Building> GetByManagerId(long managerId);
 }

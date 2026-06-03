@@ -25,24 +25,21 @@ public class CommonRoomDbRepository : ICommonRoomRepository
             ORDER BY cr.floor_number, cr.name";
 
         AddParameter(cmd, "@buildingId", buildingId);
-
         List<CommonRoom> rooms = new();
-
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
-        {
-            Building building = ReadBuildingFromReader(reader);
-            rooms.Add(new CommonRoom(
-                reader.GetInt64(reader.GetOrdinal("id")),
-                building,
-                reader.GetString(reader.GetOrdinal("name")),
-                reader.GetString(reader.GetOrdinal("description")),
-                reader.GetInt32(reader.GetOrdinal("floor_number")),
-                reader.GetBoolean(reader.GetOrdinal("is_multi_day"))));
-        }
-
+            rooms.Add(ReadRoom(reader));
         return rooms;
     }
+
+    private CommonRoom ReadRoom(IDataReader reader) =>
+        new CommonRoom(
+            reader.GetInt64(reader.GetOrdinal("id")),
+            ReadBuildingFromReader(reader),
+            reader.GetString(reader.GetOrdinal("name")),
+            reader.GetString(reader.GetOrdinal("description")),
+            reader.GetInt32(reader.GetOrdinal("floor_number")),
+            reader.GetBoolean(reader.GetOrdinal("is_multi_day")));
 
     // Dodaje novu zajednicku prostoriju i vraca je sa dodeljenim ID-em
     public CommonRoom Add(CommonRoom room)

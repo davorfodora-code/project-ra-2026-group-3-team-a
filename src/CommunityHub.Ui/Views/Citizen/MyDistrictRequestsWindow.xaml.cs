@@ -6,7 +6,7 @@ using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class MyDistrictRequestsWindow : Window
+public partial class MyDistrictRequestsWindow : Page
 {
     private readonly long _userId;
     private readonly MyDistrictRequestsViewModel _viewModel;
@@ -79,9 +79,7 @@ public partial class MyDistrictRequestsWindow : Window
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
-        CitizenHomeWindow homeWindow = new CitizenHomeWindow(_userId);
-        homeWindow.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private DistrictAccessRequestStatus? ParseStatusFilter()
@@ -93,5 +91,15 @@ public partial class MyDistrictRequestsWindow : Window
         }
 
         return Enum.Parse<DistrictAccessRequestStatus>(value);
+    }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
+    }
+
+    private void SearchNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new DistrictSearchWindow(_userId));
     }
 }

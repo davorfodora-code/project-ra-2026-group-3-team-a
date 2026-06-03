@@ -21,47 +21,31 @@ public class CitizenAccessRequestService : ICitizenAccessRequestService
 
     public AccessResultDto RequestDistrictAccess(long userId, long districtId)
     {
-        District? district = _districtRepository.GetAll().FirstOrDefault(d => d.Id == districtId);
-        if (district == null)
+        AccessResultDto? districtValidation = TryGetDistrict(districtId, out District? district);
+        if (districtValidation != null)
         {
-            return Error("Selektovani kvart nije pronađen.");
+            return districtValidation;
         }
 
-        if (_membershipService.HasMembership(userId))
+        AccessResultDto? membershipValidation = ValidateMembership(userId, districtId);
+        if (membershipValidation != null)
         {
-            long? existingDistrictId = _membershipService.GetMembershipDistrictId(userId);
-            if (existingDistrictId == districtId)
-            {
-                return Warning("Već ste član ovog kvarta.");
-            }
-
-            return Warning("Već ste član nekog kvarta. Ne možete tražiti pristup drugom kvartu.");
+            return membershipValidation;
         }
 
-        string? rawAddress = _userProfileRepository.GetAddressByUserId(userId);
-        if (string.IsNullOrWhiteSpace(rawAddress))
+        AccessResultDto? addressValidation = TryGetResidenceAddress(userId, out string streetName, out int streetNumber);
+        if (addressValidation != null)
         {
-            return Error("Nije moguće pročitati adresu stanovanja iz profila.");
+            return addressValidation;
         }
 
-        if (!TryParseResidenceStreetAndNumber(rawAddress, out string streetName, out int streetNumber))
-        {
-            return Error("Adresa stanovanja nije u očekivanom formatu (npr. 'Zemunska 10, Novi Sad').");
-        }
-
-        if (district.ContainsAddress(streetName, streetNumber))
+        if (district!.ContainsAddress(streetName, streetNumber))
         {
             _membershipService.CreateMembership(userId, districtId);
             return Success("Adresa se poklapa sa kvartom — automatski ste učlanjeni.");
         }
 
-        if (_requestRepository.ExistsPending(userId, districtId))
-        {
-            return Warning("Već imate aktivan zahtev za ovaj kvart.");
-        }
-
-        _requestRepository.Create(userId, districtId);
-        return Success("Kreiran je zahtev za pristup kvartu (status: Pending).");
+        return CreatePendingRequest(userId, districtId);
     }
 
     public List<DistrictAccessRequestDto> GetAllByUserId(long userId)
@@ -129,6 +113,58 @@ public class CitizenAccessRequestService : ICitizenAccessRequestService
         string trimmed = rawAddress.Trim();
         int commaIndex = trimmed.IndexOf(',');
         return commaIndex > 0 ? trimmed[..commaIndex].Trim() : trimmed;
+    }
+
+    private AccessResultDto? TryGetDistrict(long districtId, out District? district)
+    {
+        district = _districtRepository.GetAll().FirstOrDefault(d => d.Id == districtId);
+        return district == null ? Error("Selektovani kvart nije pronađen.") : null;
+    }
+
+    private AccessResultDto? ValidateMembership(long userId, long districtId)
+    {
+        if (!_membershipService.HasMembership(userId))
+        {
+            return null;
+        }
+
+        long? existingDistrictId = _membershipService.GetMembershipDistrictId(userId);
+        if (existingDistrictId == districtId)
+        {
+            return Warning("Već ste član ovog kvarta.");
+        }
+
+        return Warning("Već ste član nekog kvarta. Ne možete tražiti pristup drugom kvartu.");
+    }
+
+    private AccessResultDto? TryGetResidenceAddress(long userId, out string streetName, out int streetNumber)
+    {
+        streetName = string.Empty;
+        streetNumber = 0;
+
+        string? rawAddress = _userProfileRepository.GetAddressByUserId(userId);
+        if (string.IsNullOrWhiteSpace(rawAddress))
+        {
+            return Error("Nije moguće pročitati adresu stanovanja iz profila.");
+        }
+
+        if (!TryParseResidenceStreetAndNumber(rawAddress, out streetName, out streetNumber))
+        {
+            return Error("Adresa stanovanja nije u očekivanom formatu (npr. 'Zemunska 10, Novi Sad').");
+        }
+
+        return null;
+    }
+
+    private AccessResultDto CreatePendingRequest(long userId, long districtId)
+    {
+        if (_requestRepository.ExistsPending(userId, districtId))
+        {
+            return Warning("Već imate aktivan zahtev za ovaj kvart.");
+        }
+
+        _requestRepository.Create(userId, districtId);
+        return Success("Kreiran je zahtev za pristup kvartu (status: Pending).");
     }
 
     private static AccessResultDto Success(string message) => new() { Type = AccessResultType.Success, Message = message };

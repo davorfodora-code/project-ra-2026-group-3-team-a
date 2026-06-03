@@ -34,6 +34,12 @@ public class CitizenDistrictService : ICitizenDistrictService
             .ToList();
     }
 
+    public DistrictListItemDto? GetById(long districtId)
+    {
+        District? district = _districtRepository.GetAll().FirstOrDefault(d => d.Id == districtId);
+        return district == null ? null : MapToDto(district);
+    }
+
     private static DistrictListItemDto MapToDto(District district)
     {
         return new DistrictListItemDto

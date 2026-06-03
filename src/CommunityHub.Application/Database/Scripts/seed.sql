@@ -3,6 +3,25 @@
 --  Pokrenuti POSLE database.sql kroz pgAdmin
 -- ============================================================
 
+-- ============================================================
+--  Uskladjavanje postojeće baze — 4.4 trust_level
+--  (bezbedno ako kolona/constraint već postoje)
+-- ============================================================
+ALTER TABLE district_memberships
+    ADD COLUMN IF NOT EXISTS trust_level VARCHAR(30) NOT NULL DEFAULT 'Nov';
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'chk_trust_level'
+    ) THEN
+        ALTER TABLE district_memberships
+            ADD CONSTRAINT chk_trust_level
+            CHECK (trust_level IN ('Nov', 'Neaktivan', 'Aktivan', 'Istaknuti', 'OdPoverenja'));
+    END IF;
+END $$;
+
 
 -- ============================================================
 --  Korisnici
@@ -16,7 +35,15 @@ INSERT INTO users (id, username, password, name, surname, birthday, role, addres
 (-6, 'milica', 'milica123', 'Milica', 'Milić',      '2000-07-08', 'DistrictCoordinator',  'Knez Mihailova 3, Beograd'),
 (-7, 'nikola', 'nikola123', 'Nikola', 'Nikolić',    '1997-12-18', 'Citizen',              'Zemunska 10, Beograd'),
 (-8, 'ivana',  'ivana123',  'Ivana',  'Ivanović',   '2001-09-05', 'Citizen',              'Gandijeva 25, Beograd'),
-(-9, 'boban',  'boban123',  'Boban',  'Bobanović',  '1999-04-10', 'Citizen',              'Zemunska 22, Beograd');
+(-9, 'boban',  'boban123',  'Boban',  'Bobanović',  '1999-04-10', 'Citizen',              'Zemunska 22, Beograd'),
+(-10, 'jelena', 'jelena123', 'Jelena', 'Petrović',   '1996-02-11', 'Citizen',             'Gandijeva 14, Beograd'),
+(-11, 'milan',  'milan123',  'Milan',  'Jovanović',  '1995-10-01', 'Citizen',             'Gandijeva 40, Beograd'),
+(-14, 'teodora','teodora123','Teodora','Ristić',     '1999-01-07', 'Citizen',             'Gandijeva 62, Beograd'),
+(-17, 'uros',   'uros123',   'Uroš',   'Živković',   '1994-09-28', 'Citizen',             'Bulevar Zorana Đinđića 110, Beograd'),
+(-19, 'aleksa', 'aleksa123', 'Aleksa', 'Milošević',  '1996-08-08', 'Citizen',             'Gandijeva 49, Beograd'),
+(-21, 'igor',   'igor123',   'Igor',   'Babić',      '1993-04-26', 'Citizen',             'Gandijeva 12, Beograd'),
+(-22, 'nina',   'nina123',   'Nina',   'Lazić',      '2000-12-05', 'Citizen',             'Glavna 9, Beograd'),
+(-23, 'filip',  'filip123',  'Filip',  'Tadić',      '1998-01-22', 'Citizen',             'Zemunska 28, Beograd');
 
 
 -- ============================================================
@@ -79,30 +106,138 @@ INSERT INTO district_access_requests (id, user_id, district_id, creation_date, s
 (-3, -8, -2, '2025-03-12 16:45:00', 'Approved', NULL),
 (-4, -7, -2, '2025-03-08 11:20:00', 'Rejected', 'Adresa nije u opsegu ulica kvarta.');
 
--- Članstva u kvartovima (za odobrene zahteve)
-INSERT INTO district_memberships (id, district_id, user_id, join_date) VALUES
-(-1, -2, -8, '2025-03-12 16:45:00');
+-- Članstva u kvartovima (bogatiji podaci za 4.4)
+INSERT INTO district_memberships (id, district_id, user_id, join_date, trust_level) VALUES
+(-1,  -2, -8,  '2026-02-12 16:45:00', 'Nov'),
+(-10, -2, -10, '2024-06-01 09:00:00', 'Nov'),
+(-11, -2, -11, '2023-02-10 09:00:00', 'Nov'),
+(-14, -2, -14, '2022-10-21 09:00:00', 'Nov'),
+(-17, -2, -17, '2021-05-09 09:00:00', 'Nov'),
+(-19, -2, -19, '2023-12-05 09:00:00', 'Nov'),
+(-21, -2, -21, '2022-01-12 09:00:00', 'Nov'),
+(-22, -1, -22, '2024-03-14 09:00:00', 'Nov'),
+(-23, -1, -23, '2023-08-01 09:00:00', 'Nov');
+
+-- Sastanci kvarta (4.5)
+INSERT INTO district_meetings (id, district_id, meeting_type, meeting_time, date_range_start, date_range_end, status, scheduled_date) VALUES
+(-1, -2, 'Dobrodoslica', '20:00', '2026-05-25', '2026-05-29', 'UPripremi', NULL),
+(-2, -2, 'Motivacija',   '19:30', '2026-04-20', '2026-04-28', 'Zakazan',   '2026-04-24'),
+(-3, -2, 'Motivacija',   '19:00', '2026-04-10', '2026-04-12', 'Otkazan',   NULL),
+(-4, -2, 'Dobrodoslica', '18:00', '2026-05-19', '2026-05-21', 'UPripremi', NULL);
+
+INSERT INTO district_meeting_votes (id, meeting_id, citizen_id, preferred_date) VALUES
+(-1, -1, -8, '2026-05-27');
+
+-- Sastanci kvarta Zemun (auto-uclanjenje preko Zemunske ulice)
+INSERT INTO district_meetings (id, district_id, meeting_type, meeting_time, date_range_start, date_range_end, status, scheduled_date) VALUES
+(-5, -1, 'Dobrodoslica', '20:00', '2026-05-25', '2026-05-29', 'UPripremi', NULL),
+(-6, -1, 'Motivacija',   '19:30', '2026-04-20', '2026-04-28', 'Zakazan',   '2026-04-24'),
+(-7, -1, 'Motivacija',   '19:00', '2026-04-10', '2026-04-12', 'Otkazan',   NULL),
+(-8, -1, 'Dobrodoslica', '18:00', '2026-05-19', '2026-05-21', 'UPripremi', NULL);
 
 -- Dogadjaji gradjana (4.3)
+-- Statusi: UPripremi (prijava), Zakazan (spreman / buduci), Zavrsen (istorija + evidencija prisustva)
+-- Demo za evidenciju: dogadjaj -19, organizator ivana (-8), bez unetog prisustva
 INSERT INTO district_events (id, district_id, organizer_id, name, description, event_date, start_time, duration_minutes, min_volunteers, status, created_at) VALUES
-(-1, -1, -7, 'Ciscenje parka', 'Akcija ciscenja centralnog parka u kvartu.', '2026-06-20', '09:00', 180, 2, 'UPripremi', '2026-06-01 10:00:00'),
-(-2, -2, -8, 'Uredjenje igralista', 'Farbanje klupa i sredjivanje igralista.', '2026-06-22', '10:00', 120, 2, 'Zakazan', '2026-06-02 12:00:00');
+(-1,  -1, -7,  'Ciscenje parka',              'Akcija ciscenja centralnog parka u kvartu.',                    '2026-06-20', '09:00', 180, 2, 'UPripremi', '2026-06-01 10:00:00'),
+(-2,  -2, -8,  'Uredjenje igralista',         'Farbanje klupa i sredjivanje igralista.',                       '2026-06-22', '10:00', 120, 2, 'Zakazan',   '2026-06-02 12:00:00'),
+(-3,  -2, -8,  'Letnje sredjivanje dvorista',  'Priprema zelenih povrsina oko stambenih blokova.',              '2026-06-28', '09:00', 150, 2, 'UPripremi', '2026-06-03 11:00:00'),
+(-4,  -2, -10, 'Obelezavanje biciklisticke staze', 'Postavljanje oznaka i uredjenje staze.',                     '2026-07-10', '08:30', 120, 2, 'UPripremi', '2026-06-05 14:00:00'),
+(-5,  -2, -11, 'Akcija zelenila oko skole',    'Uredjenje travnjaka i sadnja cvecja.',                          '2026-05-25', '10:00', 120, 2, 'UPripremi', '2026-05-10 09:00:00'),
+(-11, -2, -11, 'Sadnja drveca',                 'Sadnja mladica u dvoristu kvartovske skole.',                    '2026-07-15', '11:00', 180, 3, 'UPripremi', '2026-06-08 13:00:00'),
+(-12, -2, -14, 'Uredjenje igralista 2',         'Popravka klupa i kanti za otpatke.',                            '2026-07-22', '10:00', 150, 2, 'UPripremi', '2026-06-10 10:00:00'),
+(-13, -2, -14, 'Akcija reciklaze',              'Prikupljanje i sortiranje reciklaznog otpada.',                 '2026-05-30', '09:30', 120, 2, 'Zakazan',   '2026-05-12 09:30:00'),
+(-19, -2, -8,  'Evidencija prisustva (demo)',   'Zavrsen test dogadjaj — Ivana evidentira prisustvo volontera.',   '2026-05-10', '09:00', 120, 2, 'Zavrsen',   '2026-05-01 10:00:00'),
+(-10, -2, -10, 'Prolecno ciscenje bloka',       'Ciscenje oko zgrada i parkinga.',                               '2026-03-01', '09:00', 120, 3, 'Zavrsen',   '2026-02-20 12:00:00'),
+(-14, -2, -17, 'Bojenje parkovske ograde',      'Uredjenje ograde i zamena ostecenih delova.',                   '2026-03-27', '08:00', 180, 3, 'Zavrsen',   '2026-03-12 08:15:00'),
+(-15, -2, -19, 'Komsijski sajam knjiga',        'Razmena knjiga i uredjenje stajalista.',                        '2026-04-02', '12:00', 120, 2, 'Zavrsen',   '2026-03-20 16:00:00'),
+(-18, -1, -22, 'Ciscenje zemunskog parka',       'Akcija ciscenja i uredjenja klupa.',                            '2026-03-22', '09:00', 120, 2, 'Zavrsen',   '2026-03-10 12:00:00');
 
 INSERT INTO district_event_required_items (id, event_id, item_name, assigned_volunteer_id) VALUES
-(-1, -1, 'Rukavice', -7),
-(-2, -1, 'Vrece za smece', NULL),
-(-3, -2, 'Farba', -8),
-(-4, -2, 'Cetke', -9);
+(-1,  -1,  'Rukavice',         -7),
+(-2,  -1,  'Vrece za smece',   NULL),
+(-3,  -2,  'Farba',            -8),
+(-4,  -2,  'Cetke',            -14),
+(-21, -3,  'Lopate',           NULL),
+(-22, -3,  'Kante',            NULL),
+(-23, -4,  'Trake',            -11),
+(-24, -4,  'Markeri',          NULL),
+(-25, -5,  'Rukavice',         NULL),
+(-26, -5,  'Vrece',            NULL),
+(-12, -11, 'Lopate',           NULL),
+(-13, -11, 'Rukavice',         NULL),
+(-27, -12, 'Farba',            NULL),
+(-28, -12, 'Sarafi',           NULL),
+(-15, -13, 'Kese',             -14),
+(-29, -13, 'Rukavice',         -19),
+(-30, -19, 'Metle',            -10),
+(-31, -19, 'Kese',             -11),
+(-32, -19, 'Rukavice',         -14),
+(-10, -10, 'Vrece za smece',   -10),
+(-11, -10, 'Rukavice',         -11),
+(-35, -10, 'Metle',            -14),
+(-16, -14, 'Cetke',            -19),
+(-33, -14, 'Farba',            -10),
+(-36, -14, 'Rukavice',         -11),
+(-17, -15, 'Stolovi',          -21),
+(-34, -15, 'Knjige',           -19),
+(-20, -18, 'Rukavice',         -23),
+(-37, -18, 'Metle',            -22);
 
 INSERT INTO district_event_applications (id, event_id, citizen_id, applied_at) VALUES
-(-1, -1, -7, '2026-06-05 09:30:00'),
-(-2, -2, -8, '2026-06-06 08:00:00'),
-(-3, -2, -9, '2026-06-06 08:10:00');
+(-1,  -1,  -7,  '2026-06-05 09:30:00'),
+(-2,  -2,  -8,  '2026-06-06 08:00:00'),
+(-3,  -2,  -14, '2026-06-06 08:10:00'),
+(-4,  -4,  -11, '2026-06-07 10:00:00'),
+(-5,  -13, -14, '2026-05-14 09:00:00'),
+(-6,  -13, -19, '2026-05-14 09:15:00'),
+(-30, -19, -10, '2026-05-05 08:00:00'),
+(-31, -19, -11, '2026-05-05 08:10:00'),
+(-32, -19, -14, '2026-05-05 08:20:00'),
+(-10, -10, -10, '2026-02-25 09:00:00'),
+(-11, -10, -11, '2026-02-25 09:10:00'),
+(-12, -10, -14, '2026-02-25 09:20:00'),
+(-16, -14, -19, '2026-03-20 08:30:00'),
+(-33, -14, -10, '2026-03-20 08:40:00'),
+(-34, -14, -11, '2026-03-20 08:50:00'),
+(-17, -15, -21, '2026-03-25 12:20:00'),
+(-35, -15, -19, '2026-03-25 12:30:00'),
+(-20, -18, -23, '2026-03-14 09:00:00'),
+(-36, -18, -22, '2026-03-14 09:10:00');
 
 INSERT INTO district_event_application_items (id, application_id, required_item_id) VALUES
-(-1, -1, -1),
-(-2, -2, -3),
-(-3, -3, -4);
+(-1,  -1,  -1),
+(-2,  -2,  -3),
+(-3,  -3,  -4),
+(-4,  -4,  -23),
+(-5,  -5,  -15),
+(-6,  -6,  -29),
+(-30, -30, -30),
+(-31, -31, -31),
+(-32, -32, -32),
+(-10, -10, -10),
+(-11, -11, -11),
+(-12, -12, -35),
+(-16, -16, -16),
+(-33, -33, -33),
+(-34, -34, -36),
+(-17, -17, -17),
+(-35, -35, -34),
+(-20, -20, -20),
+(-36, -36, -37);
+
+-- Prisustvo samo na Zavrsenim dogadjajima; -19 namerno bez redova (test evidencije)
+INSERT INTO district_event_volunteer_attendances (id, event_id, volunteer_id, attended, marked_at) VALUES
+(-1,  -10, -10, TRUE,  '2026-03-01 12:30:00'),
+(-2,  -10, -11, TRUE,  '2026-03-01 12:30:00'),
+(-3,  -10, -14, TRUE,  '2026-03-01 12:35:00'),
+(-7,  -14, -19, TRUE,  '2026-03-27 11:50:00'),
+(-12, -14, -10, TRUE,  '2026-03-27 11:55:00'),
+(-13, -14, -11, FALSE, '2026-03-27 11:58:00'),
+(-8,  -15, -21, TRUE,  '2026-04-02 14:05:00'),
+(-16, -15, -19, TRUE,  '2026-04-02 14:06:00'),
+(-11, -18, -23, TRUE,  '2026-03-22 11:00:00'),
+(-37, -18, -22, TRUE,  '2026-03-22 11:05:00');
 
 
 -- ============================================================
@@ -287,3 +422,47 @@ INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start
 -- JOVANA (-4): Na čekanju — želi Salu za sastanke 30.05
 INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start_date, requested_end_date, proposed_start_date, proposed_end_date, approved_date, status) VALUES
 (-6, -4, -4, '2026-05-30 00:00:00', '2026-05-30 00:00:00', NULL, NULL, NULL, 'Pending');
+
+
+-- ============================================================
+--  Skupstine stanara (test podaci za 1.6 i 1.7)
+--  Zgrada -1 (Glavna 15, Zemun) — stanovi: 1-8
+-- ============================================================
+
+-- Skupstina 1: predstojeća, 3 teme, 2 predloga stanara, delimicno prisustvo
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-1, -1, '2026-07-15 19:00:00', 'Scheduled');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-1, -1, 'Curenje vode na 3. spratu', false),
+(-2, -1, 'Ciscenje zajednickih prostorija', false),
+(-3, -1, 'Raspodela troskova za lift', false);
+
+INSERT INTO assembly_topic_suggestions (id, assembly_id, tenant_id, topic) VALUES
+(-1, -1, -3, 'Sigurnosna kamera na ulazu'),
+(-2, -1, -4, 'Problem sa parkingom');
+
+INSERT INTO assembly_attendances (id, assembly_id, apartment_number, tenant_id) VALUES
+(-1, -1, 1, -3),
+(-2, -1, 2, -4);
+
+-- Skupstina 2: prosla, Confirmed, 5 tema
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-2, -1, '2026-04-24 18:00:00', 'Confirmed');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-4, -2, 'Godisnji plan odrzavanja', false),
+(-5, -2, 'Zamena interfona', false),
+(-6, -2, 'Finansijski izvestaj', false),
+(-7, -2, 'Popravka krova', false),
+(-8, -2, 'Nabavka kanti za reciklazu', true);
+
+-- Skupstina 3: otkazana, 4 teme
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-3, -1, '2026-03-27 19:30:00', 'Cancelled');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-9,  -3, 'Redovni pregled liftova', false),
+(-10, -3, 'Zimsko ciscenje', false),
+(-11, -3, 'Uredjenje dvorista', false),
+(-12, -3, 'Zamena sijalica na hodniku', false);
