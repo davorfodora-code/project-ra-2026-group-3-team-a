@@ -65,4 +65,31 @@ public class BuildingDbRepository : IBuildingRepository, ITenantBuildingSearchRe
         BuildingDbReader.LoadImagesForBuildings(connection, buildings);
         return buildings;
     }
+
+    public List<Building> GetByManagerId(long managerId)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT b.id, b.neighborhood, b.number_of_floors, b.manager_id,
+                   a.id AS address_id, a.street, a.street_number,
+                   l.id AS location_id, l.city, l.country,
+                   (SELECT COUNT(*) FROM floors f
+                    JOIN apartments ap ON ap.floor_id = f.id
+                    WHERE f.building_id = b.id) AS total_apartments
+            FROM buildings b
+            JOIN addresses a ON a.id = b.address_id
+            JOIN locations l ON l.id = b.location_id
+            WHERE b.manager_id = @managerId
+            ORDER BY a.street, a.street_number";
+        BuildingDbWriter.AddParameter(cmd, "@managerId", managerId);
+        List<Building> buildings = new();
+        using (IDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+                buildings.Add(BuildingDbReader.ReadBuildingFromReader(reader));
+        }
+        BuildingDbReader.LoadImagesForBuildings(connection, buildings);
+        return buildings;
+    }
 }
