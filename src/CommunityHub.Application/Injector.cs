@@ -21,7 +21,8 @@ public class Injector
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
         { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
         { typeof(IBulletinBoardStatsRepository),    new BulletinBoardStatsDbRepository() },
-        { typeof(IAssemblyRepository),              new AssemblyDbRepository() },
+        { typeof(IAssemblyRepository),               new AssemblyDbRepository() },
+        { typeof(IIssueReportRepository),            new IssueReportDbRepository() },
 
         // Citizen
         { typeof(ICitizenDistrictRepository),                 new CitizenDistrictDbRepository() },
@@ -58,13 +59,10 @@ public class Injector
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },
         { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },
-        { typeof(IDistrictMeetingRepository),            new DistrictMeetingDbRepository() },
-        { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
-        { typeof(IForumRepository), new ForumDbRepository() },
-        { typeof(ICityObjectRepository), new CityObjectDbRepository() },
         { typeof(IDistrictMeetingRepository),           new DistrictMeetingDbRepository() },
         { typeof(ICitizenTrustStatisticRepository),     new CitizenTrustStatisticDbRepository() },
         { typeof(IForumRepository),                     new ForumDbRepository() },
+        { typeof(ICityObjectRepository),                new CityObjectDbRepository() },
     };
 
     public static T Get<T>()

@@ -734,7 +734,8 @@ INSERT INTO city_facility_reservations (id, facility_id, district_id, reserved_a
 -- ============================================================
 INSERT INTO addresses (id, street, street_number) VALUES
 (-1, 'Glavna', '15'),
-(-2, 'Bulevar Mihajla Pupina', '22');
+(-2, 'Bulevar Mihajla Pupina', '22'),
+(-3, 'Cara Dusana', '10');
 
 
 -- ============================================================
@@ -742,7 +743,8 @@ INSERT INTO addresses (id, street, street_number) VALUES
 -- ============================================================
 INSERT INTO buildings (id, address_id, neighborhood, location_id, number_of_floors, manager_id) VALUES
 (-1, -1, 'Zemun',        -1, 3, -1),
-(-2, -2, 'Novi Beograd', -1, 2, -2);
+(-2, -2, 'Novi Beograd', -1, 2, -2),
+(-3, -3, 'Zemun',        -1, 2, -1);
 
 
 -- ============================================================
@@ -759,6 +761,11 @@ INSERT INTO floors (id, building_id, floor_number) VALUES
 (-4, -2, 1),
 (-5, -2, 2);
 
+-- Treca zgrada — Cara Dusana 10 (Markova, 2 sprata)
+INSERT INTO floors (id, building_id, floor_number) VALUES
+(-6, -3, 1),
+(-7, -3, 2);
+
 -- Stanovi za prvu zgradu
 INSERT INTO apartments (id, floor_id, apartment_number) VALUES
 (-1, -1, 1), (-2, -1, 2), (-3, -1, 3),
@@ -769,6 +776,11 @@ INSERT INTO apartments (id, floor_id, apartment_number) VALUES
 INSERT INTO apartments (id, floor_id, apartment_number) VALUES
 (-9, -4, 1), (-10, -4, 2),
 (-11, -5, 3), (-12, -5, 4);
+
+-- Stanovi za trecu zgradu
+INSERT INTO apartments (id, floor_id, apartment_number) VALUES
+(-13, -6, 1), (-14, -6, 2),
+(-15, -7, 3), (-16, -7, 4);
 
 
 -- ============================================================
@@ -798,7 +810,9 @@ INSERT INTO building_memberships (id, building_id, tenant_id, floor_number, apar
 (-1, -1, -7, 3, 7, '2026-03-20 11:00:00'),
 (-2, -1, -3, 1, 1, '2026-04-05 10:00:00'),
 (-3, -1, -4, 2, 4, '2026-04-06 14:30:00'),
-(-4, -2, -3, 1, 2, '2026-04-10 10:00:00');
+(-4, -2, -3, 1, 2, '2026-04-10 10:00:00'),
+(-5, -3, -3, 1, 1, '2026-04-12 09:00:00'),
+(-6, -3, -4, 2, 3, '2026-04-12 10:00:00');
 
 
 -- ============================================================
@@ -907,3 +921,20 @@ INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 (-10, -3, 'Zimsko ciscenje', false),
 (-11, -3, 'Uredjenje dvorista', false),
 (-12, -3, 'Zamena sijalica na hodniku', false);
+
+
+-- ============================================================
+--  Prijave problema (test podaci za 1.8)
+--  Zgrada -1 (Glavna 15, Zemun) — razliciti prioriteti i statusi
+-- ============================================================
+INSERT INTO issue_reports (id, tenant_id, building_id, description, priority, reported_at, status) VALUES
+(-1, -3, -1, 'Curenje vode na 3. spratu, mokri zidovi u hodniku.',         'Urgent',    '2026-04-14 09:00:00', 'Unresolved'),
+(-2, -4, -1, 'Lift se zaglavljuje dva puta dnevno.',                        'Urgent',    '2026-04-20 11:30:00', 'Unresolved'),
+(-3, -3, -1, 'Pokvarena sijalica na 3. spratu u hodniku.',                  'SolveSoon', '2026-03-20 14:00:00', 'Unresolved'),
+(-4, -4, -1, 'Ostecena ograda na parkingu — opasnost za decu.',             'SolveSoon', '2026-04-08 10:00:00', 'PotentiallyResolved'),
+(-5, -3, -1, 'Buka iz podruma kasno naveče.',                               'CanWait',   '2026-03-28 20:00:00', 'PotentiallyResolved'),
+(-6, -4, -1, 'Klupa u dvorištu je slomljena.',                              'CanWait',   '2026-04-01 08:00:00', 'Unresolved'),
+-- Cara Dusana 10 (treca Markova zgrada) — za testiranje filtera
+(-7, -3, -3, 'Puknuta cev u podrumu, voda curi.',                           'Urgent',    '2026-04-25 07:30:00', 'Unresolved'),
+(-8, -4, -3, 'Interfon ne radi na drugom spratu.',                          'SolveSoon', '2026-04-18 15:00:00', 'Unresolved'),
+(-9, -3, -3, 'Smece ispred zgrade se ne prazni redovno.',                   'CanWait',   '2026-04-10 09:00:00', 'PotentiallyResolved');

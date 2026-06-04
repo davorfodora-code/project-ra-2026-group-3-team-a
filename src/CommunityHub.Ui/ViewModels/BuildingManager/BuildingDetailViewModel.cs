@@ -7,23 +7,29 @@ namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
 public class BuildingDetailViewModel : BaseViewModel
 {
-    private readonly BuildingService _buildingService;
+    private readonly BuildingService     _buildingService;
     private readonly BuildingMembershipsViewModel _membershipsVm;
-    private readonly CommonRoomsViewModel _commonRoomsVm;
+    private readonly CommonRoomsViewModel         _commonRoomsVm;
+    private readonly IssueReportService           _issueService;
     private BuildingDto _building = null!;
     private int _activeTabIndex;
     private int _imageIndex;
     private ObservableCollection<BuildingMembershipDto> _members = new();
-    private ObservableCollection<CommonRoomDto> _rooms = new();
+    private ObservableCollection<CommonRoomDto>         _rooms   = new();
 
     public BuildingDetailViewModel(BuildingDto building, long managerId)
     {
         _buildingService = new BuildingService(Injector.Get<IBuildingRepository>());
-        _membershipsVm = new BuildingMembershipsViewModel(managerId);
-        _commonRoomsVm = new CommonRoomsViewModel();
+        _membershipsVm   = new BuildingMembershipsViewModel(managerId);
+        _commonRoomsVm   = new CommonRoomsViewModel();
+        _issueService    = new IssueReportService(Injector.Get<IIssueReportRepository>());
+        UrgentIssues    = new ObservableCollection<IssueReportItemViewModel>();
+        SolveSoonIssues = new ObservableCollection<IssueReportItemViewModel>();
+        CanWaitIssues   = new ObservableCollection<IssueReportItemViewModel>();
         Building = _buildingService.GetById(building.Id) ?? building;
         LoadMembers();
         LoadRooms();
+        LoadIssues();
     }
 
     public BuildingDto Building
@@ -139,5 +145,43 @@ public class BuildingDetailViewModel : BaseViewModel
             Rooms = new ObservableCollection<CommonRoomDto>(list);
         }
         catch { Rooms = new ObservableCollection<CommonRoomDto>(); }
+    }
+
+    public ObservableCollection<IssueReportItemViewModel> UrgentIssues    { get; }
+    public ObservableCollection<IssueReportItemViewModel> SolveSoonIssues { get; }
+    public ObservableCollection<IssueReportItemViewModel> CanWaitIssues   { get; }
+    public bool HasUrgentIssues    => UrgentIssues.Count > 0;
+    public bool HasSolveSoonIssues => SolveSoonIssues.Count > 0;
+    public bool HasCanWaitIssues   => CanWaitIssues.Count > 0;
+    public bool HasNoIssues        => UrgentIssues.Count == 0 && SolveSoonIssues.Count == 0 && CanWaitIssues.Count == 0;
+
+    public void LoadIssues()
+    {
+        try
+        {
+            List<IssueReportDto> list = _issueService.GetByBuildingId(Building.Id);
+            UrgentIssues.Clear();
+            SolveSoonIssues.Clear();
+            CanWaitIssues.Clear();
+            foreach (IssueReportDto dto in list)
+            {
+                IssueReportItemViewModel item = new IssueReportItemViewModel(dto);
+                if (dto.Priority == "Urgent")         UrgentIssues.Add(item);
+                else if (dto.Priority == "SolveSoon") SolveSoonIssues.Add(item);
+                else                                  CanWaitIssues.Add(item);
+            }
+        }
+        catch { /* prikazuje prazne kolekcije */ }
+        OnPropertyChanged(nameof(HasUrgentIssues));
+        OnPropertyChanged(nameof(HasSolveSoonIssues));
+        OnPropertyChanged(nameof(HasCanWaitIssues));
+        OnPropertyChanged(nameof(HasNoIssues));
+    }
+
+    public void MarkIssueAsResolved(long reportId)
+    {
+        try { _issueService.MarkAsResolved(reportId); }
+        catch { /* ignorisi gresku */ }
+        LoadIssues();
     }
 }
