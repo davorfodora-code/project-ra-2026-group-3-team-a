@@ -21,7 +21,8 @@ public class Injector
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
         { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
         { typeof(IBulletinBoardStatsRepository),    new BulletinBoardStatsDbRepository() },
-        { typeof(IAssemblyRepository),              new AssemblyDbRepository() },
+        { typeof(IAssemblyRepository),               new AssemblyDbRepository() },
+        { typeof(IIssueReportRepository),            new IssueReportDbRepository() },
 
         // Citizen
         { typeof(ICitizenDistrictRepository),                 new CitizenDistrictDbRepository() },

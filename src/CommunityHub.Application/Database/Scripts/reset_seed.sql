@@ -845,3 +845,16 @@ INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 (-10, -3, 'Zimsko ciscenje', false),
 (-11, -3, 'Uredjenje dvorista', false),
 (-12, -3, 'Zamena sijalica na hodniku', false);
+
+
+-- ============================================================
+--  Prijave problema (test podaci za 1.8)
+--  Zgrada -1 (Glavna 15, Zemun) — razliciti prioriteti i statusi
+-- ============================================================
+INSERT INTO issue_reports (id, tenant_id, building_id, description, priority, reported_at, status) VALUES
+(-1, -3, -1, 'Curenje vode na 3. spratu, mokri zidovi u hodniku.',         'Urgent',    '2026-04-14 09:00:00', 'Unresolved'),
+(-2, -4, -1, 'Lift se zaglavljuje dva puta dnevno.',                        'Urgent',    '2026-04-20 11:30:00', 'Unresolved'),
+(-3, -3, -1, 'Pokvarena sijalica na 3. spratu u hodniku.',                  'SolveSoon', '2026-03-20 14:00:00', 'Unresolved'),
+(-4, -4, -1, 'Ostecena ograda na parkingu — opasnost za decu.',             'SolveSoon', '2026-04-08 10:00:00', 'PotentiallyResolved'),
+(-5, -3, -1, 'Buka iz podruma kasno naveče.',                               'CanWait',   '2026-03-28 20:00:00', 'PotentiallyResolved'),
+(-6, -4, -1, 'Klupa u dvorištu je slomljena.',                              'CanWait',   '2026-04-01 08:00:00', 'Unresolved');
