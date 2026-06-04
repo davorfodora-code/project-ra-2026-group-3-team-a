@@ -77,6 +77,7 @@ public partial class CitizenShellWindow : Window
             MyDistrictWindow => "Moj kvart",
             CitizenEventsWindow => "Događaji",
             CitizenMeetingsWindow => "Sastanci",
+            CitizenCityFacilitiesWindow => "Gradski objekti",
             CitizenProfileWindow => "Profil",
             _ => string.Empty
         };
@@ -92,6 +93,7 @@ public partial class CitizenShellWindow : Window
         SetButtonSelected(MMyDistrictButton, page is MyDistrictWindow);
         SetButtonSelected(MEventsButton, page is CitizenEventsWindow);
         SetButtonSelected(MMeetingsButton, page is CitizenMeetingsWindow);
+        SetButtonSelected(MObjectsButton, page is CitizenCityFacilitiesWindow);
 
         if (page is CitizenProfileWindow)
         {
@@ -205,7 +207,7 @@ public partial class CitizenShellWindow : Window
             case Key.NumPad6:
                 if (EnsureMemberShortcutAccess("Gradski objekti"))
                 {
-                    ObjectsNotImplementedButton_Click(this, new RoutedEventArgs());
+                    ObjectsNavButton_Click(this, new RoutedEventArgs());
                 }
 
                 e.Handled = true;
@@ -336,6 +338,12 @@ public partial class CitizenShellWindow : Window
     private void ObjectsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Gradski objekti");
     private void ReviewsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Recenzije");
     private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
+
+    private void ObjectsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        _activeTopAction = string.Empty;
+        Navigate(new CitizenCityFacilitiesWindow(UserId));
+    }
 
     private static void ShowUnavailableMessage(string moduleName)
     {

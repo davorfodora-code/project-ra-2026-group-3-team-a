@@ -38,6 +38,10 @@ public class Injector
         { typeof(ICitizenMeetingService),                     new CitizenMeetingService(
                                                                 new CitizenMeetingDbRepository(),
                                                                 new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenCityFacilityRepository),            new CitizenCityFacilityDbRepository()  },
+        { typeof(ICitizenCityFacilityService),               new CitizenCityFacilityService(
+                                                                new CitizenCityFacilityDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
 
         // Tenant
         { typeof(TenantSvc.ITenantBuildingSearchRepository),         new BuildingDbRepository() },
