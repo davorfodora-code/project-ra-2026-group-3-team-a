@@ -1,0 +1,171 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.ProblemsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Problemi" Background="#F5F5F5">
+
+    <Page.Resources>
+        <Style x:Key="IssueCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje -->
+        <Border Grid.Row="0" Background="White" Padding="16,14"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="Problemi" FontSize="22" FontWeight="Bold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Filter dropdown -->
+        <Border Grid.Row="1" Background="White" Padding="16,10"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <ComboBox ItemsSource="{Binding BuildingFilters}"
+                      SelectedItem="{Binding SelectedFilter}"
+                      DisplayMemberPath="Label"
+                      Width="200" HorizontalAlignment="Left"
+                      FontSize="13"
+                      SelectionChanged="Filter_Changed"/>
+        </Border>
+
+        <!-- Lista problema -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16,16,16,24">
+
+                <TextBlock Text="Nema prijavljenih problema." FontSize="14"
+                           Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,20,0,0"
+                           Visibility="{Binding HasNoIssues, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- HITNO -->
+                <StackPanel Visibility="{Binding HasUrgentIssues, Converter={StaticResource BoolToVisibility}}">
+                    <Border Background="#FFEBEE" CornerRadius="6" Padding="10,5" Margin="0,0,0,8">
+                        <TextBlock Text="HITNO" FontSize="12" FontWeight="Bold" Foreground="#C62828"
+                                   HorizontalAlignment="Center"/>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding UrgentIssues}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource IssueCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding BuildingAddress}"
+                                                   FontSize="14" FontWeight="Bold" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding TenantFullName}"
+                                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                        <TextBlock Text="{Binding Description}"
+                                                   FontSize="13" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding DateLine}" FontSize="12" Foreground="#888888"/>
+                                            <TextBlock Text=" • " FontSize="12" Foreground="#888888"/>
+                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="12" Foreground="#888888"/>
+                                        </StackPanel>
+                                        <Button Content="Označi kao rešen" Tag="{Binding}"
+                                                Click="MarkAsResolved_Click"
+                                                HorizontalAlignment="Right" Padding="10,5"
+                                                FontSize="12" Cursor="Hand"
+                                                Background="Transparent" BorderBrush="#888888" BorderThickness="1"
+                                                Visibility="{Binding CanMarkAsResolved, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- MOŽE DA ČEKA -->
+                <StackPanel Visibility="{Binding HasSolveSoonIssues, Converter={StaticResource BoolToVisibility}}">
+                    <Border Background="#FFF8E1" CornerRadius="6" Padding="10,5" Margin="0,0,0,8">
+                        <TextBlock Text="MOŽE DA ČEKA" FontSize="12" FontWeight="Bold" Foreground="#E65C00"
+                                   HorizontalAlignment="Center"/>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding SolveSoonIssues}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource IssueCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding BuildingAddress}"
+                                                   FontSize="14" FontWeight="Bold" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding TenantFullName}"
+                                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                        <TextBlock Text="{Binding Description}"
+                                                   FontSize="13" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding DateLine}" FontSize="12" Foreground="#888888"/>
+                                            <TextBlock Text=" • " FontSize="12" Foreground="#888888"/>
+                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="12" Foreground="#888888"/>
+                                        </StackPanel>
+                                        <Button Content="Označi kao rešen" Tag="{Binding}"
+                                                Click="MarkAsResolved_Click"
+                                                HorizontalAlignment="Right" Padding="10,5"
+                                                FontSize="12" Cursor="Hand"
+                                                Background="Transparent" BorderBrush="#888888" BorderThickness="1"
+                                                Visibility="{Binding CanMarkAsResolved, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- U NAREDNOM PERIODU -->
+                <StackPanel Visibility="{Binding HasCanWaitIssues, Converter={StaticResource BoolToVisibility}}">
+                    <Border Background="#F3F3F3" CornerRadius="6" Padding="10,5" Margin="0,0,0,8">
+                        <TextBlock Text="U NAREDNOM PERIODU" FontSize="12" FontWeight="Bold" Foreground="#555555"
+                                   HorizontalAlignment="Center"/>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding CanWaitIssues}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource IssueCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding BuildingAddress}"
+                                                   FontSize="14" FontWeight="Bold" Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding TenantFullName}"
+                                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                        <TextBlock Text="{Binding Description}"
+                                                   FontSize="13" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding DateLine}" FontSize="12" Foreground="#888888"/>
+                                            <TextBlock Text=" • " FontSize="12" Foreground="#888888"/>
+                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="12" Foreground="#888888"/>
+                                        </StackPanel>
+                                        <Button Content="Označi kao rešen" Tag="{Binding}"
+                                                Click="MarkAsResolved_Click"
+                                                HorizontalAlignment="Right" Padding="10,5"
+                                                FontSize="12" Cursor="Hand"
+                                                Background="Transparent" BorderBrush="#888888" BorderThickness="1"
+                                                Visibility="{Binding CanMarkAsResolved, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
