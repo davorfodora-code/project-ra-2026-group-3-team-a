@@ -121,8 +121,12 @@ public partial class CitizenProfileWindow : Page
             MessageBoxImage.Information);
     }
 
+    private void ObjectsNotImplementedButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenCityFacilitiesWindow(_userId));    
+    }
+
     private void ReportsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Izveštaji");
-    private void ObjectsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Gradski objekti");
     private void ReviewsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Recenzije");
     private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
 }
