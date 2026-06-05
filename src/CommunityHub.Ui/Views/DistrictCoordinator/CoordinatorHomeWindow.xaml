@@ -31,6 +31,12 @@
         <DataTemplate DataType="{x:Type vm:ReservationDialogViewModel}">
             <local:ReservationDialogView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReviewsViewModel}">
+            <local:ReviewsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FinancesViewModel}">
+            <local:FinancesView/>
+        </DataTemplate>
 
         <Style x:Key="NavTabStyle" TargetType="Button">
             <Setter Property="Background"      Value="Transparent"/>
@@ -91,6 +97,12 @@
                             <DataTrigger Binding="{Binding IsReservationsTab}" Value="True">
                                 <Setter Property="Text" Value="Rezervacije"/>
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsReviewsTab}" Value="True">
+                                <Setter Property="Text" Value="Recenzije"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsFinancesTab}" Value="True">
+                                <Setter Property="Text" Value="Finansije kvarta"/>
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
@@ -122,6 +134,22 @@
                 Background="White">
             <StackPanel Orientation="Horizontal" Margin="20,0">
 
+                <Grid>
+                    <Button Content="Finansije kvarta"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="finances">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavTabStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsFinancesTab}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                            Visibility="{Binding IsFinancesTab, Converter={StaticResource BoolToVis}}"/>
+                </Grid>
 
                 <Grid>
                     <Button Content="Moji kvartovi"
@@ -206,8 +234,22 @@
                     <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
                             Visibility="{Binding IsReservationsTab, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
-                <Button Content="Recenzije"    Style="{StaticResource NavTabStyle}"
-                        Command="{Binding NotImplementedTabCommand}" CommandParameter="Recenzije"/>
+                <Grid>
+                    <Button Content="Recenzije"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="reviews">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavTabStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsReviewsTab}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                            Visibility="{Binding IsReviewsTab, Converter={StaticResource BoolToVis}}"/>
+                </Grid>
                 <Button Content="Poklon grada" Style="{StaticResource NavTabStyle}"
                         Command="{Binding NotImplementedTabCommand}" CommandParameter="Poklon grada"/>
                 <Button Content="Pomoc"        Style="{StaticResource NavTabStyle}"

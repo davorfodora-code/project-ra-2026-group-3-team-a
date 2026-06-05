@@ -1,0 +1,475 @@
+<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.FinancesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CommunityHub.Ui.ViewModels.DistrictCoordinator"
+             xmlns:local="clr-namespace:CommunityHub.Ui.Views.DistrictCoordinator">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <DataTemplate DataType="{x:Type vm:AddEditExpenseViewModel}">
+            <local:AddEditExpenseView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AddDonationViewModel}">
+            <local:AddDonationView/>
+        </DataTemplate>
+
+        <Style x:Key="TableHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize"     Value="12"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+            <Setter Property="Foreground"   Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="TableCellStyle" TargetType="TextBlock">
+            <Setter Property="FontSize"     Value="12"/>
+            <Setter Property="Foreground"   Value="#2C3E50"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- GRID VIEW                                                       -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Margin="20"
+              Visibility="{Binding IsGridView, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Toolbar -->
+            <DockPanel Grid.Row="0" Margin="0,0,0,16" LastChildFill="False">
+                <Button DockPanel.Dock="Left" Content="Vrati se na sve kvartove"
+                        Command="{Binding BackToHomeCommand}"
+                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
+                        Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal"
+                            Margin="16,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Kvart" FontSize="12" Foreground="#555"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding Districts}" SelectedItem="{Binding SelectedDistrict}"
+                              DisplayMemberPath="DisplayText" Width="200" Height="28" FontSize="12"/>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal"
+                            Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Period" FontSize="12" Foreground="#555"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding Periods}" SelectedItem="{Binding SelectedPeriod}"
+                              DisplayMemberPath="Label" Width="110" Height="28" FontSize="12"/>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Summary cards -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
+                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                        Background="White" Padding="16,12" Margin="0,0,16,0" MinWidth="220">
+                    <StackPanel>
+                        <TextBlock Text="Saldo kvarta" FontSize="11" Foreground="#888"/>
+                        <TextBlock Text="{Binding SaldoDisplay, Mode=OneWay}"
+                                   FontSize="20" FontWeight="Bold" Foreground="#2C3E50" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                        Background="White" Padding="16,12" Margin="0,0,16,0" MinWidth="220">
+                    <StackPanel>
+                        <TextBlock Text="Ukupno donacija" FontSize="11" Foreground="#888"/>
+                        <TextBlock Text="{Binding DonationsDisplay, Mode=OneWay}"
+                                   FontSize="20" FontWeight="Bold" Foreground="#27AE60" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                        Background="White" Padding="16,12" MinWidth="220">
+                    <StackPanel>
+                        <TextBlock Text="Ukupno troškova" FontSize="11" Foreground="#888"/>
+                        <TextBlock Text="{Binding ExpensesDisplay, Mode=OneWay}"
+                                   FontSize="20" FontWeight="Bold" Foreground="#C0392B" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Error banner -->
+            <Border Grid.Row="2" Background="#FDEDEC" CornerRadius="6" Padding="14,10"
+                    Margin="0,0,0,10"
+                    Visibility="{Binding HasLoadError, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding LoadError, Mode=OneWay}"
+                           FontSize="12" Foreground="#C0392B" TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- Section title -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,12">
+                <TextBlock Text="Kategorija budžeta" FontSize="14" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                <TextBlock Text="Kliknite na karticu za detalje" FontSize="11" Foreground="#888" Margin="0,2,0,0"/>
+            </StackPanel>
+
+            <!-- Category cards -->
+            <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding CategoryCards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="3"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                                    Background="White" Margin="0,0,12,12" Cursor="Hand">
+                                <Grid Margin="14,12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="False">
+                                        <TextBlock DockPanel.Dock="Left" Text="{Binding Name, Mode=OneWay}"
+                                                   FontSize="12" Foreground="#555"/>
+                                        <Button DockPanel.Dock="Right" Content="Detalji ->"
+                                                Command="{Binding OpenDetailCommand}"
+                                                Background="Transparent" BorderThickness="0"
+                                                FontSize="11" Foreground="#2980B9" Cursor="Hand" Padding="0"/>
+                                    </DockPanel>
+                                    <TextBlock Grid.Row="1" Text="{Binding BalanceDisplay, Mode=OneWay}"
+                                               FontSize="18" FontWeight="Bold" Foreground="#2C3E50"
+                                               Margin="0,0,0,10"/>
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" FontSize="10" Foreground="#27AE60">
+                                            <Run Text="Don: "/>
+                                            <Run Text="{Binding DonationsDisplay, Mode=OneWay}"/>
+                                        </TextBlock>
+                                        <TextBlock Grid.Column="1" FontSize="10" Foreground="#C0392B" HorizontalAlignment="Right">
+                                            <Run Text="Troš: "/>
+                                            <Run Text="{Binding ExpensesDisplay, Mode=OneWay}"/>
+                                        </TextBlock>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- CATEGORY DETAIL VIEW                                            -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Margin="20"
+              Visibility="{Binding IsDetailView, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>  <!-- toolbar: back + name -->
+                <RowDefinition Height="Auto"/>  <!-- summary cards -->
+                <RowDefinition Height="Auto"/>  <!-- action buttons -->
+                <RowDefinition Height="*"/>     <!-- two tables -->
+                <RowDefinition Height="Auto"/>  <!-- hints + notification -->
+            </Grid.RowDefinitions>
+
+            <!-- Back + category name -->
+            <DockPanel Grid.Row="0" Margin="0,0,0,14" LastChildFill="False">
+                <Button DockPanel.Dock="Left" Content="Vrati se na finansije kvartova"
+                        Command="{Binding BackToGridCommand}"
+                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
+                        Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"
+                        Margin="0,0,12,0"/>
+                <TextBlock DockPanel.Dock="Left"
+                           Text="{Binding DetailCategoryName, Mode=OneWay}"
+                           FontSize="16" FontWeight="Bold" Foreground="#2C3E50"
+                           VerticalAlignment="Center"/>
+            </DockPanel>
+
+            <!-- Category summary cards -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,16">
+                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                        Background="White" Padding="16,10" Margin="0,0,12,0" MinWidth="200">
+                    <StackPanel>
+                        <TextBlock Text="Ukupan budžet kategorije" FontSize="10" Foreground="#888"/>
+                        <TextBlock Text="{Binding DetailBalance, Mode=OneWay}"
+                                   FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                        Background="White" Padding="16,10" Margin="0,0,12,0" MinWidth="200">
+                    <StackPanel>
+                        <TextBlock Text="Ukupno donacija" FontSize="10" Foreground="#888"/>
+                        <TextBlock Text="{Binding DetailTotalDonations, Mode=OneWay}"
+                                   FontSize="18" FontWeight="Bold" Foreground="#27AE60" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
+                        Background="White" Padding="16,10" MinWidth="200">
+                    <StackPanel>
+                        <TextBlock Text="Ukupno troškova" FontSize="10" Foreground="#888"/>
+                        <TextBlock Text="{Binding DetailTotalExpenses, Mode=OneWay}"
+                                   FontSize="18" FontWeight="Bold" Foreground="#C0392B" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Action buttons -->
+            <DockPanel Grid.Row="2" Margin="0,0,0,10" LastChildFill="False">
+                <Button DockPanel.Dock="Left" Content="+ Dodaj donaciju"
+                        Command="{Binding AddDonationCommand}"
+                        Background="Transparent" BorderBrush="#27AE60" BorderThickness="1"
+                        Padding="14,6" FontSize="12" Foreground="#27AE60" Cursor="Hand"/>
+                <Button DockPanel.Dock="Right" Content="+ Dodaj trosak"
+                        Command="{Binding AddExpenseCommand}"
+                        Background="Transparent" BorderBrush="#2C3E50" BorderThickness="1"
+                        Padding="14,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
+            </DockPanel>
+
+            <!-- Two tables -->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- ─── DONATIONS TABLE ─── -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Donations header bar -->
+                    <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Left" Text="Donacije"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="#2C3E50"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <TextBlock Text="Datum" FontSize="11" Foreground="#555"
+                                       VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <ComboBox ItemsSource="{Binding SortOptions}"
+                                      SelectedItem="{Binding DonSort}"
+                                      Width="80" Height="26" FontSize="11"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Column headers -->
+                    <Border Grid.Row="1" Background="#2C3E50" Padding="8,6" CornerRadius="4,4,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Iznos" Style="{StaticResource TableHeaderStyle}"/>
+                            <TextBlock Grid.Column="1" Text="Datum" Style="{StaticResource TableHeaderStyle}" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Donation rows -->
+                    <Border Grid.Row="2" BorderBrush="#D5D8DC" BorderThickness="1,0,1,1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Donations}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="#EAECEE" BorderThickness="0,0,0,1"
+                                                Background="White" Padding="8,7">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding AmountDisplay, Mode=OneWay}"
+                                                           Style="{StaticResource TableCellStyle}"
+                                                           FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding DateDisplay, Mode=OneWay}"
+                                                           Style="{StaticResource TableCellStyle}"
+                                                           HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- Donations pagination -->
+                    <DockPanel Grid.Row="3" Margin="0,6,0,0" LastChildFill="False">
+                        <Button DockPanel.Dock="Left" Content="‹" Command="{Binding DonPrevCommand}"
+                                Width="28" Height="28" Background="Transparent"
+                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding DonPageLabel, Mode=OneWay}"
+                                   FontSize="12" Foreground="#555"
+                                   VerticalAlignment="Center" Margin="8,0"/>
+                        <Button DockPanel.Dock="Left" Content="›" Command="{Binding DonNextCommand}"
+                                Width="28" Height="28" Background="Transparent"
+                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                    </DockPanel>
+                </Grid>
+
+                <!-- ─── EXPENSES TABLE ─── -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Expenses header bar -->
+                    <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Left" Text="Troškovi"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="#2C3E50"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <TextBlock Text="Datum" FontSize="11" Foreground="#555"
+                                       VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <ComboBox ItemsSource="{Binding SortOptions}"
+                                      SelectedItem="{Binding ExpSort}"
+                                      Width="80" Height="26" FontSize="11"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Column headers -->
+                    <Border Grid.Row="1" Background="#2C3E50" Padding="8,6" CornerRadius="4,4,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="56"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Iznos"      Style="{StaticResource TableHeaderStyle}"/>
+                            <TextBlock Grid.Column="1" Text="Kratak opis" Style="{StaticResource TableHeaderStyle}"/>
+                            <TextBlock Grid.Column="2" Text="Datum"      Style="{StaticResource TableHeaderStyle}" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Expense rows (inline Edit/Delete) -->
+                    <Border Grid.Row="2" BorderBrush="#D5D8DC" BorderThickness="1,0,1,1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Expenses}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="#EAECEE" BorderThickness="0,0,0,1"
+                                                Background="White" Padding="8,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition Width="28"/>
+                                                    <ColumnDefinition Width="28"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding AmountDisplay, Mode=OneWay}"
+                                                           Style="{StaticResource TableCellStyle}"
+                                                           FontWeight="SemiBold"/>
+                                                <Button Grid.Column="1"
+                                                        Content="{Binding Description, Mode=OneWay}"
+                                                        Background="Transparent" BorderThickness="0"
+                                                        Padding="0" HorizontalContentAlignment="Left"
+                                                        Cursor="Hand"
+                                                        ToolTip="{Binding Description, Mode=OneWay}"
+                                                        FontSize="12" Foreground="#2C3E50"
+                                                        Command="{Binding DataContext.ShowFullDescCommand,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding Description, Mode=OneWay}"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding DateDisplay, Mode=OneWay}"
+                                                           Style="{StaticResource TableCellStyle}"
+                                                           HorizontalAlignment="Right"/>
+                                                <!-- Edit button -->
+                                                <Button Grid.Column="3" Content="✏" ToolTip="Uredi"
+                                                        Width="24" Height="24" Margin="2,0,0,0"
+                                                        Background="Transparent" BorderThickness="0"
+                                                        FontSize="11" Foreground="#2980B9" Cursor="Hand"
+                                                        Command="{Binding DataContext.EditExpenseCommand,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                                <!-- Delete button -->
+                                                <Button Grid.Column="4" Content="✕" ToolTip="Obriši"
+                                                        Width="24" Height="24"
+                                                        Background="Transparent" BorderThickness="0"
+                                                        FontSize="11" Foreground="#C0392B" Cursor="Hand"
+                                                        Command="{Binding DataContext.DeleteExpenseCommand,
+                                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- Expenses pagination -->
+                    <DockPanel Grid.Row="3" Margin="0,6,0,0" LastChildFill="False">
+                        <Button DockPanel.Dock="Left" Content="‹" Command="{Binding ExpPrevCommand}"
+                                Width="28" Height="28" Background="Transparent"
+                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding ExpPageLabel, Mode=OneWay}"
+                                   FontSize="12" Foreground="#555"
+                                   VerticalAlignment="Center" Margin="8,0"/>
+                        <Button DockPanel.Dock="Left" Content="›" Command="{Binding ExpNextCommand}"
+                                Width="28" Height="28" Background="Transparent"
+                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                    </DockPanel>
+                </Grid>
+            </Grid>
+
+            <!-- Hints + notification -->
+            <Grid Grid.Row="4" Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" FontSize="11" Foreground="#888" FontStyle="Italic">
+                    Levim klikom na opis prikazujete punu verziju opisa
+                </TextBlock>
+                <Border Grid.Column="1" Background="#2ECC71" CornerRadius="6"
+                        Padding="16,8" HorizontalAlignment="Center"
+                        Visibility="{Binding HasNotification, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding NotificationText, Mode=OneWay}"
+                               FontSize="12" FontStyle="Italic" FontWeight="SemiBold"
+                               Foreground="White"/>
+                </Border>
+                <TextBlock Grid.Column="2" FontSize="11" Foreground="#888"
+                           FontStyle="Italic" HorizontalAlignment="Right">
+                    Desnim klikom na trosak iskace meni sa akcijama
+                </TextBlock>
+            </Grid>
+        </Grid>
+
+        <!-- Full description popup -->
+        <Border Background="#CC000000"
+                Visibility="{Binding ShowFullDescription, Converter={StaticResource BoolToVis}}"
+                Panel.ZIndex="5">
+            <Border Background="White" CornerRadius="8" MaxWidth="540"
+                    Padding="28,20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Pun opis" FontSize="13" FontWeight="SemiBold"
+                               Foreground="#2C3E50" Margin="0,0,0,12"/>
+                    <TextBlock Text="{Binding FullDescriptionText, Mode=OneWay}"
+                               FontSize="13" Foreground="#2C3E50" TextWrapping="Wrap"
+                               Margin="0,0,0,20"/>
+                    <Button Content="Zatvori" Command="{Binding HideFullDescCommand}"
+                            HorizontalAlignment="Right"
+                            Background="#2C3E50" Foreground="White" BorderThickness="0"
+                            Padding="20,8" FontSize="13" Cursor="Hand"/>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- Dialog overlay (add/edit expense) -->
+        <ContentControl Content="{Binding ActiveDialog}"
+                        Panel.ZIndex="10"
+                        Visibility="{Binding HasDialog, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

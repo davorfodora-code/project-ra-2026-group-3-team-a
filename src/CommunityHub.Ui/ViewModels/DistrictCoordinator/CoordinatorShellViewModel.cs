@@ -7,7 +7,7 @@ namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 public class CoordinatorShellViewModel : ViewModelBase
 {
-    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum", TabReservations = "reservations";
+    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum", TabReservations = "reservations", TabReviews = "reviews", TabFinances = "finances";
 
     private readonly RegistrationOverlayController _overlayCtrl;
     private string _currentTab = TabHome;
@@ -22,6 +22,8 @@ public class CoordinatorShellViewModel : ViewModelBase
         Stats        = new StatisticsViewModel(coordinatorId);
         Forum        = new ForumViewModel(coordinatorId);
         Reservations = new ReservationsViewModel(coordinatorId);
+        Reviews      = new ReviewsViewModel(coordinatorId);
+        Finances     = new FinancesViewModel(coordinatorId);
         Header       = new CoordinatorHeaderViewModel(coordinatorId, Home);
         _currentTabContent = Home;
         _overlayCtrl = new RegistrationOverlayController(coordinatorId,
@@ -29,7 +31,12 @@ public class CoordinatorShellViewModel : ViewModelBase
             () => { Home.Refresh(); Header.RefreshDisplayProps(); },
             m => NotificationRequested?.Invoke(m));
         Home.RegisterDistrictRequested += () => _overlayCtrl.Open();
-        Home.FinanceRequested          += d => NotificationRequested?.Invoke($"Finansije za kvart '{d}' — još nije implementirano.");
+        Home.FinanceRequested          += districtId =>
+        {
+            Finances.PreSelectDistrict(districtId);
+            CurrentTab = TabFinances;
+        };
+        Finances.BackToHomeRequested += () => CurrentTab = TabHome;
         Home.SelectionChanged          += _ => Header.RefreshDisplayProps();
         SwitchTabCommand         = new RelayCommand(p => CurrentTab = p?.ToString() ?? TabHome);
         LogoutCommand            = new RelayCommand(_ => LogoutRequested?.Invoke());
@@ -43,6 +50,8 @@ public class CoordinatorShellViewModel : ViewModelBase
     public StatisticsViewModel        Stats        { get; }
     public ForumViewModel             Forum        { get; }
     public ReservationsViewModel      Reservations { get; }
+    public ReviewsViewModel           Reviews      { get; }
+    public FinancesViewModel          Finances     { get; }
     public CoordinatorHeaderViewModel Header       { get; }
 
     public string CurrentTab
@@ -58,6 +67,8 @@ public class CoordinatorShellViewModel : ViewModelBase
                     TabStats        => Stats,
                     TabForum        => Forum,
                     TabReservations => Reservations,
+                    TabReviews      => Reviews,
+                    TabFinances     => Finances,
                     _               => Home
                 };
                 OnPropertyChanged(nameof(IsHomeTab));
@@ -65,6 +76,8 @@ public class CoordinatorShellViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsStatsTab));
                 OnPropertyChanged(nameof(IsForumTab));
                 OnPropertyChanged(nameof(IsReservationsTab));
+                OnPropertyChanged(nameof(IsReviewsTab));
+                OnPropertyChanged(nameof(IsFinancesTab));
             }
         }
     }
@@ -75,6 +88,8 @@ public class CoordinatorShellViewModel : ViewModelBase
     public bool IsStatsTab        => _currentTab == TabStats;
     public bool IsForumTab        => _currentTab == TabForum;
     public bool IsReservationsTab => _currentTab == TabReservations;
+    public bool IsReviewsTab      => _currentTab == TabReviews;
+    public bool IsFinancesTab     => _currentTab == TabFinances;
 
     public ViewModelBase? ActiveOverlay
     {

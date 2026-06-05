@@ -59,6 +59,12 @@ public class Injector
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },
         { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },
+        { typeof(IDistrictMeetingRepository),            new DistrictMeetingDbRepository() },
+        { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
+        { typeof(IForumRepository), new ForumDbRepository() },
+        { typeof(ICityObjectRepository), new CityObjectDbRepository() },
+        { typeof(IReviewRepository),     new ReviewDbRepository() },
+        { typeof(IBudgetRepository),     new BudgetDbRepository() },
         { typeof(IDistrictMeetingRepository),           new DistrictMeetingDbRepository() },
         { typeof(ICitizenTrustStatisticRepository),     new CitizenTrustStatisticDbRepository() },
         { typeof(IForumRepository),                     new ForumDbRepository() },
