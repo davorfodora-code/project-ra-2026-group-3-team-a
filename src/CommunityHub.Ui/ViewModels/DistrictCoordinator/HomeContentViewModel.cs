@@ -31,7 +31,7 @@ public class HomeContentViewModel : ViewModelBase
         OpenFinancesCommand     = new RelayCommand(p =>
         {
             if (p is DistrictHomeCardViewModel card)
-                FinanceRequested?.Invoke(card.Name);
+                FinanceRequested?.Invoke(card.DistrictId);
         });
     }
 
@@ -65,7 +65,7 @@ public class HomeContentViewModel : ViewModelBase
     public ICommand OpenFinancesCommand     { get; }
 
     public event Action? RegisterDistrictRequested;
-    public event Action<string>? FinanceRequested;
+    public event Action<long>? FinanceRequested;
     public event Action<DistrictHomeCardViewModel?>? SelectionChanged;
 
 
