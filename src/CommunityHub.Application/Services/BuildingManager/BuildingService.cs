@@ -62,6 +62,13 @@ public class BuildingService
             .ToList();
     }
 
+    public List<BuildingDto> GetByManagerId(long managerId)
+    {
+        return _repository.GetByManagerId(managerId)
+            .Select(MapToDto)
+            .ToList();
+    }
+
     private BuildingDto MapToDto(Building b) => new BuildingDto
     {
         Id = b.Id,

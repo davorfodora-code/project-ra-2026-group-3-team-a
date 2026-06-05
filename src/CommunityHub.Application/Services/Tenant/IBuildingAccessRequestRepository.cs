@@ -8,4 +8,5 @@ public interface IBuildingAccessRequestRepository
     long Create(long tenantId, long buildingId, int apartmentNumber);
     List<BuildingAccessRequest> GetAllByTenant(long tenantId);
     void Delete(long requestId);
+    List<int> GetApartmentNumbers(long buildingId);
 }

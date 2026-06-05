@@ -70,42 +70,30 @@ public class NewCommonRoomViewModel : BaseViewModel
 
     public bool HasError => !string.IsNullOrEmpty(_errorMessage);
 
-    // --- Submit ---
-
     public bool TrySubmit()
     {
         ErrorMessage = string.Empty;
-
-        string name = Name.Trim();
-        string description = Description.Trim();
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            ErrorMessage = "Unesite naziv prostorije.";
-            return false;
-        }
-        if (string.IsNullOrWhiteSpace(description))
-        {
-            ErrorMessage = "Unesite opis prostorije.";
-            return false;
-        }
-
+        string? err = Validate();
+        if (err != null) { ErrorMessage = err; return false; }
         try
         {
             _commonRoomsVm.Add(new CreateCommonRoomDto
             {
-                BuildingId = _building.Id,
-                Name = name,
-                Description = description,
+                BuildingId  = _building.Id,
+                Name        = Name.Trim(),
+                Description = Description.Trim(),
                 FloorNumber = SelectedFloor,
-                IsMultiDay = IsMultiDay
+                IsMultiDay  = IsMultiDay
             });
             return true;
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Greska: {ex.Message}";
-            return false;
-        }
+        catch (Exception ex) { ErrorMessage = $"Greska: {ex.Message}"; return false; }
+    }
+
+    private string? Validate()
+    {
+        if (string.IsNullOrWhiteSpace(Name.Trim()))        return "Unesite naziv prostorije.";
+        if (string.IsNullOrWhiteSpace(Description.Trim())) return "Unesite opis prostorije.";
+        return null;
     }
 }

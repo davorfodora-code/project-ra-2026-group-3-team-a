@@ -10,21 +10,21 @@
         </Grid.RowDefinitions>
 
         <!-- Tab traka -->
-        <Border Grid.Row="0" Background="White" Padding="24,12"
+        <Border Grid.Row="0" Background="White" Padding="24,16"
                 BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Button x:Name="TabMyBookingsBtn" Tag="active"
                         Style="{StaticResource TabBtnStyle}"
                         Click="TabMyBookings_Click"
-                        Margin="0,0,28,0" Padding="0,0,0,4">
-                    <TextBlock x:Name="TabMyBookingsText" Text="My bookings"
-                               FontSize="19" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+                        Margin="0,0,32,0" Padding="0,0,0,12">
+                    <TextBlock x:Name="TabMyBookingsText" Text="Moje rezervacije"
+                               FontSize="24" FontWeight="SemiBold" Foreground="#1A1A1A"/>
                 </Button>
                 <Button x:Name="TabBookedOnPostBtn"
                         Style="{StaticResource TabBtnStyle}"
-                        Click="TabBookedOnPost_Click" Padding="0,0,0,4">
-                    <TextBlock x:Name="TabBookedOnPostText" Text="Booked on my post"
-                               FontSize="18" Foreground="#888888"/>
+                        Click="TabBookedOnPost_Click" Padding="0,0,0,12">
+                    <TextBlock x:Name="TabBookedOnPostText" Text="Rezervisano na mom oglasu"
+                               FontSize="22" Foreground="#888888"/>
                 </Button>
             </StackPanel>
         </Border>
@@ -41,9 +41,9 @@
                     </Border.Effect>
                     <StackPanel>
                         <Grid>
-                            <TextBlock Text="My upcoming week" FontSize="14" FontWeight="SemiBold"
+                            <TextBlock Text="Moja nadolazeća nedelja" FontSize="16" FontWeight="SemiBold"
                                        VerticalAlignment="Center"/>
-                            <TextBlock x:Name="WeekLabelText" FontSize="14" Foreground="#666666"
+                            <TextBlock x:Name="WeekLabelText" FontSize="15" Foreground="#666666"
                                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                         </Grid>
                         <Canvas x:Name="WeeklyChartCanvas" Height="130" Margin="0,12,0,0"/>
@@ -51,11 +51,11 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
                             <Rectangle Width="14" Height="14" RadiusX="2" RadiusY="2"
                                        Fill="#4A5D6E" VerticalAlignment="Center"/>
-                            <TextBlock Text="Offering help" FontSize="13" Foreground="#555555"
+                            <TextBlock Text="Nudim pomoć" FontSize="15" Foreground="#555555"
                                        Margin="6,0,20,0" VerticalAlignment="Center"/>
                             <Rectangle Width="14" Height="14" RadiusX="2" RadiusY="2"
                                        Fill="#BDC3C7" VerticalAlignment="Center"/>
-                            <TextBlock Text="Seeking help" FontSize="13" Foreground="#555555"
+                            <TextBlock Text="Tražim pomoć" FontSize="15" Foreground="#555555"
                                        Margin="6,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
@@ -63,7 +63,7 @@
 
                 <!-- Lista rezervacija -->
                 <TextBlock x:Name="NoMyBookingsText"
-                           Text="You have no bookings yet."
+                           Text="Nemate rezervacija."
                            Foreground="#AAAAAA" FontSize="14"
                            HorizontalAlignment="Center" Margin="0,20,0,0"
                            Visibility="Collapsed"/>
@@ -74,14 +74,14 @@
                             <Border Style="{StaticResource AdCardStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
+                                        <ColumnDefinition Width="54"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Avatar -->
                                     <Border Grid.Column="0" Width="38" Height="38"
                                             CornerRadius="19" Background="#ECF0F1"
-                                            VerticalAlignment="Top" Margin="0,2,12,0">
+                                            VerticalAlignment="Top" Margin="0,2,14,0">
                                         <TextBlock Text="{Binding OwnerName, Converter={StaticResource NameToInitials}}"
                                                    FontSize="13" FontWeight="SemiBold" Foreground="#555555"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -89,34 +89,34 @@
 
                                     <!-- Sadržaj -->
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding OwnerName}"
-                                                   FontSize="19" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                                                        <TextBlock Text="{Binding OwnerName}"
+                                                   FontSize="20" FontWeight="SemiBold" Margin="0,0,0,2"/>
                                         <TextBlock Text="{Binding OwnerTypeDisplay}"
-                                                   FontSize="13" Foreground="#888888" Margin="0,0,0,6"/>
+                                                   FontSize="15" Foreground="#888888" Margin="0,0,0,6"/>
                                         <TextBlock Text="{Binding OwnerDescription}"
-                                                   FontSize="14" Foreground="#444444"
+                                                   FontSize="15" Foreground="#444444"
                                                    TextWrapping="Wrap" Margin="0,0,0,8"/>
 
                                         <!-- Datum i kategorija -->
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                            <fa:IconBlock Icon="CalendarDays" FontSize="13" Foreground="#AAAAAA"
+                                            <fa:IconBlock Icon="CalendarDays" FontSize="14" Foreground="#AAAAAA"
                                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding OwnerDateRangeDisplay}"
-                                                       FontSize="13" Foreground="#666666"
+                                                       FontSize="15" Foreground="#666666"
                                                        VerticalAlignment="Center" Margin="0,0,14,0"/>
-                                            <fa:IconBlock Icon="Tag" FontSize="13" Foreground="#AAAAAA"
+                                            <fa:IconBlock Icon="Tag" FontSize="14" Foreground="#AAAAAA"
                                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding OwnerCategory}"
-                                                       FontSize="13" Foreground="#666666"
+                                                       FontSize="15" Foreground="#666666"
                                                        VerticalAlignment="Center"/>
                                         </StackPanel>
 
                                         <!-- Tvoj oglas -->
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                            <TextBlock Text="For your post: "
-                                                       FontSize="13" Foreground="#666666"/>
+                                            <TextBlock Text="Za vaš oglas: "
+                                                       FontSize="15" Foreground="#666666"/>
                                             <TextBlock Text="{Binding RequesterAdLabel}"
-                                                       FontSize="13" Foreground="#666666"
+                                                       FontSize="15" Foreground="#666666"
                                                        FontStyle="Italic"/>
                                         </StackPanel>
 
@@ -128,7 +128,7 @@
                                                             CornerRadius="4" Padding="10,6"
                                                             Margin="0,0,0,5" HorizontalAlignment="Left">
                                                         <TextBlock Text="{Binding DisplayText}"
-                                                                   FontSize="13" Foreground="#333333"/>
+                                                                   FontSize="15" Foreground="#333333"/>
                                                     </Border>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -149,8 +149,8 @@
             <StackPanel Margin="24,16,24,24">
 
                 <TextBlock x:Name="NoBookedText"
-                           Text="Nobody has booked on your posts yet."
-                           Foreground="#AAAAAA" FontSize="14"
+                           Text="Niko još nije rezervisao na vašem oglasu."
+                           Foreground="#AAAAAA" FontSize="16"
                            HorizontalAlignment="Center" Margin="0,20,0,0"
                            Visibility="Collapsed"/>
 
@@ -169,19 +169,19 @@
                                     <Grid Margin="0,0,0,10">
                                         <StackPanel>
                                             <TextBlock Text="{Binding MyAdHeader}"
-                                                       FontSize="16" FontWeight="SemiBold"/>
+                                                       FontSize="20" FontWeight="SemiBold"/>
                                             <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                <fa:IconBlock Icon="CalendarDays" FontSize="13"
+                                                <fa:IconBlock Icon="CalendarDays" FontSize="14"
                                                               Foreground="#AAAAAA" Margin="0,0,5,0"
                                                               VerticalAlignment="Center"/>
                                                 <TextBlock Text="{Binding MyDateRangeDisplay}"
-                                                           FontSize="13" Foreground="#666666"
+                                                           FontSize="15" Foreground="#666666"
                                                            VerticalAlignment="Center" Margin="0,0,14,0"/>
-                                                <fa:IconBlock Icon="Tag" FontSize="13"
+                                                <fa:IconBlock Icon="Tag" FontSize="14"
                                                               Foreground="#AAAAAA" Margin="0,0,5,0"
                                                               VerticalAlignment="Center"/>
                                                 <TextBlock Text="{Binding MyCategory}"
-                                                           FontSize="13" Foreground="#666666"
+                                                           FontSize="15" Foreground="#666666"
                                                            VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </StackPanel>
@@ -199,7 +199,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="13">
+                                            <TextBlock Text="{Binding StatusDisplay}" FontSize="14">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="#155724"/>
@@ -242,12 +242,12 @@
                                                     <!-- Sadržaj -->
                                                     <StackPanel Grid.Column="1">
                                                         <TextBlock Text="{Binding BookerName}"
-                                                                   FontSize="16" FontWeight="SemiBold"/>
+                                                                   FontSize="20" FontWeight="SemiBold"/>
                                                         <TextBlock Text="{Binding BookerTypeDisplay}"
-                                                                   FontSize="13" Foreground="#888888"
+                                                                   FontSize="15" Foreground="#888888"
                                                                    Margin="0,2,0,4"/>
                                                         <TextBlock Text="{Binding BookerAdDescription}"
-                                                                   FontSize="13" Foreground="#444444"
+                                                                   FontSize="15" Foreground="#444444"
                                                                    FontStyle="Italic"
                                                                    TextWrapping="Wrap" Margin="0,0,0,8"/>
 

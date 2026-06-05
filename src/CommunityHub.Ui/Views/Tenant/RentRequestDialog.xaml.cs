@@ -41,36 +41,31 @@ public partial class RentRequestDialog : Window
     {
         var start = StartDatePicker.SelectedDate;
         var end   = EndDatePicker.SelectedDate;
-
-        if (start == null || end == null)
+        string? error = ValidateDateSelection(start, end);
+        if (error != null)
         {
-            ValidationText.Text = "Molimo izaberite oba datuma.";
+            ValidationText.Text = error;
             ValidationText.Visibility = Visibility.Visible;
             return;
         }
-
-        if (start.Value.Date < DateTime.Today || end.Value.Date < DateTime.Today)
-        {
-            ValidationText.Text = "Datumi ne mogu biti u prošlosti.";
-            ValidationText.Visibility = Visibility.Visible;
-            return;
-        }
-
-        if (end.Value.Date < start.Value.Date)
-        {
-            ValidationText.Text = "Datum završetka ne može biti pre datuma početka.";
-            ValidationText.Visibility = Visibility.Visible;
-            return;
-        }
-
         Result = new CreateCommonRoomRequestDto
         {
             RoomId    = _room.RoomId,
-            StartDate = start.Value.Date,
-            EndDate   = end.Value.Date,
+            StartDate = start!.Value.Date,
+            EndDate   = end!.Value.Date,
         };
-
         DialogResult = true;
+    }
+
+    private static string? ValidateDateSelection(DateTime? start, DateTime? end)
+    {
+        if (start == null || end == null)
+            return "Molimo izaberite oba datuma.";
+        if (start.Value.Date < DateTime.Today || end.Value.Date < DateTime.Today)
+            return "Datumi ne mogu biti u prošlosti.";
+        if (end.Value.Date < start.Value.Date)
+            return "Datum završetka ne može biti pre datuma početka.";
+        return null;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;

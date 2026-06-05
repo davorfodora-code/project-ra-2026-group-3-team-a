@@ -44,8 +44,7 @@ public partial class HomePage : Page
 
     private void NeresenoProblemi_Click(object sender, RoutedEventArgs e)
     {
-        _shell.SetActiveNav(4);
-        _shell.MainFrame.Navigate(new MorePage(_shell));
+        _shell.MainFrame.Navigate(new ProblemsPage(_shell));
     }
 
     private void AktivniOglasi_Click(object sender, RoutedEventArgs e)

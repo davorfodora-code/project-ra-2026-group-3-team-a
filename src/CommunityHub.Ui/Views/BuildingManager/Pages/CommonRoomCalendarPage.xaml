@@ -1,0 +1,68 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.CommonRoomCalendarPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Kalendar prostorije" Background="#F5F5F5">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje -->
+        <Border Grid.Row="0" Background="White" Padding="12,12"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="{Binding RoomName}" FontSize="18" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Sadrzaj -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16,16,16,24">
+
+                <!-- Info-box o prostoriji -->
+                <Border Background="White" BorderBrush="#DDDDDD"
+                        BorderThickness="1" CornerRadius="8"
+                        Padding="14,12" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="{Binding BuildingLine}"    FontSize="13" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding FloorLine}"       FontSize="13" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding DescriptionLine}" FontSize="13" Margin="0,0,0,2"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding TypeLine}"        FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="Pregled zauzetosti:"
+                           FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+
+                <!-- Kalendar — BlackoutDates se popunjavaju u code-behind-u (read-only prikaz) -->
+                <Calendar x:Name="RoomCalendar"
+                          HorizontalAlignment="Center"
+                          SelectionMode="None">
+                    <Calendar.LayoutTransform>
+                        <ScaleTransform ScaleX="1.4" ScaleY="1.4"/>
+                    </Calendar.LayoutTransform>
+                </Calendar>
+
+                <TextBlock Text="Precrtani datumi su zauzeti (odobreni ili predlozeni zahtevi)."
+                           FontSize="12" Foreground="#888888"
+                           Margin="0,10,0,0"/>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

@@ -9,6 +9,7 @@
         <conv:NameToInitialsConverter x:Key="NameToInitials"/>
         <conv:NullToVisibilityConverter x:Key="NullToCollapsed"/>
 
+
         <!-- Kružno dugme za Help (?) -->
         <Style x:Key="CircleButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>

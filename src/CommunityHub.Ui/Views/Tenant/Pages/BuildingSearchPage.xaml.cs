@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using CommunityHub.Application.Services.Tenant.Dto;
 using CommunityHub.Ui.ViewModels.Tenant;
 
@@ -26,35 +27,35 @@ public partial class BuildingSearchPage : System.Windows.Controls.Page
         _searchVm.LoadAll();
         PopulateCombos();
         RefreshCards();
+        _shell.SetBreadcrumb("Pretraga zgrada");
     }
 
     private void TabSearch_Click(object sender, RoutedEventArgs e)
     {
-        TabSearchBtn.Tag = "active";
-        TabRequestsBtn.Tag = null;
-        TabSearchText.FontWeight = FontWeights.SemiBold;
-        TabSearchText.Foreground = System.Windows.Media.Brushes.Black;
-        TabRequestsText.FontWeight = FontWeights.Normal;
-        TabRequestsText.Foreground = new System.Windows.Media.SolidColorBrush(
-            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#888888"));
-        SearchPanel.Visibility = Visibility.Visible;
-        RequestsPanel.Visibility = Visibility.Collapsed;
+        SwitchTab(TabSearchBtn, TabSearchText, SearchPanel, TabRequestsBtn, TabRequestsText, RequestsPanel);
+        _shell.SetBreadcrumb("Pretraga zgrada");
     }
 
     private void TabRequests_Click(object sender, RoutedEventArgs e)
     {
-        TabRequestsBtn.Tag = "active";
-        TabSearchBtn.Tag = null;
-        TabRequestsText.FontWeight = FontWeights.SemiBold;
-        TabRequestsText.Foreground = System.Windows.Media.Brushes.Black;
-        TabSearchText.FontWeight = FontWeights.Normal;
-        TabSearchText.Foreground = new System.Windows.Media.SolidColorBrush(
-            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#888888"));
-        RequestsPanel.Visibility = Visibility.Visible;
-        SearchPanel.Visibility = Visibility.Collapsed;
-
+        SwitchTab(TabRequestsBtn, TabRequestsText, RequestsPanel, TabSearchBtn, TabSearchText, SearchPanel);
         _requestsVm.LoadRequests();
         ApplyRequestFilters();
+        _shell.SetBreadcrumb("Moji zahtevi");
+    }
+
+    private static void SwitchTab(
+        Button activeBtn, TextBlock activeText, UIElement showPanel,
+        Button inactiveBtn, TextBlock inactiveText, UIElement hidePanel)
+    {
+        activeBtn.Tag   = "active";
+        inactiveBtn.Tag = null;
+        activeText.FontWeight   = FontWeights.SemiBold;
+        activeText.Foreground   = Brushes.Black;
+        inactiveText.FontWeight = FontWeights.Normal;
+        inactiveText.Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
+        showPanel.Visibility = Visibility.Visible;
+        hidePanel.Visibility = Visibility.Collapsed;
     }
 
     private void PopulateCombos()
@@ -63,7 +64,6 @@ public partial class BuildingSearchPage : System.Windows.Controls.Page
         cities.AddRange(_searchVm.Buildings.Select(b => b.City).Distinct().OrderBy(c => c));
         CityComboBox.ItemsSource = cities;
         CityComboBox.SelectedIndex = 0;
-
         var countries = new List<string> { "Sve države" };
         countries.AddRange(_searchVm.Buildings.Select(b => b.Country).Distinct().OrderBy(c => c));
         CountryComboBox.ItemsSource = countries;
@@ -115,31 +115,20 @@ public partial class BuildingSearchPage : System.Windows.Controls.Page
         }
     }
 
-    private void PrevImage_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: BuildingCardVm vm }) vm.Prev();
-    }
+    private void PrevImage_Click(object sender, RoutedEventArgs e) { if (sender is Button { DataContext: BuildingCardVm vm }) vm.Prev(); }
+    private void NextImage_Click(object sender, RoutedEventArgs e) { if (sender is Button { DataContext: BuildingCardVm vm }) vm.Next(); }
 
-    private void NextImage_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: BuildingCardVm vm }) vm.Next();
-    }
-
-    private void StatusFilter_Changed(object sender, SelectionChangedEventArgs e)
-    {
-        if (IsLoaded) ApplyRequestFilters();
-    }
-
-    private void SortFilter_Changed(object sender, SelectionChangedEventArgs e)
+    private void RequestFiltersChanged(object sender, SelectionChangedEventArgs e)
     {
         if (IsLoaded) ApplyRequestFilters();
     }
 
     private void ApplyRequestFilters()
     {
-        string status = (StatusFilterComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Svi statusi";
+        var selectedItem = StatusFilterComboBox.SelectedItem as ComboBoxItem;
+        string? tagValue = selectedItem?.Tag?.ToString();
+        string filterStatus = string.IsNullOrEmpty(tagValue) ? "Svi" : tagValue;
         bool newestFirst = (SortComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() != "Najstariji prvo";
-        string filterStatus = status == "Svi statusi" ? "Svi" : status;
         _requestsVm.ApplyFilters(filterStatus, newestFirst);
     }
 
