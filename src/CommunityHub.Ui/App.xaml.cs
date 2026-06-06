@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using CommunityHub.Ui.Settings;
 using CommunityHub.Ui.ViewModels.DistrictCoordinator;
 using CommunityHub.Ui.Views.DistrictCoordinator;
 
@@ -13,6 +14,9 @@ public partial class App
     public App()
     {
         DispatcherUnhandledException += OnDispatcherUnhandledException;
+
+        // Ucitaj globalna podesavanja iz JSON fajla
+        AppSettings.Load();
 
         _meetingTimer = new DispatcherTimer
         {

@@ -16,8 +16,7 @@ public partial class MorePage : Page
 
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("Stranica podešavanja dolazi uskoro.",
-            "Podešavanja", MessageBoxButton.OK, MessageBoxImage.Information);
+        _shell.MainFrame.Navigate(new SettingsPage(_shell));
     }
 
     private void Wizard_Click(object sender, RoutedEventArgs e)
