@@ -20,9 +20,16 @@ public partial class TenantHomePage : Page
         WelcomeText.Text = $"Welcome, {user?.Name ?? "Korisnik"}";
 
         _vm.LoadStats();
+        AssembliesCount.Text = _vm.UpcomingAssembliesCount.ToString();
         PendingRequestsCount.Text = _vm.PendingRequestsCount.ToString();
         HelpPostsCount.Text = _vm.ActiveAdsCount.ToString();
         IssuesCount.Text = _vm.UnresolvedIssuesCount.ToString();
+    }
+
+    private void NavAssemblies_Click(object sender, RoutedEventArgs e)
+    {
+        _shell.SetActiveNav(6);
+        _shell.MainFrame.Navigate(new AssembliesPage(_shell));
     }
 
     private void NavHelpBoard_Click(object sender, RoutedEventArgs e)
