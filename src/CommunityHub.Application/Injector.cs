@@ -51,6 +51,7 @@ public class Injector
         { typeof(ICityObjectRepository), new CityObjectDbRepository() },
         { typeof(IReviewRepository),     new ReviewDbRepository() },
         { typeof(IBudgetRepository),     new BudgetDbRepository() },
+        { typeof(ICityGiftRepository),   new CityGiftDbRepository() },
     };
 
     public static T Get<T>()
