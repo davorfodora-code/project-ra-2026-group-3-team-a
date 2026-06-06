@@ -12,13 +12,13 @@
             <UniformGrid Columns="2" Rows="2">
 
                 <Button Style="{StaticResource TileButtonStyle}" Height="180"
-                        Margin="0,0,8,8">
+                        Margin="0,0,8,8" Click="NavAssemblies_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock x:Name="AssembliesCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nadolazeće skupštine" FontSize="16"
+                            <TextBlock Text="Nadolazeće skupštine" FontSize="18"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
                                        MaxWidth="160"/>

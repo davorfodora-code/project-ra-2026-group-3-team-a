@@ -117,12 +117,23 @@
                             </StackPanel>
                         </Button>
                     </Grid>
-                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="PeopleGroup" FontSize="26" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
-                        <TextBlock Text="Skupštine" Foreground="#B0BEC5" FontSize="22"
-                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    </StackPanel>
+                    <!-- Skupštine -->
+                    <Grid>
+                        <Border x:Name="NavSkupstineHighlight" Background="#243342"
+                                Visibility="Collapsed">
+                            <Border Width="4" HorizontalAlignment="Left" Background="White"/>
+                        </Border>
+                        <Button Style="{StaticResource SideNavStyle}" Click="NavSkupstine_Click">
+                            <StackPanel Orientation="Horizontal" Margin="20,16">
+                                <fa:IconBlock x:Name="NavSkupstineIcon" Icon="PeopleGroup" FontSize="26"
+                                              Foreground="#B0BEC5" VerticalAlignment="Center"
+                                              Width="36" TextAlignment="Center"/>
+                                <TextBlock x:Name="NavSkupstineText" Text="Skupštine"
+                                           Foreground="#B0BEC5" FontSize="22"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
                         <fa:IconBlock Icon="FileLines" FontSize="26" Foreground="#B0BEC5"
                                       VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
