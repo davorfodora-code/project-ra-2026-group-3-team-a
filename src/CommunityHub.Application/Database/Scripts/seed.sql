@@ -241,6 +241,31 @@ INSERT INTO district_event_volunteer_attendances (id, event_id, volunteer_id, at
 
 
 -- ============================================================
+--  Gradski objekti (4.6)
+-- ============================================================
+INSERT INTO city_facilities (id, district_id, name, description, address) VALUES
+(-1, -2, 'Muzej savremene umetnosti', 'Muzej sa stalnim i tematskim izlozbama.', 'Usce 10, Beograd'),
+(-2, -2, 'Sportski centar Novi Beograd', 'Sportski kompleks za rekreaciju i grupne posete.', 'Bulevar Zorana Djindjica 44, Beograd'),
+(-3, -2, 'Dom kulture Studentski grad', 'Kulturni centar sa predstavama, projekcijama i radionicama.', 'Bulevar Zorana Djindjica 179, Beograd'),
+(-4, -1, 'Zemunski kej', 'Setaliste i prostor za organizovane obilaske.', 'Kej oslobodjenja, Beograd'),
+(-5, -1, 'Zavicajni muzej Zemun', 'Muzej posvecen istoriji Zemuna.', 'Glavna 9, Beograd');
+
+INSERT INTO city_facility_interest_votes (id, facility_id, citizen_id, voted_at) VALUES
+(-1, -1, -8,  '2026-05-01 10:00:00'),
+(-2, -1, -10, '2026-05-02 11:00:00'),
+(-3, -2, -11, '2026-05-03 12:00:00'),
+(-4, -3, -14, '2026-05-04 13:00:00'),
+(-5, -4, -22, '2026-05-05 14:00:00');
+
+INSERT INTO city_facility_reservations (id, facility_id, district_id, reserved_at, note) VALUES
+(-1, -1, -2, '2026-01-15 11:00:00', 'Grupni obilazak muzeja.'),
+(-2, -1, -2, '2026-03-20 12:00:00', 'Tematska izlozba za gradjane kvarta.'),
+(-3, -2, -2, '2026-02-10 17:00:00', 'Sportski dan za clanove kvarta.'),
+(-4, -3, -2, '2025-12-05 19:00:00', 'Kulturno vece.'),
+(-5, -4, -1, '2026-04-12 10:00:00', 'Setnja i obilazak keja.');
+
+
+-- ============================================================
 --  Adrese
 -- ============================================================
 INSERT INTO addresses (id, street, street_number) VALUES
@@ -451,3 +476,44 @@ INSERT INTO notifications (tenant_id, type, related_ad_id, related_slot_id, is_r
 -- Notifikacija za Petara (-3): Jovana je rezervisala termin na njegovom oglasu (već postoji rezervacija iz seed podataka)
 INSERT INTO notifications (tenant_id, type, related_ad_id, related_slot_id, is_read, created_at) VALUES
 (-3, 'Rezervacija termina', -1, -1, FALSE, '2026-06-01 10:00:00');
+--  Skupstine stanara (test podaci za 1.6 i 1.7)
+--  Zgrada -1 (Glavna 15, Zemun) — stanovi: 1-8
+-- ============================================================
+
+-- Skupstina 1: predstojeća, 3 teme, 2 predloga stanara, delimicno prisustvo
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-1, -1, '2026-07-15 19:00:00', 'Scheduled');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-1, -1, 'Curenje vode na 3. spratu', false),
+(-2, -1, 'Ciscenje zajednickih prostorija', false),
+(-3, -1, 'Raspodela troskova za lift', false);
+
+INSERT INTO assembly_topic_suggestions (id, assembly_id, tenant_id, topic) VALUES
+(-1, -1, -3, 'Sigurnosna kamera na ulazu'),
+(-2, -1, -4, 'Problem sa parkingom');
+
+INSERT INTO assembly_attendances (id, assembly_id, apartment_number, tenant_id) VALUES
+(-1, -1, 1, -3),
+(-2, -1, 2, -4);
+
+-- Skupstina 2: prosla, Confirmed, 5 tema
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-2, -1, '2026-04-24 18:00:00', 'Confirmed');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-4, -2, 'Godisnji plan odrzavanja', false),
+(-5, -2, 'Zamena interfona', false),
+(-6, -2, 'Finansijski izvestaj', false),
+(-7, -2, 'Popravka krova', false),
+(-8, -2, 'Nabavka kanti za reciklazu', true);
+
+-- Skupstina 3: otkazana, 4 teme
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-3, -1, '2026-03-27 19:30:00', 'Cancelled');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-9,  -3, 'Redovni pregled liftova', false),
+(-10, -3, 'Zimsko ciscenje', false),
+(-11, -3, 'Uredjenje dvorista', false),
+(-12, -3, 'Zamena sijalica na hodniku', false);

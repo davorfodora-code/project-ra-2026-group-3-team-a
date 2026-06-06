@@ -21,6 +21,8 @@ public class Injector
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
         { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
         { typeof(IBulletinBoardStatsRepository),    new BulletinBoardStatsDbRepository() },
+        { typeof(IAssemblyRepository),               new AssemblyDbRepository() },
+        { typeof(IIssueReportRepository),            new IssueReportDbRepository() },
 
         // Citizen
         { typeof(ICitizenDistrictRepository),                 new CitizenDistrictDbRepository() },
@@ -36,6 +38,10 @@ public class Injector
         { typeof(ICitizenMeetingRepository),                  new CitizenMeetingDbRepository() },
         { typeof(ICitizenMeetingService),                     new CitizenMeetingService(
                                                                 new CitizenMeetingDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenCityFacilityRepository),            new CitizenCityFacilityDbRepository()  },
+        { typeof(ICitizenCityFacilityService),               new CitizenCityFacilityService(
+                                                                new CitizenCityFacilityDbRepository(),
                                                                 new CitizenDistrictMembershipDbRepository()) },
 
         // Tenant
@@ -54,9 +60,16 @@ public class Injector
         // DistrictCoordinator
         { typeof(IDistrictRepository),                  new DistrictDbRepository() },
         { typeof(IDistrictAccessRequestRepository),     new DistrictAccessRequestDbRepository() },
+        { typeof(IDistrictMeetingRepository),            new DistrictMeetingDbRepository() },
+        { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
+        { typeof(IForumRepository), new ForumDbRepository() },
+        { typeof(ICityObjectRepository), new CityObjectDbRepository() },
+        { typeof(IReviewRepository),     new ReviewDbRepository() },
+        { typeof(IBudgetRepository),     new BudgetDbRepository() },
         { typeof(IDistrictMeetingRepository),           new DistrictMeetingDbRepository() },
         { typeof(ICitizenTrustStatisticRepository),     new CitizenTrustStatisticDbRepository() },
         { typeof(IForumRepository),                     new ForumDbRepository() },
+        { typeof(ICityObjectRepository),                new CityObjectDbRepository() },
     };
 
     public static T Get<T>()

@@ -1,10 +1,11 @@
 using System.Windows;
+using System.Windows.Controls;
 using CommunityHub.Application.Services.Citizen;
 using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class CitizenHomeWindow : Window
+public partial class CitizenHomeWindow : Page
 {
     private readonly CitizenHomeViewModel _viewModel;
     private readonly CitizenMembershipService _membershipService;
@@ -56,30 +57,22 @@ public partial class CitizenHomeWindow : Window
 
     private void DistrictSearchButton_Click(object sender, RoutedEventArgs e)
     {
-        DistrictSearchWindow window = new DistrictSearchWindow(_viewModel.UserId);
-        window.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new DistrictSearchWindow(_viewModel.UserId));
     }
 
     private void MyDistrictRequestsButton_Click(object sender, RoutedEventArgs e)
     {
-        MyDistrictRequestsWindow window = new MyDistrictRequestsWindow(_viewModel.UserId);
-        window.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new MyDistrictRequestsWindow(_viewModel.UserId));
     }
 
     private void MeetingsButton_Click(object sender, RoutedEventArgs e)
     {
-        CitizenMeetingsWindow window = new CitizenMeetingsWindow(_viewModel.UserId);
-        window.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_viewModel.UserId));
     }
 
     private void DistrictEventsButton_Click(object sender, RoutedEventArgs e)
     {
-        CitizenEventsWindow window = new CitizenEventsWindow(_viewModel.UserId);
-        window.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenEventsWindow(_viewModel.UserId));
     }
 
     private void MyDistrictButton_Click(object sender, RoutedEventArgs e)
@@ -91,23 +84,17 @@ public partial class CitizenHomeWindow : Window
             return;
         }
 
-        MyDistrictWindow window = new MyDistrictWindow(_viewModel.UserId);
-        window.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new MyDistrictWindow(_viewModel.UserId));
     }
 
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        CitizenProfileWindow profileWindow = new CitizenProfileWindow(_viewModel.UserId);
-        profileWindow.Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenProfileWindow(_viewModel.UserId));
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
-        LogInForm loginForm = new LogInForm();
-        loginForm.Show();
-        Close();
+        CitizenShellNavigation.Logout(this);
     }
 
     private void MembershipActionButton_Click(object sender, RoutedEventArgs e)
@@ -130,8 +117,12 @@ public partial class CitizenHomeWindow : Window
             MessageBoxImage.Information);
     }
 
+    private void ObjectsNotImplementedButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenCityFacilitiesWindow(_viewModel.UserId));
+    }
+
     private void ReportsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Izveštaji");
-    private void ObjectsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Gradski objekti");
     private void ReviewsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Recenzije");
     private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
 }

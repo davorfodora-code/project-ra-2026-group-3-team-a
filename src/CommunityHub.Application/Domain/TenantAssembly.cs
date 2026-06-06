@@ -31,4 +31,7 @@ public class TenantAssembly
         Topics.Add(topic);
         topic.Assembly = this;
     }
+
+    // Teme mogu da se menjaju najkasnije 24h pred skupstinu
+    public bool CanEditTopics() => DateTime.Now < ScheduledAt.AddHours(-24);
 }

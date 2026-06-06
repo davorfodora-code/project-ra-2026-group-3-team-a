@@ -5,7 +5,7 @@ using CommunityHub.Ui.ViewModels.Citizen;
 
 namespace CommunityHub.Ui.Views.Citizen;
 
-public partial class CitizenMeetingsWindow : Window
+public partial class CitizenMeetingsWindow : Page
 {
     private readonly long _userId;
     private readonly CitizenMeetingsViewModel _viewModel;
@@ -29,8 +29,7 @@ public partial class CitizenMeetingsWindow : Window
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void SaveVoteButton_Click(object sender, RoutedEventArgs e)
@@ -52,19 +51,16 @@ public partial class CitizenMeetingsWindow : Window
 
     private void HomeNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenHomeWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
     }
 
     private void MyDistrictNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new MyDistrictWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new MyDistrictWindow(_userId));
     }
 
     private void EventsNavButton_Click(object sender, RoutedEventArgs e)
     {
-        new CitizenEventsWindow(_userId).Show();
-        Close();
+        CitizenShellNavigation.Navigate(this, new CitizenEventsWindow(_userId));
     }
 }
