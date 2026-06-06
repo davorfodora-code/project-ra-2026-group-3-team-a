@@ -495,7 +495,7 @@ INSERT INTO assembly_topic_suggestions (id, assembly_id, tenant_id, topic) VALUE
 
 INSERT INTO assembly_attendances (id, assembly_id, apartment_number, tenant_id) VALUES
 (-1, -1, 1, -3),
-(-2, -1, 2, -4);
+(-2, -1, 4, -4);
 
 -- Skupstina 2: prosla, Confirmed, 5 tema
 INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
@@ -512,11 +512,19 @@ INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
 (-3, -1, '2026-03-27 19:30:00', 'Cancelled');
 
+-- Skupstina 4: predstojeća, zgrada -2 (Bulevar Mihajla Pupina 22), Scheduled
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-4, -2, '2026-08-10 18:00:00', 'Scheduled');
+
 INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 (-9,  -3, 'Redovni pregled liftova', false),
 (-10, -3, 'Zimsko ciscenje', false),
 (-11, -3, 'Uredjenje dvorista', false),
 (-12, -3, 'Zamena sijalica na hodniku', false);
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-13, -4, 'Ugradnja interfona', false),
+(-14, -4, 'Uredjenje ulaza zgrade', false);
 
 
 -- ============================================================
