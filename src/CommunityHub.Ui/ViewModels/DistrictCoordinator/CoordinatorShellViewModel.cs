@@ -7,7 +7,7 @@ namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
 
 public class CoordinatorShellViewModel : ViewModelBase
 {
-    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum", TabReservations = "reservations", TabReviews = "reviews", TabFinances = "finances";
+    public const string TabHome = "home", TabRequests = "requests", TabStats = "stats", TabForum = "forum", TabReservations = "reservations", TabReviews = "reviews", TabFinances = "finances", TabCityGifts = "citygifts";
 
     private readonly RegistrationOverlayController _overlayCtrl;
     private string _currentTab = TabHome;
@@ -24,6 +24,7 @@ public class CoordinatorShellViewModel : ViewModelBase
         Reservations = new ReservationsViewModel(coordinatorId);
         Reviews      = new ReviewsViewModel(coordinatorId);
         Finances     = new FinancesViewModel(coordinatorId);
+        CityGifts    = new CityGiftsViewModel(coordinatorId);
         Header       = new CoordinatorHeaderViewModel(coordinatorId, Home);
         _currentTabContent = Home;
         _overlayCtrl = new RegistrationOverlayController(coordinatorId,
@@ -36,7 +37,8 @@ public class CoordinatorShellViewModel : ViewModelBase
             Finances.PreSelectDistrict(districtId);
             CurrentTab = TabFinances;
         };
-        Finances.BackToHomeRequested += () => CurrentTab = TabHome;
+        Finances.BackToHomeRequested   += () => CurrentTab = TabHome;
+        CityGifts.BackToFinancesRequested += () => CurrentTab = TabFinances;
         Home.SelectionChanged          += _ => Header.RefreshDisplayProps();
         SwitchTabCommand         = new RelayCommand(p => CurrentTab = p?.ToString() ?? TabHome);
         LogoutCommand            = new RelayCommand(_ => LogoutRequested?.Invoke());
@@ -52,6 +54,7 @@ public class CoordinatorShellViewModel : ViewModelBase
     public ReservationsViewModel      Reservations { get; }
     public ReviewsViewModel           Reviews      { get; }
     public FinancesViewModel          Finances     { get; }
+    public CityGiftsViewModel         CityGifts    { get; }
     public CoordinatorHeaderViewModel Header       { get; }
 
     public string CurrentTab
@@ -69,8 +72,10 @@ public class CoordinatorShellViewModel : ViewModelBase
                     TabReservations => Reservations,
                     TabReviews      => Reviews,
                     TabFinances     => Finances,
+                    TabCityGifts    => CityGifts,
                     _               => Home
                 };
+                if (value == TabCityGifts) CityGifts.EnsureLoaded();
                 OnPropertyChanged(nameof(IsHomeTab));
                 OnPropertyChanged(nameof(IsRequestsTab));
                 OnPropertyChanged(nameof(IsStatsTab));
@@ -78,6 +83,7 @@ public class CoordinatorShellViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsReservationsTab));
                 OnPropertyChanged(nameof(IsReviewsTab));
                 OnPropertyChanged(nameof(IsFinancesTab));
+                OnPropertyChanged(nameof(IsCityGiftsTab));
             }
         }
     }
@@ -90,6 +96,7 @@ public class CoordinatorShellViewModel : ViewModelBase
     public bool IsReservationsTab => _currentTab == TabReservations;
     public bool IsReviewsTab      => _currentTab == TabReviews;
     public bool IsFinancesTab     => _currentTab == TabFinances;
+    public bool IsCityGiftsTab   => _currentTab == TabCityGifts;
 
     public ViewModelBase? ActiveOverlay
     {

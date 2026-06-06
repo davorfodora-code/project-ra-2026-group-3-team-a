@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Threading;
 using CommunityHub.Application.Services.DistrictCoordinator.Dto;
 
 namespace CommunityHub.Ui.ViewModels.DistrictCoordinator;
@@ -62,5 +63,9 @@ public partial class FinancesViewModel
     {
         NotificationText = message;
         HasNotification  = true;
+
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3.5) };
+        timer.Tick += (_, _) => { HasNotification = false; timer.Stop(); };
+        timer.Start();
     }
 }

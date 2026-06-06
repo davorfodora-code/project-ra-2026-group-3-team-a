@@ -37,6 +37,9 @@
         <DataTemplate DataType="{x:Type vm:FinancesViewModel}">
             <local:FinancesView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CityGiftsViewModel}">
+            <local:CityGiftsView/>
+        </DataTemplate>
 
         <Style x:Key="NavTabStyle" TargetType="Button">
             <Setter Property="Background"      Value="Transparent"/>
@@ -102,6 +105,9 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsFinancesTab}" Value="True">
                                 <Setter Property="Text" Value="Finansije kvarta"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCityGiftsTab}" Value="True">
+                                <Setter Property="Text" Value="Poklon grada"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -250,8 +256,22 @@
                     <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
                             Visibility="{Binding IsReviewsTab, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
-                <Button Content="Poklon grada" Style="{StaticResource NavTabStyle}"
-                        Command="{Binding NotImplementedTabCommand}" CommandParameter="Poklon grada"/>
+                <Grid>
+                    <Button Content="Poklon grada"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="citygifts">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavTabStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCityGiftsTab}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Border Height="2" Background="#2C3E50" VerticalAlignment="Bottom"
+                            Visibility="{Binding IsCityGiftsTab, Converter={StaticResource BoolToVis}}"/>
+                </Grid>
                 <Button Content="Pomoc"        Style="{StaticResource NavTabStyle}"
                         Command="{Binding NotImplementedTabCommand}" CommandParameter="Pomoc"/>
             </StackPanel>
