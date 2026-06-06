@@ -1,9 +1,109 @@
 <Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.MorePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Više">
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      Title="Više" Background="#F5F5F5">
+
+    <Page.Resources>
+        <!-- Stavka liste — dugme bez ivica, hover daje svetlo siv background -->
+        <Style x:Key="MoreItemStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,16"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
     <Grid>
-        <TextBlock Text="Više" FontSize="24" FontWeight="Bold"
-                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje -->
+        <Border Grid.Row="0" Background="White" Padding="16,14"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <TextBlock Text="Više" FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Lista stavki -->
+        <StackPanel Grid.Row="1" Margin="0,16,0,0">
+
+            <!-- Podešavanja -->
+            <Button Style="{StaticResource MoreItemStyle}" Click="Settings_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <fa:IconBlock Grid.Column="0" Icon="Cog" FontSize="20" Margin="0,0,16,0"
+                                  VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="Podešavanja" FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <fa:IconBlock Grid.Column="2" Icon="ChevronRight" FontSize="14"
+                                  Foreground="#888888" VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+
+            <!-- Pokretni vodič (placeholder za sad) -->
+            <Button Style="{StaticResource MoreItemStyle}" Click="Wizard_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <fa:IconBlock Grid.Column="0" Icon="HandPointer" FontSize="20" Margin="0,0,16,0"
+                                  VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="Pokretni vodič" FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <fa:IconBlock Grid.Column="2" Icon="ChevronRight" FontSize="14"
+                                  Foreground="#888888" VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+
+            <!-- Odjava -->
+            <Button Style="{StaticResource MoreItemStyle}" Click="Logout_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <fa:IconBlock Grid.Column="0" Icon="SignOutAlt" FontSize="20" Margin="0,0,16,0"
+                                  VerticalAlignment="Center" Foreground="#C62828"/>
+                    <TextBlock Grid.Column="1" Text="Odjava" FontSize="16"
+                               VerticalAlignment="Center" Foreground="#C62828"/>
+                    <fa:IconBlock Grid.Column="2" Icon="ChevronRight" FontSize="14"
+                                  Foreground="#888888" VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+
+        </StackPanel>
     </Grid>
 </Page>
