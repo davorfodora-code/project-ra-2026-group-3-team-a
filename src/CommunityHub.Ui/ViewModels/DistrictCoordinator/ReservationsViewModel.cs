@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using System.Windows.Input;
 using CommunityHub.Application;
 using CommunityHub.Application.Services.DistrictCoordinator;
@@ -135,5 +136,9 @@ public class ReservationsViewModel : ViewModelBase
     {
         NotificationText = message;
         HasNotification  = true;
+
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3.5) };
+        timer.Tick += (_, _) => { HasNotification = false; timer.Stop(); };
+        timer.Start();
     }
 }
