@@ -54,6 +54,7 @@ public class Injector
         { typeof(TenantSvc.ICommonRoomRequestTenantRepository),      new TenantDb.CommonRoomRequestTenantDbRepository() },
         { typeof(TenantSvc.INotificationRepository),                  new TenantDb.NotificationDbRepository() },
         { typeof(TenantSvc.ITenantIssueRepository),                   new TenantDb.TenantIssueDbRepository() },
+        { typeof(TenantSvc.ITenantAssemblyRepository),                new TenantDb.TenantAssemblyDbRepository() },
 
         // User
         { typeof(IUserRepository),                      new UserDbRepository() },
