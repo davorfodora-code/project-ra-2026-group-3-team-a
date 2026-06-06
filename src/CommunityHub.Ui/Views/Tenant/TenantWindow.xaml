@@ -100,12 +100,23 @@
                             </StackPanel>
                         </Button>
                     </Grid>
-                    <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
-                        <fa:IconBlock Icon="CircleExclamation" FontSize="26" Foreground="#B0BEC5"
-                                      VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
-                        <TextBlock Text="Problemi" Foreground="#B0BEC5" FontSize="22"
-                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    </StackPanel>
+                    <!-- Problemi -->
+                    <Grid>
+                        <Border x:Name="NavProblemiHighlight" Background="#243342"
+                                Visibility="Collapsed">
+                            <Border Width="4" HorizontalAlignment="Left" Background="White"/>
+                        </Border>
+                        <Button Style="{StaticResource SideNavStyle}" Click="NavProblemi_Click">
+                            <StackPanel Orientation="Horizontal" Margin="20,16">
+                                <fa:IconBlock x:Name="NavProblemiIcon" Icon="CircleExclamation"
+                                              FontSize="26" Foreground="#B0BEC5"
+                                              VerticalAlignment="Center" Width="36" TextAlignment="Center"/>
+                                <TextBlock x:Name="NavProblemiText" Text="Problemi"
+                                           Foreground="#B0BEC5" FontSize="22"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
                     <StackPanel Orientation="Horizontal" Margin="20,16" Opacity="0.35">
                         <fa:IconBlock Icon="PeopleGroup" FontSize="26" Foreground="#B0BEC5"
                                       VerticalAlignment="Center" Width="36" TextAlignment="Center"/>

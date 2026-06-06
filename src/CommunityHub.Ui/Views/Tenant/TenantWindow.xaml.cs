@@ -33,6 +33,7 @@ public partial class TenantWindow : Window
             (NavOglasnaHighlight,     NavOglasnaIcon,      NavOglasnaText,      "Oglasna tabla"),
             (NavZakazivanjeHighlight, NavZakazivanjeIcon,  NavZakazivanjeText,  "Zakazivanje"),
             (NavZajednickeHighlight,  NavZajednickeIcon,   NavZajednickeText,   "Zajedničke prostorije"),
+            (NavProblemiHighlight,    NavProblemiIcon,     NavProblemiText,     "Problemi"),
         ];
 
         SetActiveNav(0);
@@ -91,6 +92,12 @@ public partial class TenantWindow : Window
     {
         SetActiveNav(4);
         MainFrame.Navigate(new CommonRoomsPage(this));
+    }
+
+    private void NavProblemi_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav(5);
+        MainFrame.Navigate(new IssuesPage(this));
     }
 
     private void Avatar_Click(object sender, MouseButtonEventArgs e)

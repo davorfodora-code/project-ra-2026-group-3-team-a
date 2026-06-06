@@ -48,7 +48,7 @@
                 </Button>
 
                 <Button Style="{StaticResource TileButtonStyle}" Height="180"
-                        Margin="0,8,8,0">
+                        Margin="0,8,8,0" Click="NavIssues_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock x:Name="IssuesCount" Text="0"

@@ -53,6 +53,7 @@ public class Injector
         { typeof(TenantSvc.ICommonRoomTenantRepository),             new TenantDb.CommonRoomTenantDbRepository() },
         { typeof(TenantSvc.ICommonRoomRequestTenantRepository),      new TenantDb.CommonRoomRequestTenantDbRepository() },
         { typeof(TenantSvc.INotificationRepository),                  new TenantDb.NotificationDbRepository() },
+        { typeof(TenantSvc.ITenantIssueRepository),                   new TenantDb.TenantIssueDbRepository() },
 
         // User
         { typeof(IUserRepository),                      new UserDbRepository() },
@@ -66,10 +67,6 @@ public class Injector
         { typeof(ICityObjectRepository), new CityObjectDbRepository() },
         { typeof(IReviewRepository),     new ReviewDbRepository() },
         { typeof(IBudgetRepository),     new BudgetDbRepository() },
-        { typeof(IDistrictMeetingRepository),           new DistrictMeetingDbRepository() },
-        { typeof(ICitizenTrustStatisticRepository),     new CitizenTrustStatisticDbRepository() },
-        { typeof(IForumRepository),                     new ForumDbRepository() },
-        { typeof(ICityObjectRepository),                new CityObjectDbRepository() },
     };
 
     public static T Get<T>()
