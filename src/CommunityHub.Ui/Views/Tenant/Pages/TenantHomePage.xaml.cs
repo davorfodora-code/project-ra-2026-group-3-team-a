@@ -22,12 +22,19 @@ public partial class TenantHomePage : Page
         _vm.LoadStats();
         PendingRequestsCount.Text = _vm.PendingRequestsCount.ToString();
         HelpPostsCount.Text = _vm.ActiveAdsCount.ToString();
+        IssuesCount.Text = _vm.UnresolvedIssuesCount.ToString();
     }
 
     private void NavHelpBoard_Click(object sender, RoutedEventArgs e)
     {
         _shell.SetActiveNav(2);
         _shell.MainFrame.Navigate(new HelpBoardPage(_shell));
+    }
+
+    private void NavIssues_Click(object sender, RoutedEventArgs e)
+    {
+        _shell.SetActiveNav(5);
+        _shell.MainFrame.Navigate(new IssuesPage(_shell));
     }
 
     private void NavBuildings_Click(object sender, RoutedEventArgs e)
