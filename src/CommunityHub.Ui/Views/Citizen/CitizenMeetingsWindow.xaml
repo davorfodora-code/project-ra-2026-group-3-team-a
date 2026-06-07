@@ -23,26 +23,14 @@
             <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Content="Nazad"
-                    Padding="14,8"
-                    Style="{StaticResource Win11SecondaryButtonStyle}"
-                    Margin="0,0,14,0"
-                    Click="BackButton_Click"/>
-            <StackPanel Grid.Column="1">
+        <StackPanel Grid.Row="0" Grid.Column="0">
                 <TextBlock Text="Glasanje za termin sastanka"
                            FontSize="28"
                            Style="{StaticResource Win11HeadingTextStyle}"/>
                 <TextBlock Text="Pregled i glasanje za termine sastanaka u pripremi."
                            Foreground="{StaticResource Win11TextMutedBrush}"
                            Margin="0,4,0,0"/>
-            </StackPanel>
-        </Grid>
+        </StackPanel>
 
         <TextBlock Grid.Row="2" Grid.Column="0"
                    Text="Ovde vidite sve sastanke za svoj kvart. Za sastanke u pripremi možete označiti datum koji vam najviše odgovara."
@@ -132,9 +120,6 @@
                 <Button Content="🗓  Događaji"
                         Style="{StaticResource CitizenNavButtonStyle}"
                         Click="EventsNavButton_Click"/>
-                <Button Content="🤝  Sastanci"
-                        Style="{StaticResource CitizenNavButtonStyle}"
-                        IsEnabled="False"/>
             </StackPanel>
         </Border>
     </Grid>

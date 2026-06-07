@@ -24,16 +24,10 @@
 
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Content="Nazad"
-                    Click="BackButton_Click"
-                    Style="{StaticResource Win11SecondaryButtonStyle}"
-                    Padding="14,8"/>
-            <StackPanel Grid.Column="1" Margin="14,0,0,0">
+            <StackPanel Grid.Column="0">
                 <TextBlock Text="Događaji kvarta"
                            Style="{StaticResource Win11HeadingTextStyle}"
                            FontSize="28"/>
@@ -41,7 +35,7 @@
                            Foreground="{StaticResource Win11TextMutedBrush}"
                            Margin="0,4,0,0"/>
             </StackPanel>
-            <TextBlock Grid.Column="2"
+            <TextBlock Grid.Column="1"
                        Text="Ctrl+3 Događaji | Ctrl+N Novi događaj"
                        Foreground="{StaticResource Win11TextMutedBrush}"
                        VerticalAlignment="Bottom"/>
@@ -104,9 +98,6 @@
                 <Button Content="🗓  Događaji"
                         Style="{StaticResource CitizenNavButtonStyle}"
                         IsEnabled="False"/>
-                <Button Content="🤝  Sastanci"
-                        Style="{StaticResource CitizenNavButtonStyle}"
-                        Click="MeetingsNavButton_Click"/>
             </StackPanel>
         </Border>
     </Grid>

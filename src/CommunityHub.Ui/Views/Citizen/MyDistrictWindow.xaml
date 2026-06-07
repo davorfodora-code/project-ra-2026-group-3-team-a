@@ -162,9 +162,6 @@
                 <Button Content="🗓  Događaji"
                         Style="{StaticResource CitizenNavButtonStyle}"
                         Click="EventsNavButton_Click"/>
-                <Button Content="🤝  Sastanci"
-                        Style="{StaticResource CitizenNavButtonStyle}"
-                        Click="MeetingsNavButton_Click"/>
             </StackPanel>
         </Border>
     </Grid>
