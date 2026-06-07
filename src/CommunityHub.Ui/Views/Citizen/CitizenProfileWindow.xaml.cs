@@ -131,5 +131,8 @@ public partial class CitizenProfileWindow : Page
     {
         CitizenShellNavigation.Navigate(this, new CitizenCoordinatorReviewsWindow(_userId));
     }
-    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
+    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenDonationsWindow(_userId));
+    }
 }

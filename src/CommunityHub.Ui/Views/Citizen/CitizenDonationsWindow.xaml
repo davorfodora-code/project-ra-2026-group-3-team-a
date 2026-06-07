@@ -1,0 +1,206 @@
+<Page x:Class="CommunityHub.Ui.Views.Citizen.CitizenDonationsWindow"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="{DynamicResource Win11WindowBackgroundBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CitizenTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Donacije građana"
+                               Style="{StaticResource CitizenPageTitleStyle}"/>
+                    <TextBlock Text="Uplatite donaciju za svoj kvart i pratite budžet po kategorijama."
+                               Style="{StaticResource CitizenPageSubtitleStyle}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="Ctrl+8 Donacije"
+                           Foreground="{StaticResource Win11TextMutedBrush}"
+                           VerticalAlignment="Bottom"/>
+            </Grid>
+
+            <Border Style="{StaticResource Win11CardStyle}" Margin="0,12,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Budžet kvarta"
+                                   Style="{StaticResource CitizenSectionTitleStyle}"/>
+                        <TextBlock x:Name="DistrictNameTextBlock"
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock x:Name="TotalBudgetTextBlock"
+                                   Style="{StaticResource Win11HeadingTextStyle}"
+                                   FontSize="28"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Bottom">
+                        <TextBlock Text="Iznos:"
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBox x:Name="AmountTextBox"
+                                 Width="120"
+                                 Style="{StaticResource Win11InputTextBoxStyle}"
+                                 Margin="0,0,12,0"/>
+
+                        <TextBlock Text="Kategorija:"
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <ComboBox x:Name="CategoryComboBox"
+                                  Width="190"
+                                  DisplayMemberPath="Name"
+                                  Style="{StaticResource Win11InputComboBoxStyle}"
+                                  Margin="0,0,12,0"/>
+
+                        <Button Content="Uplati donaciju"
+                                Style="{StaticResource Win11PrimaryButtonStyle}"
+                                Padding="14,9"
+                                Click="DonateButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Win11CardStyle}" Margin="0,12,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Text="Stanje po kategorijama"
+                                   Style="{StaticResource CitizenSectionTitleStyle}"/>
+
+                        <Button Grid.Column="1"
+                                Content="Osveži"
+                                Style="{StaticResource Win11SecondaryButtonStyle}"
+                                Padding="14,9"
+                                Click="RefreshButton_Click"/>
+                    </Grid>
+
+                    <DataGrid x:Name="CategoryBudgetsDataGrid"
+                              Grid.Row="2"
+                              Style="{StaticResource Win11DataGridStyle}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              MinHeight="230">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Kategorija" Binding="{Binding Category}" Width="*"/>
+                            <DataGridTextColumn Header="Donirano" Binding="{Binding DonatedAmountDisplay}" Width="150"/>
+                            <DataGridTextColumn Header="Potrošeno" Binding="{Binding SpentAmountDisplay}" Width="150"/>
+                            <DataGridTextColumn Header="Preostalo" Binding="{Binding AvailableAmountDisplay}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <Grid Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Style="{StaticResource Win11CardStyle}"
+                        Margin="0,0,6,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Istorija troškova"
+                                   Style="{StaticResource CitizenSectionTitleStyle}"/>
+
+                        <TextBlock x:Name="EmptyExpensesTextBlock"
+                                   Grid.Row="2"
+                                   Text="Još nema evidentiranih troškova za vaš kvart."
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   Visibility="Collapsed"/>
+
+                        <DataGrid x:Name="ExpensesDataGrid"
+                                  Grid.Row="4"
+                                  Style="{StaticResource Win11DataGridStyle}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  MinHeight="260">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Kategorija" Binding="{Binding Category}" Width="130"/>
+                                <DataGridTextColumn Header="Iznos" Binding="{Binding AmountDisplay}" Width="95"/>
+                                <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
+                                <DataGridTextColumn Header="Datum" Binding="{Binding SpentAtDisplay}" Width="125"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1"
+                        Style="{StaticResource Win11CardStyle}"
+                        Margin="6,0,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Moje donacije"
+                                   Style="{StaticResource CitizenSectionTitleStyle}"/>
+
+                        <TextBlock x:Name="EmptyDonationsTextBlock"
+                                   Grid.Row="2"
+                                   Text="Još niste uplatili donaciju za ovaj kvart."
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   Visibility="Collapsed"/>
+
+                        <DataGrid x:Name="MyDonationsDataGrid"
+                                  Grid.Row="4"
+                                  Style="{StaticResource Win11DataGridStyle}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  MinHeight="260">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Kategorija" Binding="{Binding Category}" Width="*"/>
+                                <DataGridTextColumn Header="Iznos" Binding="{Binding AmountDisplay}" Width="120"/>
+                                <DataGridTextColumn Header="Datum" Binding="{Binding DonatedAtDisplay}" Width="140"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
