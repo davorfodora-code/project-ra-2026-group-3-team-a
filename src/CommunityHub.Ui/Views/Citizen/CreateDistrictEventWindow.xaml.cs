@@ -55,15 +55,17 @@ public partial class CreateDistrictEventWindow : Window
             return false;
         }
 
-        dto = _viewModel.BuildDto(
-            _districtId,
-            NameTextBox.Text,
-            DescriptionTextBox.Text,
-            eventDate,
-            startTime,
-            durationMinutes,
-            minVolunteers,
-            requiredItems);
+        dto = _viewModel.BuildDto(new CreateDistrictEventFormInput
+        {
+            DistrictId = _districtId,
+            Name = NameTextBox.Text,
+            Description = DescriptionTextBox.Text,
+            EventDate = eventDate,
+            StartTime = startTime,
+            DurationMinutes = durationMinutes,
+            MinVolunteers = minVolunteers,
+            RequiredItems = requiredItems
+        });
 
         return true;
     }

@@ -107,11 +107,6 @@ public partial class CitizenProfileWindow : Page
         CitizenShellNavigation.Navigate(this, new CitizenEventsWindow(_userId));
     }
 
-    private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_userId));
-    }
-
     private static void ShowUnavailableMessage(string moduleName)
     {
         MessageBox.Show(

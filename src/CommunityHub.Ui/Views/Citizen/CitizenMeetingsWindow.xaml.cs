@@ -27,11 +27,6 @@ public partial class CitizenMeetingsWindow : Page
         MeetingsItemsControl.Visibility = hasMeetings ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
-    }
-
     private void SaveVoteButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button button || button.Tag is not CitizenMeetingCardViewModel card)

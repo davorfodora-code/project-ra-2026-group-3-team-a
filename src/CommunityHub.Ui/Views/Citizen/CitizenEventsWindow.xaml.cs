@@ -23,11 +23,6 @@ public partial class CitizenEventsWindow : Page
         EventsDataGrid.ItemsSource = _viewModel.LoadEvents();
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
-    }
-
     private void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
         LoadEvents();
@@ -68,28 +63,14 @@ public partial class CitizenEventsWindow : Page
 
     private void VolunteerSignupButton_Click(object sender, RoutedEventArgs e)
     {
-        if (EventsDataGrid.SelectedItem is not DistrictEventListItemDto selected)
-        {
-            MessageBox.Show("Izaberite dogadjaj.", "Upozorenje", MessageBoxButton.OK, MessageBoxImage.Warning);
+        if (!TryGetSelectedEvent(out DistrictEventListItemDto selected))
             return;
-        }
 
-        DistrictEventDetailsDto? details = _viewModel.GetEventDetails(selected.EventId);
-        if (details == null)
-        {
-            MessageBox.Show("Dogadjaj nije dostupan.", "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
+        VolunteerSignupDto? signupDto = OpenVolunteerSignupDialog(selected.EventId);
+        if (signupDto == null)
             return;
-        }
 
-        VolunteerSignupWindow signupWindow = new VolunteerSignupWindow(details);
-        signupWindow.Owner = Window.GetWindow(this);
-        bool? dialogResult = signupWindow.ShowDialog();
-        if (dialogResult != true || signupWindow.Dto == null)
-        {
-            return;
-        }
-
-        EventActionResultDto result = _viewModel.ApplyAsVolunteer(signupWindow.Dto);
+        EventActionResultDto result = _viewModel.ApplyAsVolunteer(signupDto);
         MessageBox.Show(result.Message, result.Success ? "Uspeh" : "Greška", MessageBoxButton.OK,
             result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
 
@@ -99,13 +80,41 @@ public partial class CitizenEventsWindow : Page
         }
     }
 
+    private bool TryGetSelectedEvent(out DistrictEventListItemDto selected)
+    {
+        selected = null!;
+        if (EventsDataGrid.SelectedItem is DistrictEventListItemDto selectedEvent)
+        {
+            selected = selectedEvent;
+            return true;
+        }
+
+        MessageBox.Show("Izaberite dogadjaj.", "Upozorenje", MessageBoxButton.OK, MessageBoxImage.Warning);
+        return false;
+    }
+
+    private VolunteerSignupDto? OpenVolunteerSignupDialog(long eventId)
+    {
+        DistrictEventDetailsDto? details = _viewModel.GetEventDetails(eventId);
+        if (details == null)
+        {
+            MessageBox.Show("Dogadjaj nije dostupan.", "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
+            return null;
+        }
+
+        VolunteerSignupWindow signupWindow = new(details)
+        {
+            Owner = Window.GetWindow(this)
+        };
+
+        bool? dialogResult = signupWindow.ShowDialog();
+        return dialogResult == true ? signupWindow.Dto : null;
+    }
+
     private void AttendanceButton_Click(object sender, RoutedEventArgs e)
     {
-        if (EventsDataGrid.SelectedItem is not DistrictEventListItemDto selected)
-        {
-            MessageBox.Show("Izaberite dogadjaj.", "Upozorenje", MessageBoxButton.OK, MessageBoxImage.Warning);
+        if (!TryGetSelectedEvent(out DistrictEventListItemDto selected))
             return;
-        }
 
         List<VolunteerAttendanceDto> candidates = _viewModel.GetAttendanceCandidates(selected.EventId);
         if (candidates.Count == 0)
@@ -136,10 +145,5 @@ public partial class CitizenEventsWindow : Page
     private void MyDistrictNavButton_Click(object sender, RoutedEventArgs e)
     {
         CitizenShellNavigation.Navigate(this, new MyDistrictWindow(_userId));
-    }
-
-    private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_userId));
     }
 }

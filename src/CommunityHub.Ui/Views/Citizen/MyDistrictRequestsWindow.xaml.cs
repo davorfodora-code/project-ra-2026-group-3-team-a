@@ -44,32 +44,14 @@ public partial class MyDistrictRequestsWindow : Page
 
     private void DeleteRequestButton_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button button || button.DataContext is not DistrictAccessRequestRowViewModel vm)
+        if (!TryGetRequestFromButton(sender, out DistrictAccessRequestRowViewModel vm))
             return;
 
-        MessageBoxResult result = MessageBox.Show(
-            "Da li ste sigurni da želite da obrišete zahtev?",
-            "Potvrda brisanja zahteva",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
-
-        if (result != MessageBoxResult.Yes)
+        if (!ConfirmRequestDeletion())
             return;
 
         AccessResultDto deleteResult = _viewModel.Delete(vm.RequestId);
-        MessageBoxImage image = deleteResult.Type switch
-        {
-            AccessResultType.Success => MessageBoxImage.Information,
-            AccessResultType.Warning => MessageBoxImage.Warning,
-            _ => MessageBoxImage.Error
-        };
-        string caption = deleteResult.Type switch
-        {
-            AccessResultType.Success => "Uspeh",
-            AccessResultType.Warning => "Upozorenje",
-            _ => "Greška"
-        };
-        MessageBox.Show(deleteResult.Message, caption, MessageBoxButton.OK, image);
+        ShowAccessResult(deleteResult);
 
         if (deleteResult.Type != AccessResultType.Success)
             return;
@@ -77,10 +59,51 @@ public partial class MyDistrictRequestsWindow : Page
         LoadRequests();
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
+    private static bool TryGetRequestFromButton(object sender, out DistrictAccessRequestRowViewModel request)
     {
-        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
+        request = null!;
+        if (sender is not Button button || button.DataContext is not DistrictAccessRequestRowViewModel vm)
+        {
+            return false;
+        }
+
+        request = vm;
+        return true;
     }
+
+    private static bool ConfirmRequestDeletion()
+    {
+        return MessageBox.Show(
+            "Da li ste sigurni da želite da obrišete zahtev?",
+            "Potvrda brisanja zahteva",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question) == MessageBoxResult.Yes;
+    }
+
+    private static void ShowAccessResult(AccessResultDto result)
+    {
+        MessageBox.Show(
+            result.Message,
+            GetCaption(result.Type),
+            MessageBoxButton.OK,
+            GetMessageBoxImage(result.Type));
+    }
+
+    private static MessageBoxImage GetMessageBoxImage(AccessResultType resultType) =>
+        resultType switch
+        {
+            AccessResultType.Success => MessageBoxImage.Information,
+            AccessResultType.Warning => MessageBoxImage.Warning,
+            _ => MessageBoxImage.Error
+        };
+
+    private static string GetCaption(AccessResultType resultType) =>
+        resultType switch
+        {
+            AccessResultType.Success => "Uspeh",
+            AccessResultType.Warning => "Upozorenje",
+            _ => "Greška"
+        };
 
     private DistrictAccessRequestStatus? ParseStatusFilter()
     {

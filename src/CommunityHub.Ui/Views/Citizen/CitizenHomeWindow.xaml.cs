@@ -17,7 +17,6 @@ public partial class CitizenHomeWindow : Page
         _viewModel = new CitizenHomeViewModel(userId);
         _membershipService = new CitizenMembershipService();
         _hasMembership = _membershipService.HasMembership(userId);
-        MeetingsButton.Visibility = _hasMembership ? Visibility.Visible : Visibility.Collapsed;
         ConfigureHomeState();
     }
 
@@ -25,22 +24,32 @@ public partial class CitizenHomeWindow : Page
     {
         if (_hasMembership)
         {
-            MemberNavPanel.Visibility = Visibility.Visible;
-            NonMemberNavPanel.Visibility = Visibility.Collapsed;
-            WelcomeDescriptionTextBlock.Text =
-                "Vaše članstvo je aktivno. Dostupne su osnovne i aktivnosti u kvartu.";
-            MembershipStatusTextBlock.Text = "Članstvo je aktivno i povezano sa vašim kvartom.";
-            MembershipActionButton.Content = "Otvori moj kvart";
-            FindDistrictButton.Visibility = Visibility.Collapsed;
-            OpenRequestsButton.Visibility = Visibility.Collapsed;
-            DistrictEventsButton.Visibility = Visibility.Visible;
-            QuickRequestTitleTextBlock.Text = "Imate pristup funkcionalnostima člana.";
-            QuickRequestDescriptionTextBlock.Text =
-                "Sada možete koristiti događaje i sastanke. Ostali moduli će biti dostupni kada backend podrška bude završena.";
-            StateHintTextBlock.Text = "Nastavite preko desne navigacije.";
+            ConfigureMemberHomeState();
             return;
         }
 
+        ConfigureNonMemberHomeState();
+    }
+
+    private void ConfigureMemberHomeState()
+    {
+        MemberNavPanel.Visibility = Visibility.Visible;
+        NonMemberNavPanel.Visibility = Visibility.Collapsed;
+        WelcomeDescriptionTextBlock.Text =
+            "Vaše članstvo je aktivno. Dostupne su osnovne i aktivnosti u kvartu.";
+        MembershipStatusTextBlock.Text = "Članstvo je aktivno i povezano sa vašim kvartom.";
+        MembershipActionButton.Content = "Otvori moj kvart";
+        FindDistrictButton.Visibility = Visibility.Collapsed;
+        OpenRequestsButton.Visibility = Visibility.Collapsed;
+        DistrictEventsButton.Visibility = Visibility.Visible;
+        QuickRequestTitleTextBlock.Text = "Imate pristup funkcionalnostima člana.";
+        QuickRequestDescriptionTextBlock.Text =
+            "Sada možete koristiti događaje i sastanke. Ostali moduli će biti dostupni kada backend podrška bude završena.";
+        StateHintTextBlock.Text = "Nastavite preko desne navigacije.";
+    }
+
+    private void ConfigureNonMemberHomeState()
+    {
         MemberNavPanel.Visibility = Visibility.Collapsed;
         NonMemberNavPanel.Visibility = Visibility.Visible;
         WelcomeDescriptionTextBlock.Text =
@@ -63,11 +72,6 @@ public partial class CitizenHomeWindow : Page
     private void MyDistrictRequestsButton_Click(object sender, RoutedEventArgs e)
     {
         CitizenShellNavigation.Navigate(this, new MyDistrictRequestsWindow(_viewModel.UserId));
-    }
-
-    private void MeetingsButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_viewModel.UserId));
     }
 
     private void DistrictEventsButton_Click(object sender, RoutedEventArgs e)
