@@ -8,6 +8,10 @@ namespace CommunityHub.Ui.Views.Citizen;
 
 public partial class CitizenShellWindow : Window
 {
+    private const string HelpAction = "help";
+    private const string SettingsAction = "settings";
+    private const string ProfileAction = "profile";
+
     public long UserId { get; }
     private bool _hasMembership;
     private readonly CitizenMembershipService _membershipService;
@@ -87,10 +91,25 @@ public partial class CitizenShellWindow : Window
 
     private void UpdateSelectionStates(Page? page)
     {
+        UpdateNonMemberSelectionStates(page);
+        UpdateMemberSelectionStates(page);
+        UpdateTopActionSelectionStates(page);
+    }
+
+    private static void SetButtonSelected(Button button, bool selected)
+    {
+        button.Tag = selected ? "active" : "normal";
+    }
+
+    private void UpdateNonMemberSelectionStates(Page? page)
+    {
         SetButtonSelected(NmHomeButton, page is CitizenHomeWindow && !_hasMembership);
         SetButtonSelected(NmSearchButton, page is DistrictSearchWindow && !_hasMembership);
         SetButtonSelected(NmRequestsButton, page is MyDistrictRequestsWindow && !_hasMembership);
+    }
 
+    private void UpdateMemberSelectionStates(Page? page)
+    {
         SetButtonSelected(MHomeButton, page is CitizenHomeWindow && _hasMembership);
         SetButtonSelected(MMyDistrictButton, page is MyDistrictWindow);
         SetButtonSelected(MEventsButton, page is CitizenEventsWindow);
@@ -98,24 +117,22 @@ public partial class CitizenShellWindow : Window
         SetButtonSelected(MObjectsButton, page is CitizenCityFacilitiesWindow);
         SetButtonSelected(MReviewsButton, page is CitizenCoordinatorReviewsWindow);
         SetButtonSelected(MDonationsButton, page is CitizenDonationsWindow);
+    }
 
+    private void UpdateTopActionSelectionStates(Page? page)
+    {
         if (page is CitizenProfileWindow)
         {
-            _activeTopAction = "profile";
+            _activeTopAction = ProfileAction;
         }
-        else if (_activeTopAction == "profile")
+        else if (_activeTopAction == ProfileAction)
         {
             _activeTopAction = string.Empty;
         }
 
-        SetButtonSelected(HelpTopButton, _activeTopAction == "help");
-        SetButtonSelected(SettingsTopButton, _activeTopAction == "settings");
-        SetButtonSelected(ProfileTopButton, _activeTopAction == "profile");
-    }
-
-    private static void SetButtonSelected(Button button, bool selected)
-    {
-        button.Tag = selected ? "active" : "normal";
+        SetButtonSelected(HelpTopButton, _activeTopAction == HelpAction);
+        SetButtonSelected(SettingsTopButton, _activeTopAction == SettingsAction);
+        SetButtonSelected(ProfileTopButton, _activeTopAction == ProfileAction);
     }
 
     private void HomeNavButton_Click(object sender, RoutedEventArgs e)
@@ -156,94 +173,94 @@ public partial class CitizenShellWindow : Window
 
     private void HandleControlShortcuts(KeyEventArgs e)
     {
-        switch (e.Key)
+        if (TryHandleNumberShortcut(e.Key) || TryHandleLetterShortcut(e.Key))
+        {
+            e.Handled = true;
+        }
+    }
+
+    private bool TryHandleNumberShortcut(Key key)
+    {
+        switch (key)
         {
             case Key.D1:
             case Key.NumPad1:
                 HomeNavButton_Click(this, new RoutedEventArgs());
-                e.Handled = true;
-                break;
+                return true;
             case Key.D2:
             case Key.NumPad2:
-                if (_hasMembership)
-                {
-                    MyDistrictNavButton_Click(this, new RoutedEventArgs());
-                }
-                else
-                {
-                    SearchNavButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                NavigateToSearchOrDistrict();
+                return true;
             case Key.D3:
             case Key.NumPad3:
-                if (_hasMembership)
-                {
-                    EventsNavButton_Click(this, new RoutedEventArgs());
-                }
-                else
-                {
-                    RequestsNavButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                NavigateToRequestsOrEvents();
+                return true;
             case Key.D4:
             case Key.NumPad4:
-                if (EnsureMemberShortcutAccess("Izveštaji"))
-                {
-                    ReportsNotImplementedButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                return TryOpenMemberModule("Izveštaji", ReportsNotImplementedButton_Click);
             case Key.D5:
             case Key.NumPad5:
-                if (EnsureMemberShortcutAccess("Sastanci"))
-                {
-                    MeetingsNavButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                return TryOpenMemberModule("Sastanci", MeetingsNavButton_Click);
             case Key.D6:
             case Key.NumPad6:
-                if (EnsureMemberShortcutAccess("Gradski objekti"))
-                {
-                    ObjectsNavButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                return TryOpenMemberModule("Gradski objekti", ObjectsNavButton_Click);
             case Key.D7:
             case Key.NumPad7:
-                if (EnsureMemberShortcutAccess("Recenzije"))
-                {
-                    ReviewsNavButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                return TryOpenMemberModule("Recenzije", ReviewsNavButton_Click);
             case Key.D8:
             case Key.NumPad8:
-                if (EnsureMemberShortcutAccess("Donacije"))
-                {
-                    DonationsNavButton_Click(this, new RoutedEventArgs());
-                }
-
-                e.Handled = true;
-                break;
+                return TryOpenMemberModule("Donacije", DonationsNavButton_Click);
             case Key.D9:
             case Key.NumPad9:
                 ProfileTopButton_Click(this, new RoutedEventArgs());
-                e.Handled = true;
-                break;
-            case Key.N:
-                HandleCreateNewShortcut();
-                e.Handled = true;
-                break;
+                return true;
+            default:
+                return false;
         }
+    }
+
+    private bool TryHandleLetterShortcut(Key key)
+    {
+        if (key != Key.N)
+        {
+            return false;
+        }
+
+        HandleCreateNewShortcut();
+        return true;
+    }
+
+    private void NavigateToSearchOrDistrict()
+    {
+        if (_hasMembership)
+        {
+            MyDistrictNavButton_Click(this, new RoutedEventArgs());
+            return;
+        }
+
+        SearchNavButton_Click(this, new RoutedEventArgs());
+    }
+
+    private void NavigateToRequestsOrEvents()
+    {
+        if (_hasMembership)
+        {
+            EventsNavButton_Click(this, new RoutedEventArgs());
+            return;
+        }
+
+        RequestsNavButton_Click(this, new RoutedEventArgs());
+    }
+
+    private bool TryOpenMemberModule(string moduleName, RoutedEventHandler openModule)
+    {
+        if (!EnsureMemberShortcutAccess(moduleName))
+        {
+            return true;
+        }
+
+        openModule(this, new RoutedEventArgs());
+        return true;
     }
 
     private bool EnsureMemberShortcutAccess(string moduleName)
@@ -320,28 +337,25 @@ public partial class CitizenShellWindow : Window
 
     private void ProfileTopButton_Click(object sender, RoutedEventArgs e)
     {
-        _activeTopAction = "profile";
+        _activeTopAction = ProfileAction;
         Navigate(new CitizenProfileWindow(UserId));
     }
 
     private void HelpTopButton_Click(object sender, RoutedEventArgs e)
     {
-        _activeTopAction = "help";
+        _activeTopAction = HelpAction;
         UpdateSelectionStates(MainFrame.Content as Page);
         ShowUnavailableMessage("Pomoć");
     }
 
     private void SettingsTopButton_Click(object sender, RoutedEventArgs e)
     {
-        _activeTopAction = "settings";
+        _activeTopAction = SettingsAction;
         UpdateSelectionStates(MainFrame.Content as Page);
         ShowUnavailableMessage("Podešavanja");
     }
 
     private void ReportsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Izveštaji");
-    private void ObjectsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Gradski objekti");
-    private void ReviewsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Recenzije");
-    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
 
     private void ObjectsNavButton_Click(object sender, RoutedEventArgs e)
     {
