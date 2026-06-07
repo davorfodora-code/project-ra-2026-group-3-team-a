@@ -193,6 +193,7 @@
 
                 <!-- ===== Tab: Statistika ===== -->
                 <StackPanel Visibility="{Binding IsStatsTabActive, Converter={StaticResource BoolToVisibility}}">
+                  <StackPanel DataContext="{Binding Stats}">
 
                     <!-- Broj oglasa u periodu -->
                     <Grid Margin="0,0,0,12">
@@ -309,6 +310,7 @@
                         </StackPanel>
                     </Border>
 
+                  </StackPanel>
                 </StackPanel>
 
             </Grid>

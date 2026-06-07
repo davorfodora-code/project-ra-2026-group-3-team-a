@@ -281,13 +281,14 @@
 
                 <!-- ===== Za iznajmljivanje tab ===== -->
                 <StackPanel Visibility="{Binding IsRentalTabActive, Converter={StaticResource BoolToVisibility}}">
+                  <StackPanel DataContext="{Binding Rental}">
 
                     <TextBlock Text="Nema zahteva za prikaz." FontSize="14"
                                Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,40,0,0"
-                               Visibility="{Binding HasNoRentalRequests, Converter={StaticResource BoolToVisibility}}"/>
+                               Visibility="{Binding HasNoRequests, Converter={StaticResource BoolToVisibility}}"/>
 
-                    <ItemsControl ItemsSource="{Binding FilteredRentalRequests}"
-                                  Visibility="{Binding HasRentalRequests, Converter={StaticResource BoolToVisibility}}">
+                    <ItemsControl ItemsSource="{Binding FilteredRequests}"
+                                  Visibility="{Binding HasRequests, Converter={StaticResource BoolToVisibility}}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Background="White" BorderBrush="#DDDDDD"
@@ -328,6 +329,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
+                  </StackPanel>
                 </StackPanel>
 
             </Grid>

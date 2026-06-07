@@ -191,7 +191,8 @@
                     </StackPanel>
 
                     <!-- Slike — karusel -->
-                    <StackPanel Visibility="{Binding HasImages, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel DataContext="{Binding ImageGallery}"
+                                Visibility="{Binding HasImages, Converter={StaticResource BoolToVisibility}}">
                         <TextBlock Text="Slike:" FontSize="14" FontWeight="SemiBold"
                                    Margin="0,10,0,6"/>
                         <Grid Margin="0,6,0,0">
@@ -309,6 +310,7 @@
 
                 <!-- ===== Problemi tab ===== -->
                 <StackPanel Visibility="{Binding IsProblemsTabActive, Converter={StaticResource BoolToVisibility}}">
+                  <StackPanel DataContext="{Binding Issues}">
 
                     <TextBlock Text="Nema prijavljenih problema." FontSize="14"
                                Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,40,0,0"
@@ -413,6 +415,7 @@
                         </ItemsControl>
                     </StackPanel>
 
+                  </StackPanel>
                 </StackPanel>
 
             </Grid>

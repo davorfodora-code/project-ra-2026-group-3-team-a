@@ -1,6 +1,7 @@
 using System.Data;
 using CommunityHub.Application.Domain;
 using CommunityHub.Application.Services.BuildingManager;
+using static CommunityHub.Application.Database.Repositories.BuildingManager.AssemblyDbHelpers;
 
 namespace CommunityHub.Application.Database.Repositories.BuildingManager;
 
@@ -11,23 +12,12 @@ public class AssemblyDbRepository : IAssemblyRepository
     {
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT ta.id, ta.scheduled_at, ta.status,
-                   b.id AS building_id, b.neighborhood, b.number_of_floors, b.manager_id,
-                   a.id AS address_id, a.street, a.street_number,
-                   l.id AS location_id, l.city, l.country,
-                   t.id AS topic_id, t.text AS topic_text, t.is_additional
-            FROM tenant_assemblies ta
-            JOIN buildings  b ON b.id = ta.building_id
-            JOIN addresses  a ON a.id = b.address_id
-            JOIN locations  l ON l.id = b.location_id
-            LEFT JOIN assembly_topics t ON t.assembly_id = ta.id
-            WHERE b.manager_id = @managerId
-            ORDER BY ta.scheduled_at DESC, t.id ASC";
+        cmd.CommandText = SelectAssemblyJoins +
+            "WHERE b.manager_id = @managerId ORDER BY ta.scheduled_at DESC, t.id ASC";
         AddParam(cmd, "@managerId", managerId);
 
-        var dict   = new Dictionary<long, TenantAssembly>();
-        var order  = new List<long>();
+        var dict  = new Dictionary<long, TenantAssembly>();
+        var order = new List<long>();
         using IDataReader r = cmd.ExecuteReader();
         while (r.Read())
         {
@@ -38,11 +28,8 @@ public class AssemblyDbRepository : IAssemblyRepository
                 dict[id] = assembly;
                 order.Add(id);
             }
-            if (!r.IsDBNull(r.GetOrdinal("topic_id")))
-                assembly.AddTopic(new AssemblyTopic(
-                    r.GetInt64(r.GetOrdinal("topic_id")),
-                    r.GetString(r.GetOrdinal("topic_text")),
-                    r.GetBoolean(r.GetOrdinal("is_additional"))));
+            AssemblyTopic? topic = TryReadTopic(r);
+            if (topic != null) assembly.AddTopic(topic);
         }
         return order.Select(id => dict[id]).ToList();
     }
@@ -52,19 +39,8 @@ public class AssemblyDbRepository : IAssemblyRepository
     {
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            SELECT ta.id, ta.scheduled_at, ta.status,
-                   b.id AS building_id, b.neighborhood, b.number_of_floors, b.manager_id,
-                   a.id AS address_id, a.street, a.street_number,
-                   l.id AS location_id, l.city, l.country,
-                   t.id AS topic_id, t.text AS topic_text, t.is_additional
-            FROM tenant_assemblies ta
-            JOIN buildings  b ON b.id = ta.building_id
-            JOIN addresses  a ON a.id = b.address_id
-            JOIN locations  l ON l.id = b.location_id
-            LEFT JOIN assembly_topics t ON t.assembly_id = ta.id
-            WHERE ta.id = @assemblyId
-            ORDER BY t.id ASC";
+        cmd.CommandText = SelectAssemblyJoins +
+            "WHERE ta.id = @assemblyId ORDER BY t.id ASC";
         AddParam(cmd, "@assemblyId", assemblyId);
 
         TenantAssembly? assembly = null;
@@ -72,11 +48,8 @@ public class AssemblyDbRepository : IAssemblyRepository
         while (r.Read())
         {
             assembly ??= ReadAssembly(r);
-            if (!r.IsDBNull(r.GetOrdinal("topic_id")))
-                assembly.AddTopic(new AssemblyTopic(
-                    r.GetInt64(r.GetOrdinal("topic_id")),
-                    r.GetString(r.GetOrdinal("topic_text")),
-                    r.GetBoolean(r.GetOrdinal("is_additional"))));
+            AssemblyTopic? topic = TryReadTopic(r);
+            if (topic != null) assembly.AddTopic(topic);
         }
         return assembly;
     }
@@ -112,16 +85,7 @@ public class AssemblyDbRepository : IAssemblyRepository
         long id = (long)cmd.ExecuteScalar()!;
 
         foreach (AssemblyTopic topic in assembly.Topics)
-        {
-            IDbCommand topicCmd = conn.CreateCommand();
-            topicCmd.CommandText = @"
-                INSERT INTO assembly_topics (assembly_id, text, is_additional)
-                VALUES (@assemblyId, @text, @isAdditional)";
-            AddParam(topicCmd, "@assemblyId", id);
-            AddParam(topicCmd, "@text", topic.Text);
-            AddParam(topicCmd, "@isAdditional", topic.IsAdditional);
-            topicCmd.ExecuteNonQuery();
-        }
+            InsertTopic(conn, id, topic.Text, topic.IsAdditional);
 
         TenantAssembly created = new TenantAssembly(id, assembly.Building, assembly.ScheduledAt, assembly.Status);
         foreach (AssemblyTopic topic in assembly.Topics)
@@ -152,13 +116,7 @@ public class AssemblyDbRepository : IAssemblyRepository
     public void AddTopic(long assemblyId, string topicText)
     {
         using IDbConnection conn = PostgresConnection.CreateConnection();
-        IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            INSERT INTO assembly_topics (assembly_id, text, is_additional)
-            VALUES (@assemblyId, @text, true)";
-        AddParam(cmd, "@assemblyId", assemblyId);
-        AddParam(cmd, "@text", topicText);
-        cmd.ExecuteNonQuery();
+        InsertTopic(conn, assemblyId, topicText, isAdditional: true);
     }
 
     // Brise predlog teme (nakon sto je dodat kao dodatna tema)
@@ -196,31 +154,15 @@ public class AssemblyDbRepository : IAssemblyRepository
         return result;
     }
 
-    private TenantAssembly ReadAssembly(IDataReader r)
+    private static void InsertTopic(IDbConnection conn, long assemblyId, string text, bool isAdditional)
     {
-        Address  address  = new Address(r.GetInt64(r.GetOrdinal("address_id")),
-                                        r.GetString(r.GetOrdinal("street")),
-                                        r.GetString(r.GetOrdinal("street_number")));
-        Location location = new Location(r.GetInt64(r.GetOrdinal("location_id")),
-                                         r.GetString(r.GetOrdinal("city")),
-                                         r.GetString(r.GetOrdinal("country")));
-        Building building = new Building(r.GetInt64(r.GetOrdinal("building_id")),
-                                         address,
-                                         r.GetString(r.GetOrdinal("neighborhood")),
-                                         location,
-                                         r.GetInt32(r.GetOrdinal("number_of_floors")),
-                                         r.GetInt64(r.GetOrdinal("manager_id")));
-        return new TenantAssembly(r.GetInt64(r.GetOrdinal("id")),
-                                  building,
-                                  r.GetDateTime(r.GetOrdinal("scheduled_at")),
-                                  r.GetString(r.GetOrdinal("status")));
-    }
-
-    private static void AddParam(IDbCommand cmd, string name, object value)
-    {
-        IDbDataParameter p = cmd.CreateParameter();
-        p.ParameterName = name;
-        p.Value         = value;
-        cmd.Parameters.Add(p);
+        IDbCommand cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO assembly_topics (assembly_id, text, is_additional)
+            VALUES (@assemblyId, @text, @isAdditional)";
+        AddParam(cmd, "@assemblyId", assemblyId);
+        AddParam(cmd, "@text",       text);
+        AddParam(cmd, "@isAdditional", isAdditional);
+        cmd.ExecuteNonQuery();
     }
 }

@@ -36,8 +36,8 @@ public partial class BuildingDetailPage : Page
         _vm.ActiveTabIndex = index;
     }
 
-    private void PrevImage_Click(object sender, RoutedEventArgs e) => _vm.PreviousImage();
-    private void NextImage_Click(object sender, RoutedEventArgs e) => _vm.NextImage();
+    private void PrevImage_Click(object sender, RoutedEventArgs e) => _vm.ImageGallery.PreviousImage();
+    private void NextImage_Click(object sender, RoutedEventArgs e) => _vm.ImageGallery.NextImage();
 
     private void FabAdd_Click(object sender, RoutedEventArgs e)
     {
@@ -47,7 +47,7 @@ public partial class BuildingDetailPage : Page
     private void MarkAsResolved_Click(object sender, RoutedEventArgs e)
     {
         IssueReportItemViewModel item = (IssueReportItemViewModel)((Button)sender).Tag;
-        _vm.MarkIssueAsResolved(item.Id);
+        _vm.Issues.MarkAsResolved(item.Id);
     }
 
     private void RoomCard_Click(object sender, RoutedEventArgs e)
