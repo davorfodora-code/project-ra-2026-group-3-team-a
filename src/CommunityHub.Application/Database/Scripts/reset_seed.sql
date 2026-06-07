@@ -506,7 +506,9 @@ INSERT INTO users (id, username, password, name, surname, birthday, role, addres
 (-19, 'aleksa', 'aleksa123', 'Aleksa', 'Milošević',  '1996-08-08', 'Citizen',             'Gandijeva 49, Beograd'),
 (-21, 'igor',   'igor123',   'Igor',   'Babić',      '1993-04-26', 'Citizen',             'Gandijeva 12, Beograd'),
 (-22, 'nina',   'nina123',   'Nina',   'Lazić',      '2000-12-05', 'Citizen',             'Glavna 9, Beograd'),
-(-23, 'filip',  'filip123',  'Filip',  'Tadić',      '1998-01-22', 'Citizen',             'Zemunska 28, Beograd');
+(-23, 'filip',  'filip123',  'Filip',  'Tadić',      '1998-01-22', 'Citizen',             'Zemunska 28, Beograd'),
+(-12, 'dragan', 'dragan123', 'Dragan', 'Draganović', '1988-03-14', 'Tenant',               'Glavna 15, Zemun'),
+(-13, 'maja',   'maja123',   'Maja',   'Majić',      '1991-07-22', 'Tenant',               'Glavna 15, Zemun');
 
 
 -- ============================================================
@@ -807,12 +809,14 @@ INSERT INTO building_access_requests (id, tenant_id, building_id, apartment_numb
 --  Članstva u zgradama (za prethodno odobren zahtev -4)
 -- ============================================================
 INSERT INTO building_memberships (id, building_id, tenant_id, floor_number, apartment_number, joined_at) VALUES
-(-1, -1, -7, 3, 7, '2026-03-20 11:00:00'),
-(-2, -1, -3, 1, 1, '2026-04-05 10:00:00'),
-(-3, -1, -4, 2, 4, '2026-04-06 14:30:00'),
-(-4, -2, -3, 1, 2, '2026-04-10 10:00:00'),
-(-5, -3, -3, 1, 1, '2026-04-12 09:00:00'),
-(-6, -3, -4, 2, 3, '2026-04-12 10:00:00');
+(-1, -1, -7,  3, 7, '2026-03-20 11:00:00'),
+(-2, -1, -3,  1, 1, '2026-04-05 10:00:00'),
+(-3, -1, -4,  2, 4, '2026-04-06 14:30:00'),
+(-4, -2, -3,  1, 2, '2026-04-10 10:00:00'),
+(-5, -3, -3,  1, 1, '2026-04-12 09:00:00'),
+(-6, -3, -4,  2, 3, '2026-04-12 10:00:00'),
+(-7, -1, -12, 1, 2, '2026-01-15 09:00:00'),
+(-8, -1, -13, 2, 5, '2026-01-20 11:00:00');
 
 
 -- ============================================================
@@ -938,6 +942,14 @@ INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 (-7, -2, 'Popravka krova', false),
 (-8, -2, 'Nabavka kanti za reciklazu', true);
 
+-- Prisustvo na prošloj potvrđenoj skupštini -2 (5/8 stanova = kvorum)
+INSERT INTO assembly_attendances (id, assembly_id, apartment_number, tenant_id) VALUES
+(-3, -2, 1,  -3),
+(-4, -2, 4,  -4),
+(-5, -2, 7,  -7),
+(-6, -2, 2,  -12),
+(-7, -2, 5,  -13);
+
 -- Skupstina 3: otkazana, 4 teme
 INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
 (-3, -1, '2026-03-27 19:30:00', 'Cancelled');
@@ -955,6 +967,14 @@ INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
 INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 (-13, -4, 'Ugradnja interfona', false),
 (-14, -4, 'Uredjenje ulaza zgrade', false);
+
+-- Skupstina 5: predstojeća, zgrada -1, bez prisustva — za testiranje prijave prisustva
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-5, -1, '2026-09-20 18:00:00', 'Scheduled');
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-15, -5, 'Sanacija fasade zgrade', false),
+(-16, -5, 'Nabavka kanti za odvojeno odlaganje otpada', false);
 
 
 -- ============================================================

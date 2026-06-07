@@ -38,7 +38,9 @@ public class TenantAssemblyDto
 
     public string DateDisplay => ScheduledAt.ToString("dddd, dd MMM yyyy", CultureInfo.InvariantCulture);
     public string TimeDisplay => ScheduledAt.ToString("HH:mm");
-    public string DeadlineDisplay => $"Rok: {Deadline:dd.MM., HH:mm}";
+    public string DeadlineDisplay => $"Rok: {Deadline:dd.MM. HH:mm}";
     public string AttendanceDisplay => $"Prisustvo: {ConfirmedCount}/{TotalApartments} stanova ({AttendancePercent:F0}%)";
-    public string QuorumLabel => HasQuorum ? "50% dostignuto" : (Status == "Cancelled" ? "50% nije dostignuto" : "Potrebno 50%");
+    public string QuorumLabel => HasQuorum ? "50% dostignuto"
+        : Status == "Cancelled" ? "50% nije dostignuto"
+        : "Potrebno 50%";
 }
