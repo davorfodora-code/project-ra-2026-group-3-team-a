@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.Settings;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -32,8 +33,7 @@ public partial class SettingsPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Tooltipovi: kada je opcija ukljucena, pored polja u aplikaciji se prikazuju mala (i) dugmad sa pomoci.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Tooltipovi: kada je opcija ukljucena, pored polja u aplikaciji se prikazuju mala (i) dugmad sa pomoci.");
     }
 }

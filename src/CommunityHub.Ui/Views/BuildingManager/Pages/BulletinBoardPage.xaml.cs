@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -38,10 +39,9 @@ public partial class BulletinBoardPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
+        HelpDialog.Show(this,
             "Oglasi: pregled svih aktivnih i arhiviranih oglasa za odabranu zgradu.\n\n" +
-            "Statistika: broj oglasa po tipu i kategoriji za izabrani period,\n" +
-            "trenutno stanje oglasne table i stanar koji je najviše pomagao.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+            "Statistika: broj oglasa po tipu i kategoriji za izabrani period, " +
+            "trenutno stanje oglasne table i stanar koji je najviše pomagao.");
     }
 }

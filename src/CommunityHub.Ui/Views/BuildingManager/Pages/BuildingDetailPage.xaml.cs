@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -53,5 +54,17 @@ public partial class BuildingDetailPage : Page
     {
         CommonRoomDto room = (CommonRoomDto)((Button)sender).Tag;
         NavigationService?.Navigate(new CommonRoomCalendarPage(_shell, room, _vm.Building));
+    }
+
+    private void HelpButton_Click(object sender, RoutedEventArgs e)
+    {
+        HelpDialog.Show(this, "Pomoć - Detalji zgrade",
+            "Pregled detalja odabrane zgrade kroz tri kartice:\n\n" +
+            "• Informacije: slike zgrade i osnovni podaci (broj spratova, stanova, stanara).\n\n" +
+            "• Stanari: lista svih stanara po stanovima.\n\n" +
+            "• Prostorije: zajedničke prostorije zgrade. " +
+            "Dugme + otvara formu za dodavanje nove prostorije.\n\n" +
+            "Pri dnu se nalazi lista neresenih problema prijavljenih od strane stanara — " +
+            "možete ih označiti kao rešene.");
     }
 }

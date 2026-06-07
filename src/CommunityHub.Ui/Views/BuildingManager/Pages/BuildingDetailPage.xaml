@@ -57,6 +57,11 @@
                 </Button>
                 <TextBlock Text="Detalji zgrade" FontSize="18" FontWeight="SemiBold"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
             </Grid>
         </Border>
 

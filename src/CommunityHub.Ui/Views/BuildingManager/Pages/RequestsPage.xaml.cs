@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -93,9 +94,8 @@ public partial class RequestsPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
+        HelpDialog.Show(this,
             "Zahtevi za pristup: odobrite ili odbijte zahteve stanara.\n\n" +
-            "Zahtevi za iznajmljivanje: izaberite slobodan termin za zahteve na cekanju.",
-            "Pomoc", MessageBoxButton.OK, MessageBoxImage.Information);
+            "Zahtevi za iznajmljivanje: izaberite slobodan termin za zahteve na cekanju.");
     }
 }

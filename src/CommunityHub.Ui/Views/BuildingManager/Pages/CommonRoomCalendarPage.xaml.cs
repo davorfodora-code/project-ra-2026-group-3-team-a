@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -31,9 +32,8 @@ public partial class CommonRoomCalendarPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Pregled zauzetosti prostorije.\n" +
-            "Precrtani datumi su vec rezervisani (odobreni ili predlozeni zahtevi).",
-            "Pomoc", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Pregled zauzetosti prostorije.\n\n" +
+            "Precrtani datumi su vec rezervisani (odobreni ili predlozeni zahtevi).");
     }
 }

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -30,10 +31,9 @@ public partial class AssembliesPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Pregled svih zakazanih skupština stanara.\n" +
-            "Kliknite na skupštinu za detalje i upravljanje temama.\n" +
-            "Dugme + otvara formu za zakazivanje nove skupštine.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Pregled svih zakazanih skupština stanara.\n\n" +
+            "Kliknite na skupštinu za detalje i upravljanje temama.\n\n" +
+            "Dugme + otvara formu za zakazivanje nove skupštine.");
     }
 }

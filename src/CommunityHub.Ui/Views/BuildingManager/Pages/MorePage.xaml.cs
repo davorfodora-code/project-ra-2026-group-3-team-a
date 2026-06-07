@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.Views;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -21,8 +22,7 @@ public partial class MorePage : Page
 
     private void Wizard_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("Pokretni vodič dolazi uskoro.",
-            "Pokretni vodič", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this, "Pokretni vodič", "Pokretni vodič dolazi uskoro.");
     }
 
     private void Logout_Click(object sender, RoutedEventArgs e)
@@ -40,8 +40,7 @@ public partial class MorePage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Dodatne opcije: podešavanja aplikacije, pokretni vodič i odjava.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Dodatne opcije: podešavanja aplikacije, pokretni vodič i odjava.");
     }
 }

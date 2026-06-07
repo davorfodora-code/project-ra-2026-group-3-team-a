@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -32,8 +33,8 @@ public partial class BuildingsPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Lista zgrada kojima upravljate. Kliknite zgradu za detalje ili pritisnite + za registraciju nove.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Lista zgrada kojima upravljate.\n\n" +
+            "Kliknite zgradu za detalje ili pritisnite + za registraciju nove.");
     }
 }
