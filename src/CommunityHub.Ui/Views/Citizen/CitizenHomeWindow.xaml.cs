@@ -127,5 +127,8 @@ public partial class CitizenHomeWindow : Page
     {
         CitizenShellNavigation.Navigate(this, new CitizenCoordinatorReviewsWindow(_viewModel.UserId));
     }
-    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
+    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenDonationsWindow(_viewModel.UserId));
+    }
 }
