@@ -268,6 +268,50 @@ INSERT INTO city_facility_reservations (id, facility_id, district_id, reserved_a
 
 
 -- ============================================================
+--  Recenzije koordinatora kvarta (4.7)
+-- ============================================================
+INSERT INTO district_coordinator_reviews
+(id, district_id, coordinator_id, author_id, rating, justification, created_at, status, removed_at)
+VALUES
+(-1, -2, -5, -8, 5, 'Koordinator je veoma azuran i dobro organizuje aktivnosti.', '2026-05-04 10:00:00', 'Active', NULL),
+(-2, -2, -5, -10, 4, 'Komunikacija je dobra, sastanci su korisni.', '2026-05-08 12:00:00', 'Active', NULL),
+(-3, -2, -5, -11, 2, 'Nisam zadovoljan jer odgovori na zahteve kasne.', '2026-05-10 09:30:00', 'Active', NULL),
+(-4, -1, -5, -22, 5, 'Sve pohvale za organizaciju u Zemunu.', '2026-05-11 15:00:00', 'Active', NULL);
+
+INSERT INTO district_coordinator_review_reports
+(id, review_id, reporter_id, reported_at)
+VALUES
+(-1, -3, -14, '2026-05-12 11:00:00'),
+(-2, -3, -17, '2026-05-12 12:00:00');
+
+
+-- ============================================================
+--  Donacije gradjana (4.8)
+-- ============================================================
+INSERT INTO district_donations (id, district_id, citizen_id, category, amount, donated_at) VALUES
+(-1, -2, -8,  'Uredjenje parkova', 12000.00, '2026-05-03 10:15:00'),
+(-2, -2, -10, 'Rasveta',            8000.00, '2026-05-06 18:30:00'),
+(-3, -2, -11, 'Cistoca',            5000.00, '2026-05-08 09:45:00'),
+(-4, -2, -14, 'Zelenilo',           6500.00, '2026-05-11 13:20:00'),
+(-5, -1, -22, 'Hitne popravke',     9000.00, '2026-05-09 12:00:00');
+
+INSERT INTO district_expenses (id, district_id, category, amount, description, spent_at) VALUES
+(-1, -2, 'Uredjenje parkova', 3500.00, 'Popravka dve klupe u parku kod skole.', '2026-05-14 11:00:00'),
+(-2, -2, 'Rasveta',           2200.00, 'Zamena sijalica kod pesacke staze.',    '2026-05-16 16:30:00'),
+(-3, -2, 'Cistoca',           1800.00, 'Vanredno odnosenje kabastog otpada.',   '2026-05-18 09:00:00'),
+(-4, -1, 'Hitne popravke',    2500.00, 'Sanacija ostecenog poklopca sahta.',    '2026-05-15 10:45:00');
+
+UPDATE districts
+SET budget = donation_totals.total_amount
+FROM (
+    SELECT district_id, SUM(amount) AS total_amount
+    FROM district_donations
+    GROUP BY district_id
+) donation_totals
+WHERE districts.id = donation_totals.district_id;
+
+
+-- ============================================================
 --  Adrese
 -- ============================================================
 INSERT INTO addresses (id, street, street_number) VALUES

@@ -127,6 +127,12 @@ public partial class CitizenProfileWindow : Page
     }
 
     private void ReportsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Izveštaji");
-    private void ReviewsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Recenzije");
-    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e) => ShowUnavailableMessage("Donacije");
+    private void ReviewsNotImplementedButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenCoordinatorReviewsWindow(_userId));
+    }
+    private void DonationsNotImplementedButton_Click(object sender, RoutedEventArgs e)
+    {
+        CitizenShellNavigation.Navigate(this, new CitizenDonationsWindow(_userId));
+    }
 }

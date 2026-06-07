@@ -78,6 +78,8 @@ public partial class CitizenShellWindow : Window
             CitizenEventsWindow => "Događaji",
             CitizenMeetingsWindow => "Sastanci",
             CitizenCityFacilitiesWindow => "Gradski objekti",
+            CitizenCoordinatorReviewsWindow => "Recenzije",
+            CitizenDonationsWindow => "Donacije",
             CitizenProfileWindow => "Profil",
             _ => string.Empty
         };
@@ -94,6 +96,8 @@ public partial class CitizenShellWindow : Window
         SetButtonSelected(MEventsButton, page is CitizenEventsWindow);
         SetButtonSelected(MMeetingsButton, page is CitizenMeetingsWindow);
         SetButtonSelected(MObjectsButton, page is CitizenCityFacilitiesWindow);
+        SetButtonSelected(MReviewsButton, page is CitizenCoordinatorReviewsWindow);
+        SetButtonSelected(MDonationsButton, page is CitizenDonationsWindow);
 
         if (page is CitizenProfileWindow)
         {
@@ -216,7 +220,7 @@ public partial class CitizenShellWindow : Window
             case Key.NumPad7:
                 if (EnsureMemberShortcutAccess("Recenzije"))
                 {
-                    ReviewsNotImplementedButton_Click(this, new RoutedEventArgs());
+                    ReviewsNavButton_Click(this, new RoutedEventArgs());
                 }
 
                 e.Handled = true;
@@ -225,7 +229,7 @@ public partial class CitizenShellWindow : Window
             case Key.NumPad8:
                 if (EnsureMemberShortcutAccess("Donacije"))
                 {
-                    DonationsNotImplementedButton_Click(this, new RoutedEventArgs());
+                    DonationsNavButton_Click(this, new RoutedEventArgs());
                 }
 
                 e.Handled = true;
@@ -343,6 +347,18 @@ public partial class CitizenShellWindow : Window
     {
         _activeTopAction = string.Empty;
         Navigate(new CitizenCityFacilitiesWindow(UserId));
+    }
+
+    private void ReviewsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        _activeTopAction = string.Empty;
+        Navigate(new CitizenCoordinatorReviewsWindow(UserId));
+    }
+
+    private void DonationsNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        _activeTopAction = string.Empty;
+        Navigate(new CitizenDonationsWindow(UserId));
     }
 
     private static void ShowUnavailableMessage(string moduleName)
