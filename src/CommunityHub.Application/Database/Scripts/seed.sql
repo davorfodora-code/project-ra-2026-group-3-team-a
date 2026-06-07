@@ -266,6 +266,24 @@ INSERT INTO city_facility_reservations (id, facility_id, district_id, reserved_a
 
 
 -- ============================================================
+--  Recenzije koordinatora kvarta (4.7)
+-- ============================================================
+INSERT INTO district_coordinator_reviews
+(id, district_id, coordinator_id, author_id, rating, justification, created_at, status, removed_at)
+VALUES
+(-1, -2, -5, -8, 5, 'Koordinator je veoma azuran i dobro organizuje aktivnosti.', '2026-05-04 10:00:00', 'Active', NULL),
+(-2, -2, -5, -10, 4, 'Komunikacija je dobra, sastanci su korisni.', '2026-05-08 12:00:00', 'Active', NULL),
+(-3, -2, -5, -11, 2, 'Nisam zadovoljan jer odgovori na zahteve kasne.', '2026-05-10 09:30:00', 'Active', NULL),
+(-4, -1, -5, -22, 5, 'Sve pohvale za organizaciju u Zemunu.', '2026-05-11 15:00:00', 'Active', NULL);
+
+INSERT INTO district_coordinator_review_reports
+(id, review_id, reporter_id, reported_at)
+VALUES
+(-1, -3, -14, '2026-05-12 11:00:00'),
+(-2, -3, -17, '2026-05-12 12:00:00');
+
+
+-- ============================================================
 --  Adrese
 -- ============================================================
 INSERT INTO addresses (id, street, street_number) VALUES

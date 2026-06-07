@@ -65,7 +65,7 @@
                     <Button x:Name="MMeetingsButton" Content="🤝  Sastanci" Style="{StaticResource ShellNavButtonStyle}" Click="MeetingsNavButton_Click"/>
                     <Button Content="📊  Izveštaji" Style="{StaticResource CitizenNavButtonStyle}" Click="ReportsNotImplementedButton_Click"/>
                     <Button x:Name="MObjectsButton" Content="🏛  Gradski objekti" Style="{StaticResource ShellNavButtonStyle}" Click="ObjectsNavButton_Click"/>
-                    <Button Content="⭐  Recenzije" Style="{StaticResource CitizenNavButtonStyle}" Click="ReviewsNotImplementedButton_Click"/>
+                    <Button x:Name="MReviewsButton" Content="⭐  Recenzije" Style="{StaticResource ShellNavButtonStyle}" Click="ReviewsNavButton_Click"/>
                     <Button Content="💙  Donacije" Style="{StaticResource CitizenNavButtonStyle}" Click="DonationsNotImplementedButton_Click"/>
                 </StackPanel>
             </StackPanel>
