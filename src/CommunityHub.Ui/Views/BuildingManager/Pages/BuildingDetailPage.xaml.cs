@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -35,11 +36,35 @@ public partial class BuildingDetailPage : Page
         _vm.ActiveTabIndex = index;
     }
 
-    private void PrevImage_Click(object sender, RoutedEventArgs e) => _vm.PreviousImage();
-    private void NextImage_Click(object sender, RoutedEventArgs e) => _vm.NextImage();
+    private void PrevImage_Click(object sender, RoutedEventArgs e) => _vm.ImageGallery.PreviousImage();
+    private void NextImage_Click(object sender, RoutedEventArgs e) => _vm.ImageGallery.NextImage();
 
     private void FabAdd_Click(object sender, RoutedEventArgs e)
     {
         NavigationService?.Navigate(new NewCommonRoomPage(_shell, _vm.Building, _vm.LoadRooms));
+    }
+
+    private void MarkAsResolved_Click(object sender, RoutedEventArgs e)
+    {
+        IssueReportItemViewModel item = (IssueReportItemViewModel)((Button)sender).Tag;
+        _vm.Issues.MarkAsResolved(item.Id);
+    }
+
+    private void RoomCard_Click(object sender, RoutedEventArgs e)
+    {
+        CommonRoomDto room = (CommonRoomDto)((Button)sender).Tag;
+        NavigationService?.Navigate(new CommonRoomCalendarPage(_shell, room, _vm.Building));
+    }
+
+    private void HelpButton_Click(object sender, RoutedEventArgs e)
+    {
+        HelpDialog.Show(this, "Pomoć - Detalji zgrade",
+            "Pregled detalja odabrane zgrade kroz tri kartice:\n\n" +
+            "• Informacije: slike zgrade i osnovni podaci (broj spratova, stanova, stanara).\n\n" +
+            "• Stanari: lista svih stanara po stanovima.\n\n" +
+            "• Prostorije: zajedničke prostorije zgrade. " +
+            "Dugme + otvara formu za dodavanje nove prostorije.\n\n" +
+            "Pri dnu se nalazi lista neresenih problema prijavljenih od strane stanara — " +
+            "možete ih označiti kao rešene.");
     }
 }

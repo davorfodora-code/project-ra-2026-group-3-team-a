@@ -1,0 +1,128 @@
+<Window x:Class="CommunityHub.Ui.Views.Citizen.CitizenShellWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SIMS - Građanin"
+        Height="720"
+        Width="1280"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F8FF"
+        PreviewKeyDown="Window_PreviewKeyDown">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CitizenTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="ShellNavButtonStyle" TargetType="Button" BasedOn="{StaticResource CitizenNavButtonStyle}">
+                <Setter Property="Tag" Value="normal"/>
+                <Style.Triggers>
+                    <Trigger Property="Tag" Value="active">
+                        <Setter Property="Background" Value="#CFE2FF"/>
+                        <Setter Property="BorderBrush" Value="#6E95DD"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="TopActionButtonStyle" TargetType="Button" BasedOn="{StaticResource Win11SecondaryButtonStyle}">
+                <Setter Property="Tag" Value="normal"/>
+                <Style.Triggers>
+                    <Trigger Property="Tag" Value="active">
+                        <Setter Property="Background" Value="#CFE2FF"/>
+                        <Setter Property="BorderBrush" Value="#6E95DD"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#EAF2FF" BorderBrush="#D6E5FF" BorderThickness="0,0,1,0">
+            <StackPanel Margin="14,16,14,14">
+                <TextBlock Text="Navigacija"
+                           FontSize="20"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           Margin="0,0,0,12"/>
+
+                <StackPanel x:Name="NonMemberNavPanel">
+                    <Button x:Name="NmHomeButton" Content="🏠  Početna" Style="{StaticResource ShellNavButtonStyle}" Click="HomeNavButton_Click"/>
+                    <Button x:Name="NmSearchButton" Content="🔎  Pretraga kvartova" Style="{StaticResource ShellNavButtonStyle}" Click="SearchNavButton_Click"/>
+                    <Button x:Name="NmRequestsButton" Content="📄  Moji zahtevi" Style="{StaticResource ShellNavButtonStyle}" Click="RequestsNavButton_Click"/>
+                </StackPanel>
+
+                <StackPanel x:Name="MemberNavPanel" Visibility="Collapsed">
+                    <TextBlock Text="OSNOVNO" Style="{StaticResource CitizenNavGroupTitleStyle}" Margin="0,0,0,6"/>
+                    <Button x:Name="MHomeButton" Content="🏠  Početna" Style="{StaticResource ShellNavButtonStyle}" Click="HomeNavButton_Click"/>
+                    <Button x:Name="MMyDistrictButton" Content="📍  Moj kvart" Style="{StaticResource ShellNavButtonStyle}" Click="MyDistrictNavButton_Click"/>
+
+                    <TextBlock Text="AKTIVNOSTI U KVARTU" Style="{StaticResource CitizenNavGroupTitleStyle}"/>
+                    <Button x:Name="MEventsButton" Content="🗓  Događaji" Style="{StaticResource ShellNavButtonStyle}" Click="EventsNavButton_Click"/>
+                    <Button x:Name="MMeetingsButton" Content="🤝  Sastanci" Style="{StaticResource ShellNavButtonStyle}" Click="MeetingsNavButton_Click"/>
+                    <Button Content="📊  Izveštaji" Style="{StaticResource CitizenNavButtonStyle}" Click="ReportsNotImplementedButton_Click"/>
+                    <Button x:Name="MObjectsButton" Content="🏛  Gradski objekti" Style="{StaticResource ShellNavButtonStyle}" Click="ObjectsNavButton_Click"/>
+                    <Button x:Name="MReviewsButton" Content="⭐  Recenzije" Style="{StaticResource ShellNavButtonStyle}" Click="ReviewsNavButton_Click"/>
+                    <Button x:Name="MDonationsButton" Content="💙  Donacije" Style="{StaticResource ShellNavButtonStyle}" Click="DonationsNavButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" BorderBrush="#D6E5FF" BorderThickness="0,0,0,1" Background="White">
+                <Grid Margin="16,12">
+                    <TextBlock x:Name="PageTitleTextBlock"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               FontSize="20"
+                               Style="{StaticResource Win11HeadingTextStyle}"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="HelpTopButton"
+                                Content="❓ Pomoć"
+                                Style="{StaticResource TopActionButtonStyle}"
+                                Padding="12,8"
+                                Margin="0,0,8,0"
+                                Click="HelpTopButton_Click"/>
+                        <Button x:Name="SettingsTopButton"
+                                Content="⚙️ Podešavanja"
+                                Style="{StaticResource TopActionButtonStyle}"
+                                Padding="12,8"
+                                Margin="0,0,8,0"
+                                Click="SettingsTopButton_Click"/>
+                        <Button x:Name="ProfileTopButton"
+                                Style="{StaticResource TopActionButtonStyle}"
+                                Padding="10,8"
+                                Click="ProfileTopButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="22" Height="22" CornerRadius="11" Background="#2C6BE2" Margin="0,0,8,0">
+                                    <TextBlock x:Name="ProfileInitialsTextBlock"
+                                               Foreground="White"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock x:Name="ProfileNameTextBlock"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource Win11HeadingTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Frame x:Name="MainFrame"
+                   Grid.Row="1"
+                   NavigationUIVisibility="Hidden"/>
+        </Grid>
+    </Grid>
+</Window>

@@ -33,16 +33,17 @@ public partial class BuildingAccessRequestForm : Window
             BuildingAddressText.Text = $"Zgrada #{buildingId}";
             BuildingLocationText.Text = string.Empty;
         }
+
+        ApartmentComboBox.ItemsSource = _viewModel.GetApartmentNumbers(_buildingId);
     }
 
-    private void ApartmentNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    private void ApartmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ErrorTextBlock.Visibility = Visibility.Collapsed;
         WarningBorder.Visibility = Visibility.Collapsed;
         _isOccupied = false;
 
-        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int num) || num <= 0)
-            return;
+        if (ApartmentComboBox.SelectedItem is not int num) return;
 
         if (_viewModel.IsApartmentOccupied(_buildingId, num))
         {
@@ -61,9 +62,9 @@ public partial class BuildingAccessRequestForm : Window
     {
         ErrorTextBlock.Visibility = Visibility.Collapsed;
 
-        if (!int.TryParse(ApartmentNumberTextBox.Text.Trim(), out int num) || num <= 0)
+        if (ApartmentComboBox.SelectedItem is not int num)
         {
-            ErrorTextBlock.Text = "Unesite ispravan broj stana.";
+            ErrorTextBlock.Text = "Izaberite broj stana.";
             ErrorTextBlock.Visibility = Visibility.Visible;
             return;
         }

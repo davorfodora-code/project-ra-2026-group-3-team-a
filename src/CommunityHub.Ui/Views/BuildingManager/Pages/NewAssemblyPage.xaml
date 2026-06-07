@@ -1,0 +1,160 @@
+<Page x:Class="CommunityHub.Ui.Views.BuildingManager.Pages.NewAssemblyPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      xmlns:ctrl="clr-namespace:CommunityHub.Ui.Controls"
+      Title="Nova skupština" Background="#F5F5F5">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Zaglavlje -->
+        <Border Grid.Row="0" Background="White" Padding="12,12"
+                BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="BackButton_Click">
+                    <fa:IconBlock Icon="ArrowLeft" FontSize="13"/>
+                </Button>
+                <TextBlock Text="Nova skupština" FontSize="18" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right"
+                        Style="{StaticResource CircleButtonStyle}"
+                        Width="32" Height="32" Click="HelpButton_Click">
+                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Forma -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16,16,16,24">
+
+                <!-- Zgrada -->
+                <TextBlock Text="Zgrada:" FontSize="13" Foreground="#555555" Margin="0,0,0,4"/>
+                <ComboBox ItemsSource="{Binding Buildings}"
+                          SelectedItem="{Binding SelectedBuilding}"
+                          DisplayMemberPath="AddressDisplay"
+                          FontSize="13" Margin="0,0,0,14"/>
+
+                <!-- Datum -->
+                <TextBlock Text="Datum:" FontSize="13" Foreground="#555555" Margin="0,0,0,4"/>
+                <DatePicker SelectedDate="{Binding SelectedDate}"
+                            FontSize="13" Margin="0,0,0,14"/>
+
+                <!-- Vreme -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="Vreme (HH:mm):" FontSize="13" Foreground="#555555" VerticalAlignment="Center"/>
+                    <ctrl:InfoButton TargetName="TimeHelp"
+                                     Margin="6,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBox Text="{Binding TimeText, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="13" Padding="8,6" Margin="0,0,0,4"
+                         MaxLength="5"
+                         PreviewTextInput="TimeInput_PreviewTextInput"/>
+                <TextBlock x:Name="TimeHelp" Visibility="Collapsed"
+                           Text="Format vremena: HH:mm (npr. 18:30). Ne možete zakazati skupštinu u terminu koji je već zauzet drugom vašom skupštinom."
+                           FontSize="11" Foreground="#888888"
+                           TextWrapping="Wrap" Margin="0,0,0,16"/>
+
+                <!-- Teme -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="Teme:" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <ctrl:InfoButton TargetName="TopicsHelp"
+                                     Margin="6,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock x:Name="TopicsHelp" Visibility="Collapsed"
+                           Text="Dodajte bar jednu temu. Stanari mogu predložiti dodatne teme koje možete dodati naknadno."
+                           FontSize="11" Foreground="#888888"
+                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                <ItemsControl ItemsSource="{Binding Topics}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Background="White"
+                                        BorderBrush="#DDDDDD" BorderThickness="1"
+                                        CornerRadius="6" Padding="10,6">
+                                    <TextBlock Text="{Binding Text}" FontSize="13" TextWrapping="Wrap"/>
+                                </Border>
+                                <Button Grid.Column="1" Tag="{Binding}"
+                                        Click="RemoveTopic_Click"
+                                        Background="Transparent" BorderThickness="0"
+                                        Cursor="Hand" Margin="6,0,0,0">
+                                    <fa:IconBlock Icon="Times" FontSize="14" Foreground="#C62828"/>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Dodaj temu -->
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0"
+                             Text="{Binding NewTopicText, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="13" Padding="8,6"
+                             x:Name="NewTopicBox"/>
+                    <Button Grid.Column="1" Click="AddTopic_Click"
+                            Margin="8,0,0,0" Padding="10,6"
+                            Background="White" BorderBrush="#1A1A1A"
+                            BorderThickness="1" Cursor="Hand" FontSize="13">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconBlock Icon="Plus" FontSize="11" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Dodaj temu" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- Greska -->
+                <Border Background="#FFEBEE" CornerRadius="6" Padding="10,8" Margin="0,14,0,0"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#C62828"
+                               FontSize="13" TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Zakaži dugme -->
+                <Button Content="Zakaži" Click="Submit_Click"
+                        Margin="0,24,0,0" Padding="0,12"
+                        FontSize="15" FontWeight="SemiBold"
+                        HorizontalAlignment="Stretch">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#1A1A1A"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#333333"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

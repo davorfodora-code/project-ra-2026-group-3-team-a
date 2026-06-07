@@ -1,0 +1,35 @@
+<UserControl x:Class="CommunityHub.Ui.Controls.InfoButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+             x:Name="Root">
+
+    <!-- Malo (i) dugme koje na klik prikazuje pomoc.
+         Vidljivost se proverava pri Loaded — ako su tooltipovi iskljuceni, sakriva se. -->
+    <Button x:Name="InfoBtn"
+            Width="14" Height="14"
+            Padding="0"
+            Background="Transparent"
+            BorderThickness="0"
+            Cursor="Hand"
+            Click="InfoBtn_Click"
+            ToolTip="{Binding TooltipText, ElementName=Root}">
+        <Button.Template>
+            <ControlTemplate TargetType="Button">
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="#888888" BorderThickness="1"
+                        CornerRadius="11">
+                    <fa:IconBlock Icon="Info" FontSize="10"
+                                  Foreground="#888888"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#F0F0F0"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Button.Template>
+    </Button>
+</UserControl>

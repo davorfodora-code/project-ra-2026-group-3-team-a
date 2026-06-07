@@ -12,16 +12,16 @@
             <UniformGrid Columns="2" Rows="2">
 
                 <Button Style="{StaticResource TileButtonStyle}" Height="180"
-                        Margin="0,0,8,8">
+                        Margin="0,0,8,8" Click="NavAssemblies_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock x:Name="AssembliesCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nadolazeće skupštine" FontSize="14"
+                            <TextBlock Text="Nadolazeće skupštine" FontSize="18"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
@@ -36,10 +36,10 @@
                             <TextBlock x:Name="HelpPostsCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Aktivni oglasi za pomoć" FontSize="14"
+                            <TextBlock Text="Aktivni oglasi za pomoć" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
@@ -48,16 +48,16 @@
                 </Button>
 
                 <Button Style="{StaticResource TileButtonStyle}" Height="180"
-                        Margin="0,8,8,0">
+                        Margin="0,8,8,0" Click="NavIssues_Click">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock x:Name="IssuesCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nerešeni problemi" FontSize="14"
+                            <TextBlock Text="Nerešeni problemi" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
@@ -72,10 +72,10 @@
                             <TextBlock x:Name="PendingRequestsCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Zahtev za pristup na čekanju" FontSize="14"
+                            <TextBlock Text="Zahtev za pristup na čekanju" FontSize="16"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
-                                       MaxWidth="140"/>
+                                       MaxWidth="160"/>
                         </StackPanel>
                         <fa:IconBlock Icon="ArrowRight" FontSize="18" Foreground="#CCCCCC"
                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"

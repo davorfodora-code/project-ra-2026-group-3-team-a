@@ -43,6 +43,11 @@ public class BuildingAccessRequestService
         return _requestRepository.ExistsPending(tenantId, buildingId);
     }
 
+    public List<int> GetApartmentNumbers(long buildingId)
+    {
+        return _requestRepository.GetApartmentNumbers(buildingId);
+    }
+
     private TenantAccessRequestDto MapToDto(BuildingAccessRequest r) => new TenantAccessRequestDto
     {
         RequestId = r.Id,

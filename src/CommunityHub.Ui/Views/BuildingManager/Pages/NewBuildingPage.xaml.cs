@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 using Microsoft.Win32;
 
@@ -102,5 +103,14 @@ public partial class NewBuildingPage : Page
         _onBuildingAdded?.Invoke();
         if (NavigationService?.CanGoBack == true)
             NavigationService.GoBack();
+    }
+
+    private void HelpButton_Click(object sender, RoutedEventArgs e)
+    {
+        HelpDialog.Show(this, "Pomoć - Nova zgrada",
+            "Na ovoj stranici registrujete novu zgradu. " +
+            "Popunite adresu, naselje, lokaciju i broj spratova. " +
+            "Za svaki sprat unesite brojeve stanova. Na kraju dodajte slike zgrade.\n\n" +
+            "*Tooltipovi se mogu uključiti/isključiti u Podešavanjima.");
     }
 }

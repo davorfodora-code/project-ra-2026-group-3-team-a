@@ -30,6 +30,7 @@ public partial class CommonRoomsPage : System.Windows.Controls.Page
         BuildingCombo.SelectedIndex = 0;
 
         RefreshRooms();
+        _shell.SetBreadcrumb("Prostorije");
     }
 
     private void RefreshRooms()
@@ -59,6 +60,7 @@ public partial class CommonRoomsPage : System.Windows.Controls.Page
         RoomsPanel.Visibility = Visibility.Visible;
         RequestsPanel.Visibility = Visibility.Collapsed;
         RefreshRooms();
+        _shell.SetBreadcrumb("Prostorije");
     }
 
     private void TabRequests_Click(object sender, RoutedEventArgs e)
@@ -72,6 +74,7 @@ public partial class CommonRoomsPage : System.Windows.Controls.Page
         RequestsPanel.Visibility = Visibility.Visible;
         RoomsPanel.Visibility = Visibility.Collapsed;
         RefreshRequests();
+        _shell.SetBreadcrumb("Moji zahtevi");
     }
 
     private void BuildingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)

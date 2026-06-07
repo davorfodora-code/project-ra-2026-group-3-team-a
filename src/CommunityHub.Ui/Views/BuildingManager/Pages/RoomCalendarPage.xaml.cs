@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -74,10 +75,9 @@ public partial class RoomCalendarPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Izaberite slobodan datum na kalendaru.\n" +
-            "Zauzeti datumi (već rezervisani) su onemogućeni za odabir.\n" +
-            "Kliknite Potvrdi da pošaljete predlog termina stanaru.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Izaberite slobodan datum na kalendaru.\n\n" +
+            "Zauzeti datumi (već rezervisani) su onemogućeni za odabir.\n\n" +
+            "Kliknite Potvrdi da pošaljete predlog termina stanaru.");
     }
 }

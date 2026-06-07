@@ -21,23 +21,48 @@ public class Injector
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
         { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
         { typeof(IBulletinBoardStatsRepository),    new BulletinBoardStatsDbRepository() },
+        { typeof(IAssemblyRepository),               new AssemblyDbRepository() },
+        { typeof(IIssueReportRepository),            new IssueReportDbRepository() },
 
         // Citizen
-        { typeof(ICitizenDistrictRepository),               new CitizenDistrictDbRepository() },
-        { typeof(ICitizenDistrictAccessRequestRepository),  new CitizenDistrictAccessRequestDbRepository() },
-        { typeof(ICitizenUserProfileRepository),            new CitizenUserProfileDbRepository()  },
-        { typeof(ICitizenDistrictMembershipRepository),     new CitizenDistrictMembershipDbRepository() },
-        { typeof(ICitizenDistrictEventRepository),          new CitizenDistrictEventDbRepository() },
+        { typeof(ICitizenDistrictRepository),                 new CitizenDistrictDbRepository() },
+        { typeof(ICitizenDistrictAccessRequestRepository),    new CitizenDistrictAccessRequestDbRepository() },
+        { typeof(ICitizenUserProfileRepository),              new CitizenUserProfileDbRepository() },
+        { typeof(ICitizenDistrictMembershipRepository),       new CitizenDistrictMembershipDbRepository() },
+        { typeof(ICitizenDistrictEventRepository),            new CitizenDistrictEventDbRepository() },
         { typeof(ICitizenDistrictEventApplicationRepository), new CitizenDistrictEventApplicationDbRepository() },
+        { typeof(ICitizenTrustRecordRepository),              new CitizenTrustRecordDbRepository() },
+        { typeof(ICitizenTrustRecordService),                 new CitizenTrustRecordService(
+                                                                new CitizenTrustRecordDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenMeetingRepository),                  new CitizenMeetingDbRepository() },
+        { typeof(ICitizenMeetingService),                     new CitizenMeetingService(
+                                                                new CitizenMeetingDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenCityFacilityRepository),            new CitizenCityFacilityDbRepository()  },
+        { typeof(ICitizenCityFacilityService),               new CitizenCityFacilityService(
+                                                                new CitizenCityFacilityDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenCoordinatorReviewRepository),       new CitizenCoordinatorReviewDbRepository() },
+        { typeof(ICitizenCoordinatorReviewService),          new CitizenCoordinatorReviewService(
+                                                                new CitizenCoordinatorReviewDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
+        { typeof(ICitizenDonationRepository),                new CitizenDonationDbRepository() },
+        { typeof(ICitizenDonationService),                   new CitizenDonationService(
+                                                                new CitizenDonationDbRepository(),
+                                                                new CitizenDistrictMembershipDbRepository()) },
 
         // Tenant
-        { typeof(TenantSvc.ITenantBuildingSearchRepository),  new BuildingDbRepository() },
-        { typeof(TenantSvc.IBuildingAccessRequestRepository), new TenantDb.BuildingAccessRequestDbRepository() },
-        { typeof(TenantSvc.IBuildingMembershipRepository),    new TenantDb.BuildingMembershipDbRepository() },
+        { typeof(TenantSvc.ITenantBuildingSearchRepository),         new BuildingDbRepository() },
+        { typeof(TenantSvc.IBuildingAccessRequestRepository),        new TenantDb.BuildingAccessRequestDbRepository() },
+        { typeof(TenantSvc.IBuildingMembershipRepository),           new TenantDb.BuildingMembershipDbRepository() },
         { typeof(TenantSvc.IAdvertisementRepository),                new TenantDb.AdvertisementDbRepository() },
-        { typeof(TenantSvc.ISchedulingRepository),                new TenantDb.SchedulingDbRepository() },
-        { typeof(TenantSvc.ICommonRoomTenantRepository),          new TenantDb.CommonRoomTenantDbRepository() },
-        { typeof(TenantSvc.ICommonRoomRequestTenantRepository),   new TenantDb.CommonRoomRequestTenantDbRepository() },
+        { typeof(TenantSvc.ISchedulingRepository),                   new TenantDb.SchedulingDbRepository() },
+        { typeof(TenantSvc.ICommonRoomTenantRepository),             new TenantDb.CommonRoomTenantDbRepository() },
+        { typeof(TenantSvc.ICommonRoomRequestTenantRepository),      new TenantDb.CommonRoomRequestTenantDbRepository() },
+        { typeof(TenantSvc.INotificationRepository),                  new TenantDb.NotificationDbRepository() },
+        { typeof(TenantSvc.ITenantIssueRepository),                   new TenantDb.TenantIssueDbRepository() },
+        { typeof(TenantSvc.ITenantAssemblyRepository),                new TenantDb.TenantAssemblyDbRepository() },
 
         // User
         { typeof(IUserRepository),                      new UserDbRepository() },

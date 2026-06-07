@@ -10,18 +10,18 @@
         </Grid.RowDefinitions>
 
         <!-- Tab header -->
-        <Border Grid.Row="0" Background="White" Padding="24,14,24,0"
+        <Border Grid.Row="0" Background="White" Padding="24,16,24,0"
                 BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="TabSearchBtn" Tag="active" Style="{StaticResource TabBtnStyle}"
-                        Click="TabSearch_Click" Margin="0,0,28,0" Padding="0,0,0,10">
+                        Click="TabSearch_Click" Margin="0,0,32,0" Padding="0,0,0,12">
                     <TextBlock x:Name="TabSearchText" Text="Pretraga zgrada"
-                               FontSize="19" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+                               FontSize="24" FontWeight="SemiBold" Foreground="#1A1A1A"/>
                 </Button>
                 <Button x:Name="TabRequestsBtn" Style="{StaticResource TabBtnStyle}"
-                        Click="TabRequests_Click" Padding="0,0,0,10">
+                        Click="TabRequests_Click" Padding="0,0,0,12">
                     <TextBlock x:Name="TabRequestsText" Text="Moji zahtevi"
-                               FontSize="18" Foreground="#888888"/>
+                               FontSize="22" Foreground="#888888"/>
                 </Button>
             </StackPanel>
         </Border>
@@ -37,66 +37,71 @@
             <!-- Forma za pretragu -->
             <Border Grid.Row="0" Background="White" Padding="24,14"
                     BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="155"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="155"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="Adresa" FontSize="12" Foreground="#888888" Margin="0,0,0,4"/>
-                        <TextBox x:Name="AddressTextBox" Padding="8,6" BorderBrush="#DDDDDD"
-                                 BorderThickness="1" FontSize="14"
-                                 TextChanged="LiveSearch_Changed"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="Naselje" FontSize="12" Foreground="#888888" Margin="0,0,0,4"/>
-                        <TextBox x:Name="NeighborhoodTextBox" Padding="8,6" BorderBrush="#DDDDDD"
-                                 TextChanged="LiveSearch_Changed"
-                                 BorderThickness="1" FontSize="14"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="4">
-                        <TextBlock Text="Grad" FontSize="12" Foreground="#888888" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CityComboBox" Padding="6,5" FontSize="14"
-                                  SelectionChanged="LiveSearch_Changed"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="6">
-                        <TextBlock Text="Država" FontSize="12" Foreground="#888888" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CountryComboBox" Padding="6,5" FontSize="14"
-                                  SelectionChanged="LiveSearch_Changed"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="8" Orientation="Horizontal" VerticalAlignment="Bottom">
-                        <Button Style="{StaticResource PrimaryBtnStyle}"
-                                Padding="16,7" Margin="0,0,8,0" Click="SearchButton_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <fa:IconBlock Icon="MagnifyingGlass" FontSize="13" Foreground="White"
-                                              Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Pretraži" FontSize="14" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Style="{StaticResource SecondaryBtnStyle}"
-                                Padding="16,7" Click="ClearButton_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <fa:IconBlock Icon="Xmark" FontSize="13"
-                                              Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Obriši" FontSize="14" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Grid>
+                <StackPanel>
+                    <!-- Red 1: Adresa + Naselje -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Adresa" FontSize="14" Foreground="#888888" Margin="0,0,0,4"/>
+                            <TextBox x:Name="AddressTextBox" Padding="8,6" BorderBrush="#DDDDDD"
+                                     BorderThickness="1" FontSize="15"
+                                     TextChanged="LiveSearch_Changed"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Naselje" FontSize="14" Foreground="#888888" Margin="0,0,0,4"/>
+                            <TextBox x:Name="NeighborhoodTextBox" Padding="8,6" BorderBrush="#DDDDDD"
+                                     TextChanged="LiveSearch_Changed"
+                                     BorderThickness="1" FontSize="15"/>
+                        </StackPanel>
+                    </Grid>
+                    <!-- Red 2: Grad + Država + dugmad -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Grad" FontSize="14" Foreground="#888888" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="CityComboBox" Padding="6,6" FontSize="15"
+                                      SelectionChanged="LiveSearch_Changed"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Država" FontSize="14" Foreground="#888888" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="CountryComboBox" Padding="6,6" FontSize="15"
+                                      SelectionChanged="LiveSearch_Changed"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Bottom">
+                            <Button Style="{StaticResource PrimaryBtnStyle}"
+                                    Padding="16,8" Margin="0,0,8,0" Click="SearchButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="MagnifyingGlass" FontSize="14" Foreground="White"
+                                                  Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Pretraži" FontSize="15" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource SecondaryBtnStyle}"
+                                    Padding="16,8" Click="ClearButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconBlock Icon="Xmark" FontSize="14"
+                                                  Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Obriši" FontSize="15" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
             </Border>
 
             <!-- Broj rezultata -->
             <TextBlock Grid.Row="1" x:Name="ResultCountText"
-                       FontSize="13" Foreground="#888888" Margin="24,8,24,4"/>
+                       FontSize="15" Foreground="#888888" Margin="24,8,24,4"/>
 
             <!-- Kartice zgrada -->
             <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -108,7 +113,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="4,4,4,4" Width="355" CornerRadius="12"
+                            <Border Margin="4,4,4,4" Width="338" CornerRadius="12"
                                     Background="White" ClipToBounds="True">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="6" ShadowDepth="1"
@@ -155,16 +160,16 @@
                                     <!-- Info -->
                                     <StackPanel Grid.Row="1" Margin="16,12,16,10">
                                         <TextBlock Text="{Binding Building.AddressDisplay}"
-                                                   FontSize="19" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                   FontSize="20" FontWeight="SemiBold" Margin="0,0,0,3"/>
                                         <TextBlock Text="{Binding Building.Neighborhood}"
-                                                   FontSize="14" Foreground="#888888" Margin="0,0,0,2"/>
+                                                   FontSize="15" Foreground="#888888" Margin="0,0,0,2"/>
                                         <TextBlock Text="{Binding Building.LocationDisplay}"
-                                                   FontSize="14" Foreground="#888888" Margin="0,0,0,6"/>
+                                                   FontSize="15" Foreground="#888888" Margin="0,0,0,6"/>
                                         <StackPanel Orientation="Horizontal">
-                                            <fa:IconBlock Icon="LayerGroup" FontSize="12"
+                                            <fa:IconBlock Icon="LayerGroup" FontSize="14"
                                                           Foreground="#AAAAAA" Margin="0,0,5,0"
                                                           VerticalAlignment="Center"/>
-                                            <TextBlock FontSize="13" Foreground="#AAAAAA">
+                                            <TextBlock FontSize="15" Foreground="#AAAAAA">
                                                 <Run Text="{Binding Building.NumberOfFloors}"/>
                                                 <Run Text=" spratova  ·  "/>
                                                 <Run Text="{Binding Building.TotalApartments}"/>
@@ -178,8 +183,8 @@
                                             BorderThickness="0,1,0,0" Padding="16,10">
                                         <Button Content="Zatraži pristup"
                                                 Style="{StaticResource PrimaryBtnStyle}"
-                                                Padding="0,8" Tag="{Binding}"
-                                                HorizontalAlignment="Stretch" FontSize="14"
+                                                Padding="0,9" Tag="{Binding}"
+                                                HorizontalAlignment="Stretch" FontSize="15"
                                                 Click="RequestAccess_Click"/>
                                     </Border>
                                 </Grid>
@@ -201,17 +206,17 @@
             <Border Grid.Row="0" Background="White" Padding="24,12"
                     BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
-                    <ComboBox x:Name="StatusFilterComboBox" Width="190" Padding="8,5" FontSize="14"
-                              SelectionChanged="StatusFilter_Changed">
+                    <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="16"/>
+                    <ComboBox x:Name="StatusFilterComboBox" Width="210" Padding="8,6" FontSize="15"
+                              SelectionChanged="RequestFiltersChanged">
                         <ComboBoxItem Content="Svi statusi" IsSelected="True"/>
-                        <ComboBoxItem Content="Pending"/>
-                        <ComboBoxItem Content="Accepted"/>
-                        <ComboBoxItem Content="Rejected"/>
+                        <ComboBoxItem Content="Na čekanju" Tag="Pending"/>
+                        <ComboBoxItem Content="Prihvaćeno" Tag="Accepted"/>
+                        <ComboBoxItem Content="Odbijeno" Tag="Rejected"/>
                     </ComboBox>
-                    <TextBlock Text="Datum:" VerticalAlignment="Center" Margin="24,0,8,0" FontSize="14"/>
-                    <ComboBox x:Name="SortComboBox" Width="165" Padding="8,5" FontSize="14"
-                              SelectionChanged="SortFilter_Changed">
+                    <TextBlock Text="Datum:" VerticalAlignment="Center" Margin="24,0,8,0" FontSize="16"/>
+                    <ComboBox x:Name="SortComboBox" Width="180" Padding="8,6" FontSize="15"
+                              SelectionChanged="RequestFiltersChanged">
                         <ComboBoxItem Content="Najnoviji prvo" IsSelected="True"/>
                         <ComboBoxItem Content="Najstariji prvo"/>
                     </ComboBox>

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Profil" Height="600" Width="900"
+        Title="Profil" Height="720" Width="1280" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
@@ -36,32 +36,66 @@
         </Border>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="PostsItemsControl" Margin="40,20">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="#E0E0E0" BorderThickness="1"
-                                Background="White" Margin="0,0,0,15"
-                                Padding="20" CornerRadius="5">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Title}"
-                                           FontSize="18"
-                                           FontWeight="Bold"
-                                           Foreground="#2C3E50"
-                                           Margin="0,0,0,8"/>
-                                <TextBlock Text="{Binding Content}"
-                                           FontSize="14"
-                                           TextWrapping="Wrap"
-                                           Foreground="#34495E"
-                                           Margin="0,0,0,10"/>
-                                <TextBlock Text="{Binding CreatedAt, StringFormat='dd.MM.yyyy. HH:mm'}"
-                                           FontSize="12"
-                                           Foreground="#95A5A6"
-                                           FontStyle="Italic"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <StackPanel Margin="40,20">
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" Background="White" CornerRadius="5" Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Evidencija poverenja" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Datum priključenja:" FontWeight="SemiBold" Margin="0,0,8,8"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TrustJoinDateTextBlock" Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Organizovani događaji:" FontWeight="SemiBold" Margin="0,0,8,8"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TrustOrganizedCountTextBlock" Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Potvrđena volontiranja:" FontWeight="SemiBold" Margin="0,0,8,8"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TrustVolunteerCountTextBlock" Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Nivo poverenja:" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="TrustLevelTextBlock" FontWeight="Bold"/>
+                        </Grid>
+
+                        <TextBlock x:Name="TrustInfoTextBlock" Foreground="#7F8C8D" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl x:Name="PostsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#E0E0E0" BorderThickness="1"
+                                    Background="White" Margin="0,0,0,15"
+                                    Padding="20" CornerRadius="5">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="#2C3E50"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="{Binding Content}"
+                                               FontSize="14"
+                                               TextWrapping="Wrap"
+                                               Foreground="#34495E"
+                                               Margin="0,0,0,10"/>
+                                    <TextBlock Text="{Binding CreatedAt, StringFormat='dd.MM.yyyy. HH:mm'}"
+                                               FontSize="12"
+                                               Foreground="#95A5A6"
+                                               FontStyle="Italic"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Window>

@@ -1,0 +1,144 @@
+<Page x:Class="CommunityHub.Ui.Views.Citizen.CitizenCoordinatorReviewsWindow"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="{DynamicResource Win11WindowBackgroundBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CitizenTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Recenzije koordinatora"
+                               Style="{StaticResource CitizenPageTitleStyle}"/>
+
+                    <TextBlock Text="Ocenite koordinatora svog kvarta i pregledajte recenzije drugih građana."
+                               Style="{StaticResource CitizenPageSubtitleStyle}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="Ctrl+7 Recenzije"
+                           Foreground="{StaticResource Win11TextMutedBrush}"
+                           VerticalAlignment="Bottom"/>
+            </Grid>
+
+            <Border Style="{StaticResource Win11CardStyle}" Margin="0,12,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Nova recenzija"
+                               Style="{StaticResource CitizenSectionTitleStyle}"/>
+
+                    <WrapPanel Grid.Row="2">
+                        <TextBlock Text="Ocena:"
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+
+                        <ComboBox x:Name="RatingComboBox"
+                                  Width="90"
+                                  Style="{StaticResource Win11InputComboBoxStyle}"
+                                  Margin="0,0,14,0">
+                            <ComboBoxItem Content="1" Tag="1"/>
+                            <ComboBoxItem Content="2" Tag="2"/>
+                            <ComboBoxItem Content="3" Tag="3"/>
+                            <ComboBoxItem Content="4" Tag="4"/>
+                            <ComboBoxItem Content="5" Tag="5"/>
+                        </ComboBox>
+
+                        <TextBlock Text="Obrazloženje:"
+                                   Foreground="{StaticResource Win11TextMutedBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+
+                        <TextBox x:Name="JustificationTextBox"
+                                 Width="440"
+                                 Style="{StaticResource Win11InputTextBoxStyle}"
+                                 Margin="0,0,10,0"/>
+
+                        <Button Content="Sačuvaj recenziju"
+                                Style="{StaticResource Win11PrimaryButtonStyle}"
+                                Padding="14,9"
+                                Click="CreateReviewButton_Click"/>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Win11CardStyle}" Margin="0,12,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Text="Recenzije građana"
+                                   Style="{StaticResource CitizenSectionTitleStyle}"/>
+
+                        <WrapPanel Grid.Column="1">
+                            <Button Content="Prijavi izabranu recenziju"
+                                    Style="{StaticResource Win11PrimaryButtonStyle}"
+                                    Padding="14,9"
+                                    Margin="0,0,8,0"
+                                    Click="ReportReviewButton_Click"/>
+
+                            <Button Content="Osveži"
+                                    Style="{StaticResource Win11SecondaryButtonStyle}"
+                                    Padding="14,9"
+                                    Click="RefreshButton_Click"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <TextBlock x:Name="EmptyReviewsTextBlock"
+                               Grid.Row="2"
+                               Text="Nema aktivnih recenzija za koordinatora vašeg kvarta."
+                               Foreground="{StaticResource Win11TextMutedBrush}"
+                               Visibility="Collapsed"/>
+
+                    <DataGrid x:Name="ReviewsDataGrid"
+                              Grid.Row="4"
+                              Style="{StaticResource Win11DataGridStyle}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              MinHeight="320">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Građanin" Binding="{Binding AuthorFullName}" Width="170"/>
+                            <DataGridTextColumn Header="Ocena" Binding="{Binding RatingDisplay}" Width="80"/>
+                            <DataGridTextColumn Header="Obrazloženje" Binding="{Binding Justification}" Width="*"/>
+                            <DataGridTextColumn Header="Datum" Binding="{Binding CreatedAtDisplay}" Width="140"/>
+                            <DataGridTextColumn Header="Prijave" Binding="{Binding ReportDisplay}" Width="160"/>
+                            <DataGridTextColumn Header="Moje" Binding="{Binding MyStatusDisplay}" Width="110"/>
+                            <DataGridTextColumn Header="Status prijave" Binding="{Binding ReportedStatusDisplay}" Width="130"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

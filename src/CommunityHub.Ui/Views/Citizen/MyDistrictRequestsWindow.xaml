@@ -1,27 +1,62 @@
-<Window x:Class="CommunityHub.Ui.Views.Citizen.MyDistrictRequestsWindow"
+<Page x:Class="CommunityHub.Ui.Views.Citizen.MyDistrictRequestsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Moji zahtevi za pristup kvartu" Height="600" Width="900"
-        WindowStartupLocation="CenterScreen">
+        Background="{DynamicResource Win11WindowBackgroundBrush}">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CitizenTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0"/>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
-            <Button Content="← Nazad" Click="BackButton_Click"
-                    Padding="10,5" Margin="0,0,15,0" VerticalAlignment="Center"/>
-            <TextBlock Text="Moji zahtevi za pristup kvartu" FontSize="20"
-                       FontWeight="Bold" VerticalAlignment="Center"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Content="Nazad"
+                    Click="BackButton_Click"
+                    Style="{StaticResource Win11SecondaryButtonStyle}"
+                    Padding="14,8"/>
+            <StackPanel Grid.Column="1" Margin="14,0,0,0">
+                <TextBlock Text="Moji zahtevi"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           FontSize="28"/>
+                <TextBlock Text="Pregled statusa i upravljanje zahtevima za pristup kvartu."
+                           Foreground="{StaticResource Win11TextMutedBrush}"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+            <TextBlock Grid.Column="2"
+                       Text="Ctrl+3 | Delete Obriši zahtev"
+                       Foreground="{StaticResource Win11TextMutedBrush}"
+                       VerticalAlignment="Bottom"/>
+        </Grid>
 
-        <Border Grid.Row="1" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="5"
-                Padding="15" Margin="0,0,0,15">
+        <Border Grid.Row="2"
+                Grid.Column="0"
+                Style="{StaticResource Win11CardStyle}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="Status:"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"/>
                 <ComboBox x:Name="StatusFilterComboBox" Width="180"
+                          Style="{StaticResource Win11InputComboBoxStyle}"
                           SelectionChanged="StatusFilterComboBox_SelectionChanged">
                     <ComboBoxItem Content="Svi" IsSelected="True"/>
                     <ComboBoxItem Content="Pending"/>
@@ -29,8 +64,12 @@
                     <ComboBoxItem Content="Rejected"/>
                 </ComboBox>
 
-                <TextBlock Text="Sortiranje po datumu:" VerticalAlignment="Center" Margin="30,0,8,0"/>
+                <TextBlock Text="Sortiranje po datumu:"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           VerticalAlignment="Center"
+                           Margin="30,0,8,0"/>
                 <ComboBox x:Name="SortComboBox" Width="150"
+                          Style="{StaticResource Win11InputComboBoxStyle}"
                           SelectionChanged="SortComboBox_SelectionChanged">
                     <ComboBoxItem Content="Najnoviji prvo" IsSelected="True"/>
                     <ComboBoxItem Content="Najstariji prvo"/>
@@ -38,15 +77,14 @@
             </StackPanel>
         </Border>
 
-        <DataGrid Grid.Row="2" x:Name="RequestsDataGrid"
+        <DataGrid Grid.Row="4"
+                  Grid.Column="0"
+                  x:Name="RequestsDataGrid"
+                  Style="{StaticResource Win11DataGridStyle}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   CanUserSortColumns="False"
-                  SelectionMode="Single"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="Horizontal"
-                  BorderThickness="1"
-                  BorderBrush="#CCCCCC">
+                  SelectionMode="Single">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Kvart" Binding="{Binding DistrictName}" Width="*"/>
                 <DataGridTextColumn Header="Datum kreiranja" Binding="{Binding CreatedAtFormatted}" Width="Auto"/>
@@ -56,11 +94,34 @@
                         <DataTemplate>
                             <Button Content="Obriši" Click="DeleteRequestButton_Click"
                                     Padding="10,4"
+                                    Style="{StaticResource Win11SecondaryButtonStyle}"
                                     Visibility="{Binding DeleteButtonVisibility}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+
+        <Border Grid.Row="0"
+                Grid.RowSpan="5"
+                Grid.Column="1"
+                Margin="12,0,0,0"
+                Style="{StaticResource Win11CardStyle}">
+            <StackPanel>
+                <TextBlock Text="Navigacija"
+                           Style="{StaticResource Win11HeadingTextStyle}"
+                           FontSize="18"
+                           Margin="0,0,0,10"/>
+                <Button Content="🏠  Početna"
+                        Style="{StaticResource CitizenNavButtonStyle}"
+                        Click="HomeNavButton_Click"/>
+                <Button Content="🔎  Pretraga kvartova"
+                        Style="{StaticResource CitizenNavButtonStyle}"
+                        Click="SearchNavButton_Click"/>
+                <Button Content="📄  Moji zahtevi"
+                        Style="{StaticResource CitizenNavButtonStyle}"
+                        IsEnabled="False"/>
+            </StackPanel>
+        </Border>
     </Grid>
-</Window>
+</Page>

@@ -7,7 +7,6 @@ public class NewBuildingViewModel : BaseViewModel
 {
     private readonly BuildingRegistrationViewModel _regVm;
     private readonly long _managerId;
-
     private string _addressInput = string.Empty;
     private string _neighborhood = string.Empty;
     private string _city = string.Empty;
@@ -22,8 +21,6 @@ public class NewBuildingViewModel : BaseViewModel
         Floors = new ObservableCollection<FloorInputViewModel>();
         ImagePaths = new ObservableCollection<string>();
     }
-
-    // --- TwoWay polja forme ---
 
     public string AddressInput
     {
@@ -59,12 +56,8 @@ public class NewBuildingViewModel : BaseViewModel
         }
     }
 
-    // --- Dinamicke kolekcije ---
-
     public ObservableCollection<FloorInputViewModel> Floors { get; }
     public ObservableCollection<string> ImagePaths { get; }
-
-    // --- Greska ---
 
     public string ErrorMessage
     {
@@ -75,10 +68,7 @@ public class NewBuildingViewModel : BaseViewModel
                 OnPropertyChanged(nameof(HasError));
         }
     }
-
     public bool HasError => !string.IsNullOrEmpty(_errorMessage);
-
-    // --- Akcije nad kolekcijama ---
 
     private void RegenerateFloors()
     {
@@ -96,81 +86,20 @@ public class NewBuildingViewModel : BaseViewModel
 
     public void RemoveImage(string path) => ImagePaths.Remove(path);
 
-    // --- Submit ---
-
     public bool TrySubmit()
     {
         ErrorMessage = string.Empty;
-
-        if (string.IsNullOrWhiteSpace(_addressInput))
-        {
-            ErrorMessage = "Unesite adresu zgrade.";
-            return false;
-        }
-
-        // Poslednja rec u adresi = kucni broj, ostatak = ulica
-        string[] parts = _addressInput.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 2)
-        {
-            ErrorMessage = "Adresa mora sadrzati ulicu i kucni broj (npr. Nemanjina 4).";
-            return false;
-        }
-        string streetNumber = parts[^1];
-        string street = string.Join(" ", parts[..^1]);
-
-        if (string.IsNullOrWhiteSpace(_neighborhood)) { ErrorMessage = "Unesite naziv naselja."; return false; }
-        if (string.IsNullOrWhiteSpace(_city))         { ErrorMessage = "Unesite grad."; return false; }
-        if (string.IsNullOrWhiteSpace(_country))      { ErrorMessage = "Unesite drzavu."; return false; }
-        if (!int.TryParse(_floorsText, out int floors) || floors <= 0)
-        {
-            ErrorMessage = "Broj spratova mora biti pozitivan broj.";
-            return false;
-        }
-        if (ImagePaths.Count == 0)
-        {
-            ErrorMessage = "Dodajte bar jednu sliku zgrade.";
-            return false;
-        }
-
-        foreach (FloorInputViewModel floor in Floors)
-        {
-            if (floor.Apartments.Count == 0)
-            {
-                ErrorMessage = $"Sprat {floor.FloorNumber} mora imati bar jedan stan.";
-                return false;
-            }
-        }
-
-        CreateBuildingDto dto = new CreateBuildingDto
-        {
-            Street = street,
-            StreetNumber = streetNumber,
-            Neighborhood = _neighborhood.Trim(),
-            City = _city.Trim(),
-            Country = _country.Trim(),
-            NumberOfFloors = floors,
-            ManagerId = _managerId,
-            ImagePaths = new List<string>(ImagePaths)
-        };
-
-        foreach (FloorInputViewModel floor in Floors)
-        {
-            dto.Floors.Add(new FloorInputDto
-            {
-                FloorNumber = floor.FloorNumber,
-                ApartmentNumbers = floor.Apartments.ToList()
-            });
-        }
-
+        string? err = NewBuildingValidation.Validate(
+            _addressInput, _neighborhood, _city, _country, _floorsText, ImagePaths, Floors);
+        if (err != null) { ErrorMessage = err; return false; }
         try
         {
+            CreateBuildingDto dto = NewBuildingValidation.BuildDto(
+                _managerId, _addressInput, _neighborhood, _city, _country,
+                _floorsText, ImagePaths, Floors);
             _regVm.RegisterBuilding(dto);
             return true;
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Greska: {ex.Message}";
-            return false;
-        }
+        catch (Exception ex) { ErrorMessage = $"Greska: {ex.Message}"; return false; }
     }
 }

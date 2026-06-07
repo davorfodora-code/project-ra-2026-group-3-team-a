@@ -40,34 +40,26 @@ public class SchedulingDbRepository : ISchedulingRepository
             long ownerAdId     = reader.GetInt64(reader.GetOrdinal("owner_ad_id"));
             long requesterAdId = reader.GetInt64(reader.GetOrdinal("requester_ad_id"));
             var key = (ownerAdId, requesterAdId);
-
             if (!groups.TryGetValue(key, out var group))
-            {
-                group = new MyBookingGroupDto
-                {
-                    OwnerAdId           = ownerAdId,
-                    RequesterAdId       = requesterAdId,
-                    OwnerName           = reader.GetString(reader.GetOrdinal("owner_name")),
-                    IsOwnerOffering     = reader.GetBoolean(reader.GetOrdinal("owner_is_offering")),
-                    OwnerDescription    = reader.GetString(reader.GetOrdinal("owner_description")),
-                    OwnerStartDate      = reader.GetDateTime(reader.GetOrdinal("owner_start_date")),
-                    OwnerEndDate        = reader.GetDateTime(reader.GetOrdinal("owner_end_date")),
-                    OwnerCategory       = reader.GetString(reader.GetOrdinal("owner_category")),
-                    IsRequesterOffering = reader.GetBoolean(reader.GetOrdinal("requester_is_offering")),
-                };
-                groups[key] = group;
-            }
-
-            group.Slots.Add(new BookedSlotDto
-            {
-                SlotId    = reader.GetInt64(reader.GetOrdinal("slot_id")),
-                StartTime = reader.GetDateTime(reader.GetOrdinal("start_time")),
-                EndTime   = reader.GetDateTime(reader.GetOrdinal("end_time")),
-            });
+                groups[key] = group = CreateBookingGroup(reader, ownerAdId, requesterAdId);
+            group.Slots.Add(MapBookedSlot(reader));
         }
-
         return [.. groups.Values];
     }
+
+    private static MyBookingGroupDto CreateBookingGroup(IDataReader reader, long ownerAdId, long requesterAdId) =>
+        new MyBookingGroupDto
+        {
+            OwnerAdId           = ownerAdId,
+            RequesterAdId       = requesterAdId,
+            OwnerName           = reader.GetString(reader.GetOrdinal("owner_name")),
+            IsOwnerOffering     = reader.GetBoolean(reader.GetOrdinal("owner_is_offering")),
+            OwnerDescription    = reader.GetString(reader.GetOrdinal("owner_description")),
+            OwnerStartDate      = reader.GetDateTime(reader.GetOrdinal("owner_start_date")),
+            OwnerEndDate        = reader.GetDateTime(reader.GetOrdinal("owner_end_date")),
+            OwnerCategory       = reader.GetString(reader.GetOrdinal("owner_category")),
+            IsRequesterOffering = reader.GetBoolean(reader.GetOrdinal("requester_is_offering")),
+        };
 
     public List<BookedOnMyPostDto> GetBookedOnMyPosts(long tenantId)
     {
@@ -103,46 +95,47 @@ public class SchedulingDbRepository : ISchedulingRepository
         using IDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            long myAdId       = reader.GetInt64(reader.GetOrdinal("my_ad_id"));
+            long myAdId         = reader.GetInt64(reader.GetOrdinal("my_ad_id"));
             long bookerTenantId = reader.GetInt64(reader.GetOrdinal("booker_tenant_id"));
-
             if (!posts.TryGetValue(myAdId, out var post))
-            {
-                post = new BookedOnMyPostDto
-                {
-                    MyAdId        = myAdId,
-                    IsMyAdOffering = reader.GetBoolean(reader.GetOrdinal("my_is_offering")),
-                    MyStartDate   = reader.GetDateTime(reader.GetOrdinal("my_start_date")),
-                    MyEndDate     = reader.GetDateTime(reader.GetOrdinal("my_end_date")),
-                    MyCategory    = reader.GetString(reader.GetOrdinal("my_category")),
-                    MyStatus      = reader.GetString(reader.GetOrdinal("my_status")),
-                };
-                posts[myAdId] = post;
-            }
-
+                posts[myAdId] = post = CreateBookedOnMyPost(reader, myAdId);
             var bookerKey = (myAdId, bookerTenantId);
             if (!bookerKeys.TryGetValue(bookerKey, out var booker))
             {
-                booker = new BookerEntryDto
-                {
-                    BookerName          = reader.GetString(reader.GetOrdinal("booker_name")),
-                    IsBookerOffering    = reader.GetBoolean(reader.GetOrdinal("booker_is_offering")),
-                    BookerAdDescription = reader.GetString(reader.GetOrdinal("booker_description")),
-                };
+                bookerKeys[bookerKey] = booker = CreateBookerEntry(reader);
                 post.Bookers.Add(booker);
-                bookerKeys[bookerKey] = booker;
             }
-
-            booker.Slots.Add(new BookedSlotDto
-            {
-                SlotId    = reader.GetInt64(reader.GetOrdinal("slot_id")),
-                StartTime = reader.GetDateTime(reader.GetOrdinal("start_time")),
-                EndTime   = reader.GetDateTime(reader.GetOrdinal("end_time")),
-            });
+            booker.Slots.Add(MapBookedSlot(reader));
         }
-
         return [.. posts.Values];
     }
+
+    private static BookedOnMyPostDto CreateBookedOnMyPost(IDataReader reader, long myAdId) =>
+        new BookedOnMyPostDto
+        {
+            MyAdId         = myAdId,
+            IsMyAdOffering = reader.GetBoolean(reader.GetOrdinal("my_is_offering")),
+            MyStartDate    = reader.GetDateTime(reader.GetOrdinal("my_start_date")),
+            MyEndDate      = reader.GetDateTime(reader.GetOrdinal("my_end_date")),
+            MyCategory     = reader.GetString(reader.GetOrdinal("my_category")),
+            MyStatus       = reader.GetString(reader.GetOrdinal("my_status")),
+        };
+
+    private static BookerEntryDto CreateBookerEntry(IDataReader reader) =>
+        new BookerEntryDto
+        {
+            BookerName          = reader.GetString(reader.GetOrdinal("booker_name")),
+            IsBookerOffering    = reader.GetBoolean(reader.GetOrdinal("booker_is_offering")),
+            BookerAdDescription = reader.GetString(reader.GetOrdinal("booker_description")),
+        };
+
+    private static BookedSlotDto MapBookedSlot(IDataReader reader) =>
+        new BookedSlotDto
+        {
+            SlotId    = reader.GetInt64(reader.GetOrdinal("slot_id")),
+            StartTime = reader.GetDateTime(reader.GetOrdinal("start_time")),
+            EndTime   = reader.GetDateTime(reader.GetOrdinal("end_time")),
+        };
 
     private static void AddParameter(IDbCommand command, string name, object value)
     {

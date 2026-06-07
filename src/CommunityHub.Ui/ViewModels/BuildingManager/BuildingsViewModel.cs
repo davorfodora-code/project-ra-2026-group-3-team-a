@@ -8,13 +8,15 @@ namespace CommunityHub.Ui.ViewModels.BuildingManager;
 public class BuildingsViewModel : BaseViewModel
 {
     private readonly BuildingService _service;
+    private readonly long _managerId;
 
     private ObservableCollection<BuildingDto> _buildings = new();
     private bool _isEmpty;
 
-    public BuildingsViewModel()
+    public BuildingsViewModel(long managerId)
     {
-        _service = new BuildingService(Injector.Get<IBuildingRepository>());
+        _managerId = managerId;
+        _service   = new BuildingService(Injector.Get<IBuildingRepository>());
     }
 
     public ObservableCollection<BuildingDto> Buildings
@@ -31,7 +33,7 @@ public class BuildingsViewModel : BaseViewModel
 
     public void Load()
     {
-        List<BuildingDto> result = _service.Search(null, null, null, null);
+        List<BuildingDto> result = _service.GetByManagerId(_managerId);
         Buildings = new ObservableCollection<BuildingDto>(result);
         IsEmpty = result.Count == 0;
     }
