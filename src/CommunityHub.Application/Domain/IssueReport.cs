@@ -31,4 +31,7 @@ public class IssueReport
         ReportedAt = reportedAt;
         Status = status;
     }
+
+    // Upravnik oznacava problem kao potencijalno resen
+    public void MarkAsResolved() => Status = "PotentiallyResolved";
 }

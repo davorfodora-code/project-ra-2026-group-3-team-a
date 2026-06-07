@@ -21,7 +21,8 @@ public class Injector
         { typeof(ICommonRoomRepository),            new CommonRoomDbRepository() },
         { typeof(ICommonRoomRequestRepository),     new CommonRoomRequestDbRepository() },
         { typeof(IBulletinBoardStatsRepository),    new BulletinBoardStatsDbRepository() },
-        { typeof(IAssemblyRepository),              new AssemblyDbRepository() },
+        { typeof(IAssemblyRepository),               new AssemblyDbRepository() },
+        { typeof(IIssueReportRepository),            new IssueReportDbRepository() },
 
         // Citizen
         { typeof(ICitizenDistrictRepository),                 new CitizenDistrictDbRepository() },
@@ -55,6 +56,9 @@ public class Injector
         { typeof(TenantSvc.ISchedulingRepository),                   new TenantDb.SchedulingDbRepository() },
         { typeof(TenantSvc.ICommonRoomTenantRepository),             new TenantDb.CommonRoomTenantDbRepository() },
         { typeof(TenantSvc.ICommonRoomRequestTenantRepository),      new TenantDb.CommonRoomRequestTenantDbRepository() },
+        { typeof(TenantSvc.INotificationRepository),                  new TenantDb.NotificationDbRepository() },
+        { typeof(TenantSvc.ITenantIssueRepository),                   new TenantDb.TenantIssueDbRepository() },
+        { typeof(TenantSvc.ITenantAssemblyRepository),                new TenantDb.TenantAssemblyDbRepository() },
 
         // User
         { typeof(IUserRepository),                      new UserDbRepository() },
@@ -66,6 +70,9 @@ public class Injector
         { typeof(ICitizenTrustStatisticRepository),      new CitizenTrustStatisticDbRepository() },
         { typeof(IForumRepository), new ForumDbRepository() },
         { typeof(ICityObjectRepository), new CityObjectDbRepository() },
+        { typeof(IReviewRepository),     new ReviewDbRepository() },
+        { typeof(IBudgetRepository),     new BudgetDbRepository() },
+        { typeof(ICityGiftRepository),   new CityGiftDbRepository() },
     };
 
     public static T Get<T>()

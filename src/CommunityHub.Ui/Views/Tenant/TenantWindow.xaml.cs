@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using CommunityHub.Application.Database.Repositories;
+using CommunityHub.Application.Services.Tenant.Dto;
+using CommunityHub.Ui.ViewModels.Tenant;
 using CommunityHub.Ui.Views.Tenant.Pages;
 using FontAwesome.Sharp;
 
@@ -14,6 +16,7 @@ public partial class TenantWindow : Window
 
     private string _currentSectionTitle = "Početna";
     private (Border Highlight, IconBlock Icon, TextBlock Text, string Title)[] _navItems = null!;
+    private NotificationsViewModel? _notifVm;
 
     public TenantWindow(long userId)
     {
@@ -30,10 +33,16 @@ public partial class TenantWindow : Window
             (NavOglasnaHighlight,     NavOglasnaIcon,      NavOglasnaText,      "Oglasna tabla"),
             (NavZakazivanjeHighlight, NavZakazivanjeIcon,  NavZakazivanjeText,  "Zakazivanje"),
             (NavZajednickeHighlight,  NavZajednickeIcon,   NavZajednickeText,   "Zajedničke prostorije"),
+            (NavProblemiHighlight,    NavProblemiIcon,     NavProblemiText,     "Problemi"),
+            (NavSkupstineHighlight,   NavSkupstineIcon,    NavSkupstineText,    "Skupštine"),
         ];
 
         SetActiveNav(0);
         MainFrame.Navigate(new TenantHomePage(this));
+
+        _notifVm = new NotificationsViewModel(UserId);
+        _notifVm.Load();
+        UpdateNotificationBadge();
     }
 
     public void SetActiveNav(int index)
@@ -86,6 +95,18 @@ public partial class TenantWindow : Window
         MainFrame.Navigate(new CommonRoomsPage(this));
     }
 
+    private void NavProblemi_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav(5);
+        MainFrame.Navigate(new IssuesPage(this));
+    }
+
+    private void NavSkupstine_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav(6);
+        MainFrame.Navigate(new AssembliesPage(this));
+    }
+
     private void Avatar_Click(object sender, MouseButtonEventArgs e)
     {
         new ProfileWindow(UserId).Show();
@@ -96,5 +117,44 @@ public partial class TenantWindow : Window
         char n = !string.IsNullOrEmpty(name) ? char.ToUpper(name[0]) : '?';
         char s = !string.IsNullOrEmpty(surname) ? char.ToUpper(surname[0]) : '?';
         return $"{n}{s}";
+    }
+
+    private void Bell_Click(object sender, RoutedEventArgs e)
+    {
+        _notifVm!.Load();
+        NotificationsList.ItemsSource = _notifVm.Notifications;
+        NoNotificationsText.Visibility = _notifVm.UnreadCount == 0
+            ? Visibility.Visible : Visibility.Collapsed;
+        NotificationsPanel.Visibility = NotificationsPanel.Visibility == Visibility.Visible
+            ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    private void CloseNotifications_Click(object sender, RoutedEventArgs e)
+        => NotificationsPanel.Visibility = Visibility.Collapsed;
+
+    private void NotificationAction_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn || btn.Tag is not NotificationDto dto) return;
+        _notifVm!.MarkAsRead(dto.Id);
+        _notifVm.Load();
+        UpdateNotificationBadge();
+        NotificationsPanel.Visibility = Visibility.Collapsed;
+
+        if (dto.Type == "Rezervacija termina")
+        {
+            SetActiveNav(3);
+            MainFrame.Navigate(new SchedulingPage(this));
+        }
+        else
+        {
+            new AdSlotsWindow(dto, UserId) { Owner = this }.ShowDialog();
+        }
+    }
+
+    public void UpdateNotificationBadge()
+    {
+        int count = _notifVm?.UnreadCount ?? 0;
+        NotificationBadge.Visibility = count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        NotificationBadgeText.Text = count.ToString();
     }
 }

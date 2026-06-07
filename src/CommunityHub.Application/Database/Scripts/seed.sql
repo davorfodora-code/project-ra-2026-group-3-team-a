@@ -468,6 +468,32 @@ INSERT INTO common_room_requests (id, tenant_id, common_room_id, requested_start
 
 
 -- ============================================================
+--  Obaveštenja — test podaci za 2.6
+-- ============================================================
+-- Jovana (-4) ima aktivan oglas koji traži selidbu (budući datum)
+INSERT INTO advertisements (id, bulletin_board_id, tenant_id, description, is_offering, start_date, end_date, category, status) VALUES
+(-7, -1, -4, 'Tražim pomoć oko selidbe krajem juna.', FALSE, '2026-06-20', '2026-06-30', 'Selidba', 'Aktivan');
+
+INSERT INTO advertisement_slots (id, advertisement_id, start_time, end_time, is_available) VALUES
+(-701, -7, '2026-06-20 16:00:00', '2026-06-20 17:00:00', TRUE),
+(-702, -7, '2026-06-21 16:00:00', '2026-06-21 17:00:00', TRUE);
+
+-- Petar (-3) kreira oglas koji nudi selidbu (budući datum) — podudara se sa Jovaninim
+INSERT INTO advertisements (id, bulletin_board_id, tenant_id, description, is_offering, start_date, end_date, category, status) VALUES
+(-8, -1, -3, 'Nudim pomoć pri selidbi, imam kombi dostupan krajem juna.', TRUE, '2026-06-18', '2026-07-02', 'Selidba', 'Aktivan');
+
+INSERT INTO advertisement_slots (id, advertisement_id, start_time, end_time, is_available) VALUES
+(-801, -8, '2026-06-20 16:00:00', '2026-06-20 17:00:00', TRUE),
+(-802, -8, '2026-06-20 17:00:00', '2026-06-20 18:00:00', TRUE),
+(-803, -8, '2026-06-21 16:00:00', '2026-06-21 17:00:00', TRUE);
+
+-- Notifikacija za Jovanu (-4): Petrov oglas (-8) se podudara sa njenim oglasom (-7)
+INSERT INTO notifications (tenant_id, type, related_ad_id, related_slot_id, is_read, created_at) VALUES
+(-4, 'Novi podudarni oglas', -8, NULL, FALSE, '2026-06-06 08:00:00');
+
+-- Notifikacija za Petara (-3): Jovana je rezervisala termin na njegovom oglasu (već postoji rezervacija iz seed podataka)
+INSERT INTO notifications (tenant_id, type, related_ad_id, related_slot_id, is_read, created_at) VALUES
+(-3, 'Rezervacija termina', -1, -1, FALSE, '2026-06-01 10:00:00');
 --  Skupstine stanara (test podaci za 1.6 i 1.7)
 --  Zgrada -1 (Glavna 15, Zemun) — stanovi: 1-8
 -- ============================================================
@@ -487,7 +513,7 @@ INSERT INTO assembly_topic_suggestions (id, assembly_id, tenant_id, topic) VALUE
 
 INSERT INTO assembly_attendances (id, assembly_id, apartment_number, tenant_id) VALUES
 (-1, -1, 1, -3),
-(-2, -1, 2, -4);
+(-2, -1, 4, -4);
 
 -- Skupstina 2: prosla, Confirmed, 5 tema
 INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
@@ -504,8 +530,28 @@ INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
 (-3, -1, '2026-03-27 19:30:00', 'Cancelled');
 
+-- Skupstina 4: predstojeća, zgrada -2 (Bulevar Mihajla Pupina 22), Scheduled
+INSERT INTO tenant_assemblies (id, building_id, scheduled_at, status) VALUES
+(-4, -2, '2026-08-10 18:00:00', 'Scheduled');
+
 INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 (-9,  -3, 'Redovni pregled liftova', false),
 (-10, -3, 'Zimsko ciscenje', false),
 (-11, -3, 'Uredjenje dvorista', false),
 (-12, -3, 'Zamena sijalica na hodniku', false);
+
+INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
+(-13, -4, 'Ugradnja interfona', false),
+(-14, -4, 'Uredjenje ulaza zgrade', false);
+
+
+-- ============================================================
+--  Prijave problema (test podaci za 2.7)
+-- ============================================================
+INSERT INTO issue_reports (id, tenant_id, building_id, description, priority, reported_at, status) VALUES
+(-1, -3, -1, 'Curenje vode na 3. spratu, mokri zidovi u hodniku.',         'Urgent',    '2026-04-14 09:00:00', 'Unresolved'),
+(-2, -4, -1, 'Lift se zaglavljuje dva puta dnevno.',                        'Urgent',    '2026-04-20 11:30:00', 'Unresolved'),
+(-3, -3, -1, 'Pokvarena sijalica na 3. spratu u hodniku.',                  'SolveSoon', '2026-03-20 14:00:00', 'Unresolved'),
+(-4, -4, -1, 'Ostecena ograda na parkingu — opasnost za decu.',             'SolveSoon', '2026-04-08 10:00:00', 'PotentiallyResolved'),
+(-5, -3, -1, 'Buka iz podruma kasno naveče.',                               'CanWait',   '2026-03-28 20:00:00', 'PotentiallyResolved'),
+(-6, -4, -1, 'Klupa u dvorištu je slomljena.',                              'CanWait',   '2026-04-01 08:00:00', 'Unresolved');

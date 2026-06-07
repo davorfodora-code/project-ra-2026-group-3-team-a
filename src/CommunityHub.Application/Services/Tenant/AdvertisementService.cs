@@ -41,6 +41,9 @@ public class AdvertisementService
             .Select(a => MapToDto(a, dto.TenantId))
             .ToList();
 
+        _repository.CreateMatchingAdNotifications(
+            adId, bulletinBoardId, dto.IsOffering, dto.Category, dto.StartDate, dto.EndDate);
+
         return (true, adId, matchingAds);
     }
 

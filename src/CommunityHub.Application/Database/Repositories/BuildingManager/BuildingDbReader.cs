@@ -83,26 +83,18 @@ internal static class BuildingDbReader
             JOIN addresses a ON a.id = b.address_id
             JOIN locations l ON l.id = b.location_id
             WHERE 1=1";
-        if (!string.IsNullOrWhiteSpace(address))
-        {
-            cmd.CommandText += " AND (a.street || ' ' || a.street_number) ILIKE @address";
-            BuildingDbWriter.AddParameter(cmd, "@address", "%" + address + "%");
-        }
-        if (!string.IsNullOrWhiteSpace(neighborhood))
-        {
-            cmd.CommandText += " AND b.neighborhood ILIKE @neighborhood";
-            BuildingDbWriter.AddParameter(cmd, "@neighborhood", "%" + neighborhood + "%");
-        }
-        if (!string.IsNullOrWhiteSpace(city))
-        {
-            cmd.CommandText += " AND l.city ILIKE @city";
-            BuildingDbWriter.AddParameter(cmd, "@city", "%" + city + "%");
-        }
-        if (!string.IsNullOrWhiteSpace(country))
-        {
-            cmd.CommandText += " AND l.country ILIKE @country";
-            BuildingDbWriter.AddParameter(cmd, "@country", "%" + country + "%");
-        }
+        AppendIlikeFilter(cmd, address,      "@address",      "(a.street || ' ' || a.street_number)");
+        AppendIlikeFilter(cmd, neighborhood, "@neighborhood", "b.neighborhood");
+        AppendIlikeFilter(cmd, city,         "@city",         "l.city");
+        AppendIlikeFilter(cmd, country,      "@country",      "l.country");
         return cmd;
+    }
+
+    // Dodaje opcioni AND ... ILIKE filter na postojeci CommandText ako je vrednost neprazna
+    private static void AppendIlikeFilter(IDbCommand cmd, string? value, string paramName, string sqlExpression)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        cmd.CommandText += $" AND {sqlExpression} ILIKE {paramName}";
+        BuildingDbWriter.AddParameter(cmd, paramName, "%" + value + "%");
     }
 }

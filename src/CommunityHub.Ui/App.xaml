@@ -9,6 +9,21 @@
         <conv:NameToInitialsConverter x:Key="NameToInitials"/>
         <conv:NullToVisibilityConverter x:Key="NullToCollapsed"/>
 
+        <!-- Traka za prikaz prisustva (skupštine) -->
+        <Style x:Key="AttendanceBarStyle" TargetType="ProgressBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Border Name="PART_Track" Background="#E0E0E0" CornerRadius="5"/>
+                            <Border Name="PART_Indicator" HorizontalAlignment="Left"
+                                    Background="#3498DB" CornerRadius="5"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
 
         <!-- Kružno dugme za Help (?) -->
         <Style x:Key="CircleButtonStyle" TargetType="Button">

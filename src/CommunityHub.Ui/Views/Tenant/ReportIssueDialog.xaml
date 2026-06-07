@@ -1,0 +1,63 @@
+<Window x:Class="CommunityHub.Ui.Views.Tenant.ReportIssueDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Prijava problema" Width="480"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <StackPanel Margin="24,20,24,24">
+
+        <TextBlock Text="Prijava problema" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+        <!-- Building -->
+        <TextBlock Text="Zgrada:" FontSize="18" Margin="0,0,0,6"/>
+        <ComboBox x:Name="BuildingCombo"
+                  FontSize="18" Padding="8,6"
+                  DisplayMemberPath="DisplayName"
+                  Margin="0,0,0,16"/>
+
+        <!-- Description -->
+        <TextBlock Text="Opis problema:" FontSize="18" Margin="0,0,0,6"/>
+        <TextBox x:Name="DescriptionBox"
+                 FontSize="18" AcceptsReturn="True"
+                 Height="90" TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 Padding="8,6" Margin="0,0,0,16"/>
+
+        <!-- Priority -->
+        <TextBlock Text="Prioritet:" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+
+        <RadioButton x:Name="RadioHitno" GroupName="Priority" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="Hitno" FontSize="18" FontWeight="SemiBold"/>
+                <TextBlock Text="Potrebno hitno rešavanje" FontSize="15" Foreground="#888888"/>
+            </StackPanel>
+        </RadioButton>
+
+        <RadioButton x:Name="RadioSolveSoon" GroupName="Priority" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="Treba rešiti uskoro" FontSize="18" FontWeight="SemiBold"/>
+                <TextBlock Text="Treba rešiti u narednom periodu" FontSize="15" Foreground="#888888"/>
+            </StackPanel>
+        </RadioButton>
+
+        <RadioButton x:Name="RadioCanWait" GroupName="Priority" IsChecked="True" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="Može da čeka" FontSize="18" FontWeight="SemiBold"/>
+                <TextBlock Text="Ne zahteva hitno rešavanje" FontSize="15" Foreground="#888888"/>
+            </StackPanel>
+        </RadioButton>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Otkaži" Click="Cancel_Click"
+                    Padding="16,8" FontSize="16" Cursor="Hand"
+                    Margin="0,0,10,0"/>
+            <Button Content="Pošalji prijavu"
+                    Click="Submit_Click"
+                    Style="{StaticResource PrimaryBtnStyle}"
+                    Padding="16,8" FontSize="16"/>
+        </StackPanel>
+
+    </StackPanel>
+</Window>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -72,30 +73,29 @@ public partial class RequestsPage : Page
     {
         if (_vm == null) return;
         if (RentalFilterCombo.SelectedItem is ComboBoxItem item && item.Tag is string tag)
-            _vm.RentalStatusFilter = tag;
+            _vm.Rental.StatusFilter = tag;
     }
 
-    private void RentalSort_Click(object sender, RoutedEventArgs e) => _vm.ToggleRentalSort();
+    private void RentalSort_Click(object sender, RoutedEventArgs e) => _vm.Rental.ToggleSort();
 
     private void ChooseDate_Click(object sender, RoutedEventArgs e)
     {
         RoomRentalRequestItemViewModel item = (RoomRentalRequestItemViewModel)((Button)sender).DataContext;
-        List<DateOnly> bookedDates = _vm.GetBookedDatesForRoom(item.RoomId);
+        List<DateOnly> bookedDates = _vm.Rental.GetBookedDatesForRoom(item.RoomId);
 
         // Višednevna prostorija → predlog termina (ProposedCounter)
         // Jednodnevna prostorija → direktno odobrenje (Approved)
         Action<long, DateTime, DateTime> onConfirmed = item.IsMultiDay
-            ? _vm.ProposeDate
-            : _vm.ApproveRentalWithDate;
+            ? _vm.Rental.ProposeDate
+            : _vm.Rental.ApproveWithDate;
 
         _shell.MainFrame.Navigate(new RoomCalendarPage(_shell, item, bookedDates, onConfirmed));
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
+        HelpDialog.Show(this,
             "Zahtevi za pristup: odobrite ili odbijte zahteve stanara.\n\n" +
-            "Zahtevi za iznajmljivanje: izaberite slobodan termin za zahteve na cekanju.",
-            "Pomoc", MessageBoxButton.OK, MessageBoxImage.Information);
+            "Zahtevi za iznajmljivanje: izaberite slobodan termin za zahteve na cekanju.");
     }
 }

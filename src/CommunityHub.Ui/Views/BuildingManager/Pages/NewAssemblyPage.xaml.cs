@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -52,10 +53,9 @@ public partial class NewAssemblyPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Odaberite zgradu, datum i vreme skupštine.\n" +
-            "Dodajte bar jednu temu.\n" +
-            "Sistem ne dozvoljava zakazivanje u terminu koji je već zauzet.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Odaberite zgradu, datum i vreme skupštine.\n\n" +
+            "Dodajte bar jednu temu.\n\n" +
+            "Sistem ne dozvoljava zakazivanje u terminu koji je već zauzet.");
     }
 }
