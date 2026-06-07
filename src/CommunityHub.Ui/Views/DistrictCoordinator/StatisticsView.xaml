@@ -1,4 +1,4 @@
-<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.StatisticsView"
+﻿<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.StatisticsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:CommunityHub.Ui.Converters">
@@ -12,6 +12,17 @@
             <Setter Property="FontSize"        Value="12"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </UserControl.Resources>
 
@@ -31,24 +42,29 @@
                            VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <ComboBox ItemsSource="{Binding Districts}"
                           SelectedItem="{Binding SelectedDistrict, Mode=TwoWay}"
-                          Width="220" Height="32" FontSize="13"
-                          DisplayMemberPath="DistrictName"/>
+                          Width="220" Height="32" FontSize="13">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DistrictName}" Margin="2,0"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
             </StackPanel>
             <Button DockPanel.Dock="Right"
                     Content="Zakaži sastanak"
                     Command="{Binding ScheduleMeetingCommand}"
                     Padding="16,8" FontSize="13"
-                    Background="#2C3E50" Foreground="White"
+                    Background="{StaticResource BrushSurface}" Foreground="{StaticResource BrushTextPrimary}"
                     FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
         </DockPanel>
 
-        <Border Grid.Row="1" Background="#EEF6FF" BorderBrush="#B3D1F5"
+        <Border Grid.Row="1" Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}"
                 BorderThickness="1" CornerRadius="6" Padding="14,8" Margin="0,0,0,14">
             <TextBlock Text="{Binding RecommendationText}"
-                       FontSize="13" Foreground="#1A3A5C" TextWrapping="Wrap"/>
+                       FontSize="13" Foreground="{StaticResource BrushAccent}" TextWrapping="Wrap"/>
         </Border>
 
-        <Border Grid.Row="2" Background="#F8F9FA" BorderBrush="#E0E0E0"
+        <Border Grid.Row="2" Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}"
                 BorderThickness="1" CornerRadius="6" Padding="16,10" Margin="0,0,0,12">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -61,33 +77,33 @@
 
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding NeaktivanCount}" FontSize="22"
-                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="#E65C00"/>
+                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource BrushWarning}"/>
                     <TextBlock Text="Neaktivan" FontSize="11"
-                               HorizontalAlignment="Center" Foreground="#555"/>
+                               HorizontalAlignment="Center" Foreground="{StaticResource BrushTextSecondary}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding AktivanCount}" FontSize="22"
-                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="#2E7D32"/>
+                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource BrushSuccess}"/>
                     <TextBlock Text="Aktivan" FontSize="11"
-                               HorizontalAlignment="Center" Foreground="#555"/>
+                               HorizontalAlignment="Center" Foreground="{StaticResource BrushTextSecondary}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding NovCount}" FontSize="22"
-                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="#1565C0"/>
+                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource BrushAccent}"/>
                     <TextBlock Text="Nov u kvartu" FontSize="11"
-                               HorizontalAlignment="Center" Foreground="#555"/>
+                               HorizontalAlignment="Center" Foreground="{StaticResource BrushTextSecondary}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="3" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding OdPoverenjaCount}" FontSize="22"
-                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="#F9A825"/>
+                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource BrushWarning}"/>
                     <TextBlock Text="Od poverenja" FontSize="11"
-                               HorizontalAlignment="Center" Foreground="#555"/>
+                               HorizontalAlignment="Center" Foreground="{StaticResource BrushTextSecondary}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="4" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding IstaknutiCount}" FontSize="22"
-                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="#6A1B9A"/>
+                               FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource BrushAccent}"/>
                     <TextBlock Text="Istaknut" FontSize="11"
-                               HorizontalAlignment="Center" Foreground="#555"/>
+                               HorizontalAlignment="Center" Foreground="{StaticResource BrushTextSecondary}"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -108,7 +124,7 @@
         </StackPanel>
 
         <TextBlock Grid.Row="4" Text="Pregled svih sastanaka"
-                   FontSize="13" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,8"/>
+                   FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}" Margin="0,0,0,8"/>
 
         <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding MeetingList.FilteredMeetings}">
@@ -119,7 +135,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="#F8F9FA" BorderBrush="#E0E0E0" BorderThickness="1"
+                        <Border Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
                                 CornerRadius="6" Padding="14,10" Margin="0,0,8,8">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -133,17 +149,17 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="0"
                                            Text="{Binding MeetingTypeDisplay}"
-                                           FontSize="14" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                                           FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}"/>
                                 <TextBlock Grid.Row="0" Grid.Column="1"
                                            Text="{Binding VoteCount, StringFormat='{}{0} glasova'}"
-                                           FontSize="12" Foreground="#555"/>
+                                           FontSize="12" Foreground="{StaticResource BrushTextSecondary}"/>
 
                                 <TextBlock Grid.Row="1" Grid.Column="0"
                                            Text="{Binding DateTimeDisplay}"
-                                           FontSize="12" Foreground="#555" Margin="0,4,0,0"/>
+                                           FontSize="12" Foreground="{StaticResource BrushTextSecondary}" Margin="0,4,0,0"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1"
                                            Text="{Binding StatusDisplay}"
-                                           FontSize="12" FontWeight="SemiBold" Foreground="#2C3E50"
+                                           FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}"
                                            Margin="0,4,0,0"/>
                             </Grid>
                         </Border>

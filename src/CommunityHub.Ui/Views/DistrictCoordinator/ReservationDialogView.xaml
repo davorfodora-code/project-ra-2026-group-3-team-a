@@ -1,6 +1,7 @@
-<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.ReservationDialogView"
+﻿<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.ReservationDialogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -9,7 +10,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="Padding"    Value="0"/>
             <Setter Property="Margin"     Value="0,0,0,6"/>
-            <Setter Property="Background" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource BrushCard}"/>
             <Setter Property="Cursor"     Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -17,16 +18,16 @@
                         <Border x:Name="ItemBorder"
                                 Background="{TemplateBinding Background}"
                                 CornerRadius="6" BorderThickness="1"
-                                BorderBrush="#D5D8DC" Padding="12,10">
+                                BorderBrush="{StaticResource BrushBorder}" Padding="12,10">
                             <ContentPresenter/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background"    Value="#EBF5FB"/>
-                                <Setter TargetName="ItemBorder" Property="BorderBrush"   Value="#2980B9"/>
+                                <Setter TargetName="ItemBorder" Property="Background"    Value="{StaticResource BrushSurface}"/>
+                                <Setter TargetName="ItemBorder" Property="BorderBrush"   Value="{StaticResource BrushAccent}"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#AED6F1"/>
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{StaticResource BrushTextMuted}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -36,10 +37,10 @@
     </UserControl.Resources>
 
     <Grid Background="#99000000">
-        <Border Background="White" CornerRadius="8"
+        <Border Background="{StaticResource BrushCard}" CornerRadius="8"
                 MaxWidth="620" MinHeight="420"
                 Margin="40" VerticalAlignment="Center" HorizontalAlignment="Center"
-                BorderBrush="#CCC" BorderThickness="1">
+                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -48,19 +49,19 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
-                <Grid Grid.Row="0" Background="#F8F9FA">
+                <Grid Grid.Row="0" Background="{StaticResource BrushSurface}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Rezervacija mesta"
                                Margin="20,14" FontSize="14" FontWeight="SemiBold"
-                               Foreground="#2C3E50" VerticalAlignment="Center"/>
+                               Foreground="{StaticResource BrushTextPrimary}" VerticalAlignment="Center"/>
                     <Button Grid.Column="1"
                             Command="{Binding CancelCommand}"
                             Content="✕" Width="32" Height="32"
                             Background="Transparent" BorderThickness="0"
-                            FontSize="14" Foreground="#888" Cursor="Hand"
+                            FontSize="14" Foreground="{StaticResource BrushTextSecondary}" Cursor="Hand"
                             Margin="0,8,12,8"/>
                 </Grid>
 
@@ -68,16 +69,16 @@
                 <StackPanel Grid.Row="1" Margin="28,20"
                             Visibility="{Binding IsStep1, Converter={StaticResource BoolToVis}}">
 
-                    <Border Background="#EBF5FB" CornerRadius="6" Padding="14,10" Margin="0,0,0,24">
+                    <Border Background="{StaticResource BrushSurface}" CornerRadius="6" Padding="14,10" Margin="0,0,0,24">
                         <StackPanel Orientation="Horizontal">
                             <Border Width="28" Height="28" CornerRadius="14"
-                                    BorderBrush="#2980B9" BorderThickness="1.5"
+                                    BorderBrush="{StaticResource BrushAccent}" BorderThickness="1.5"
                                     Margin="0,0,10,0" VerticalAlignment="Center">
                                 <TextBlock Text="i" FontSize="14" FontWeight="Bold"
-                                           Foreground="#2980B9"
+                                           Foreground="{StaticResource BrushAccent}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock VerticalAlignment="Center" FontSize="13" Foreground="#2C3E50">
+                            <TextBlock VerticalAlignment="Center" FontSize="13" Foreground="{StaticResource BrushTextPrimary}">
                                 <Run Text="Rezervišete za "/>
                                 <Run Text="{Binding CityObjectName, Mode=OneWay}" FontWeight="SemiBold"/>
                             </TextBlock>
@@ -91,11 +92,11 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Trajanje posete (h):"
-                                   FontSize="13" VerticalAlignment="Center" Foreground="#2C3E50"/>
+                                   FontSize="13" VerticalAlignment="Center" Foreground="{StaticResource BrushTextPrimary}"/>
                         <TextBox Grid.Column="1"
                                  Text="{Binding DurationHoursText, UpdateSourceTrigger=PropertyChanged}"
                                  Height="34" FontSize="13" Padding="8,4"
-                                 BorderBrush="#BDC3C7" BorderThickness="1"
+                                 BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
                                  VerticalContentAlignment="Center"/>
                     </Grid>
 
@@ -107,7 +108,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Datum od - do:"
                                    FontSize="13" VerticalAlignment="Top"
-                                   Margin="0,6,0,0" Foreground="#2C3E50"/>
+                                   Margin="0,6,0,0" Foreground="{StaticResource BrushTextPrimary}"/>
                         <StackPanel Grid.Column="1">
                             <Grid Margin="0,0,0,8">
                                 <Grid.ColumnDefinitions>
@@ -115,9 +116,10 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="Od:" FontSize="12"
-                                           Foreground="#555" VerticalAlignment="Center"/>
+                                           Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center"/>
                                 <DatePicker Grid.Column="1"
                                             SelectedDate="{Binding RangeStart}"
+                                            DisplayDateStart="{x:Static sys:DateTime.Today}"
                                             FontSize="12" Height="30"/>
                             </Grid>
                             <Grid>
@@ -126,9 +128,10 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="Do:" FontSize="12"
-                                           Foreground="#555" VerticalAlignment="Center"/>
+                                           Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center"/>
                                 <DatePicker Grid.Column="1"
                                             SelectedDate="{Binding RangeEnd}"
+                                            DisplayDateStart="{x:Static sys:DateTime.Today}"
                                             FontSize="12" Height="30"/>
                             </Grid>
                         </StackPanel>
@@ -136,7 +139,7 @@
 
                     <!-- Validation -->
                     <TextBlock Text="{Binding ValidationMessage}"
-                               Foreground="Red" FontSize="11" TextWrapping="Wrap"
+                               Foreground="{StaticResource BrushDanger}" FontSize="11" TextWrapping="Wrap"
                                Margin="0,12,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -155,17 +158,17 @@
                 <StackPanel Grid.Row="1" Margin="28,20"
                             Visibility="{Binding IsStep2, Converter={StaticResource BoolToVis}}">
 
-                    <Border Background="#EBF5FB" CornerRadius="6" Padding="14,10" Margin="0,0,0,16">
+                    <Border Background="{StaticResource BrushSurface}" CornerRadius="6" Padding="14,10" Margin="0,0,0,16">
                         <StackPanel Orientation="Horizontal">
                             <Border Width="28" Height="28" CornerRadius="14"
-                                    BorderBrush="#2980B9" BorderThickness="1.5"
+                                    BorderBrush="{StaticResource BrushAccent}" BorderThickness="1.5"
                                     Margin="0,0,10,0" VerticalAlignment="Center">
                                 <TextBlock Text="i" FontSize="14" FontWeight="Bold"
-                                           Foreground="#2980B9"
+                                           Foreground="{StaticResource BrushAccent}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock VerticalAlignment="Center" FontSize="13"
-                                       Foreground="#2C3E50" TextWrapping="Wrap">
+                                       Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap">
                                 <Run Text="Rezervišete za "/>
                                 <Run Text="{Binding CityObjectName, Mode=OneWay}" FontWeight="SemiBold"/>
                                 <Run Text=", izaberite odgovarajući termin"/>
@@ -194,11 +197,11 @@
                                                      Margin="0,0,12,0"/>
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding FullDisplay, Mode=OneWay}"
-                                                   FontSize="13" Foreground="#2C3E50"
+                                                   FontSize="13" Foreground="{StaticResource BrushTextPrimary}"
                                                    VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2"
                                                    Text="Slobodan"
-                                                   FontSize="12" Foreground="#27AE60"
+                                                   FontSize="12" Foreground="{StaticResource BrushSuccess}"
                                                    FontWeight="SemiBold"
                                                    VerticalAlignment="Center"
                                                    Margin="12,0,0,0"/>
@@ -209,7 +212,7 @@
                     </ScrollViewer>
 
                     <!-- No slots message -->
-                    <TextBlock FontSize="12" Foreground="#888" TextWrapping="Wrap"
+                    <TextBlock FontSize="12" Foreground="{StaticResource BrushTextSecondary}" TextWrapping="Wrap"
                                Margin="0,8,0,0"
                                Text="Nema slobodnih termina. Pokušajte sa kraćim trajanjem posete.">
                         <TextBlock.Style>
@@ -226,7 +229,7 @@
 
                     <!-- Validation -->
                     <TextBlock Text="{Binding ValidationMessage}"
-                               Foreground="Red" FontSize="11" TextWrapping="Wrap"
+                               Foreground="{StaticResource BrushDanger}" FontSize="11" TextWrapping="Wrap"
                                Margin="0,8,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -242,19 +245,19 @@
                 </StackPanel>
 
                 <!-- Footer -->
-                <Border Grid.Row="2" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="24,14">
+                <Border Grid.Row="2" BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,1,0,0" Padding="24,14">
                     <Grid>
                         <!-- Step 1 buttons -->
                         <DockPanel LastChildFill="False"
                                    Visibility="{Binding IsStep1, Converter={StaticResource BoolToVis}}">
                             <Button DockPanel.Dock="Left" Content="Otkaži"
                                     Command="{Binding CancelCommand}"
-                                    Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                                    Padding="20,8" FontSize="13" Foreground="#2C3E50" Cursor="Hand"/>
+                                    Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
+                                    Padding="20,8" FontSize="13" Foreground="{StaticResource BrushTextPrimary}" Cursor="Hand"/>
                             <Button DockPanel.Dock="Right" Content="Pronađi termin"
                                     Command="{Binding FindSlotsCommand}"
-                                    Background="#2C3E50" Foreground="White" BorderThickness="0"
-                                    Padding="20,8" FontSize="13" Cursor="Hand"/>
+                                    Style="{StaticResource PrimaryBtnStyle}"
+                                    Padding="20,9" FontSize="13"/>
                         </DockPanel>
 
                         <!-- Step 2 buttons -->
@@ -262,12 +265,12 @@
                                    Visibility="{Binding IsStep2, Converter={StaticResource BoolToVis}}">
                             <Button DockPanel.Dock="Left" Content="Nazad"
                                     Command="{Binding BackCommand}"
-                                    Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                                    Padding="20,8" FontSize="13" Foreground="#2C3E50" Cursor="Hand"/>
+                                    Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
+                                    Padding="20,8" FontSize="13" Foreground="{StaticResource BrushTextPrimary}" Cursor="Hand"/>
                             <Button DockPanel.Dock="Right" Content="Zakaži termin"
                                     Command="{Binding ReserveCommand}"
-                                    Background="#2C3E50" Foreground="White" BorderThickness="0"
-                                    Padding="20,8" FontSize="13" Cursor="Hand"/>
+                                    Style="{StaticResource PrimaryBtnStyle}"
+                                    Padding="20,9" FontSize="13"/>
                         </DockPanel>
                     </Grid>
                 </Border>

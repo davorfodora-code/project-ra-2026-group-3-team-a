@@ -1,4 +1,4 @@
-<Window x:Class="CommunityHub.Ui.Views.DistrictCoordinator.ScheduleMeetingDialog"
+﻿<Window x:Class="CommunityHub.Ui.Views.DistrictCoordinator.ScheduleMeetingDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Zakazivanje sastanka"
@@ -17,9 +17,9 @@
             <Setter Property="FontWeight"      Value="SemiBold"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="Cursor"          Value="Hand"/>
-            <Setter Property="Background"      Value="#BDC3C7"/>
-            <Setter Property="Foreground"      Value="#2C3E50"/>
-            <Setter Property="BorderBrush"     Value="#BDC3C7"/>
+            <Setter Property="Background"      Value="{StaticResource BrushBorder}"/>
+            <Setter Property="Foreground"      Value="{StaticResource BrushAccent}"/>
+            <Setter Property="BorderBrush"     Value="{StaticResource BrushBorder}"/>
         </Style>
     </Window.Resources>
 
@@ -51,9 +51,9 @@
                     <Style TargetType="Button" BasedOn="{StaticResource TypeToggleStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsDobrodoslicaSelected}" Value="True">
-                                <Setter Property="Background"  Value="#2C3E50"/>
-                                <Setter Property="Foreground"  Value="White"/>
-                                <Setter Property="BorderBrush" Value="#2C3E50"/>
+                                <Setter Property="Background"  Value="{StaticResource BrushAccent}"/>
+                                <Setter Property="Foreground"  Value="{StaticResource BrushCard}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource BrushAccent}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -66,9 +66,9 @@
                     <Style TargetType="Button" BasedOn="{StaticResource TypeToggleStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsMotivacijaSelected}" Value="True">
-                                <Setter Property="Background"  Value="#2C3E50"/>
-                                <Setter Property="Foreground"  Value="White"/>
-                                <Setter Property="BorderBrush" Value="#2C3E50"/>
+                                <Setter Property="Background"  Value="{StaticResource BrushAccent}"/>
+                                <Setter Property="Foreground"  Value="{StaticResource BrushCard}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource BrushAccent}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -113,7 +113,7 @@
                         Command="{Binding CancelCommand}" FontSize="13"/>
                 <Button Content="Zakaži" Width="90" Height="32"
                         Command="{Binding ConfirmCommand}" FontSize="13"
-                        Background="#2C3E50" Foreground="White" BorderThickness="0"/>
+                        Background="{StaticResource BrushSurface}" Foreground="{StaticResource BrushTextPrimary}" BorderThickness="0"/>
             </StackPanel>
         </StackPanel>
     </Grid>

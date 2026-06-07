@@ -1,0 +1,88 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ================================================
+         TAMNI MOD — 60/30/10 paleta boja
+         Promeni boje samo ovde, sve se automatski primeni
+         ================================================ -->
+
+    <!-- 60% — Glavna pozadina (stranice, prozori) -->
+    <Color x:Key="ColorBackground">#1E1E2E</Color>
+    <SolidColorBrush x:Key="BrushBackground" Color="{StaticResource ColorBackground}"/>
+
+    <!-- 30% — Površine (header, nav bar, sidebar) -->
+    <Color x:Key="ColorSurface">#313244</Color>
+    <SolidColorBrush x:Key="BrushSurface" Color="{StaticResource ColorSurface}"/>
+
+    <Color x:Key="ColorSurfaceHover">#3D3F5C</Color>
+    <SolidColorBrush x:Key="BrushSurfaceHover" Color="{StaticResource ColorSurfaceHover}"/>
+
+    <!-- Kartice i pločice (malo svetlije od pozadine) -->
+    <Color x:Key="ColorCard">#45475A</Color>
+    <SolidColorBrush x:Key="BrushCard" Color="{StaticResource ColorCard}"/>
+
+    <Color x:Key="ColorCardHover">#585B70</Color>
+    <SolidColorBrush x:Key="BrushCardHover" Color="{StaticResource ColorCardHover}"/>
+
+    <!-- 10% — Akcent (dugmad, aktivna stanja, ikone) -->
+    <Color x:Key="ColorAccent">#89B4FA</Color>
+    <SolidColorBrush x:Key="BrushAccent" Color="{StaticResource ColorAccent}"/>
+
+    <Color x:Key="ColorAccentHover">#6A9FF5</Color>
+    <SolidColorBrush x:Key="BrushAccentHover" Color="{StaticResource ColorAccentHover}"/>
+
+    <Color x:Key="ColorAccentDark">#1E1E2E</Color>
+    <SolidColorBrush x:Key="BrushAccentDark" Color="{StaticResource ColorAccentDark}"/>
+
+    <!-- Tekst — primarni -->
+    <Color x:Key="ColorTextPrimary">#CDD6F4</Color>
+    <SolidColorBrush x:Key="BrushTextPrimary" Color="{StaticResource ColorTextPrimary}"/>
+
+    <!-- Tekst — sekundarni (bio #666666) -->
+    <Color x:Key="ColorTextSecondary">#A6ADC8</Color>
+    <SolidColorBrush x:Key="BrushTextSecondary" Color="{StaticResource ColorTextSecondary}"/>
+
+    <!-- Tekst — utišan (bio #BBBBBB, #AAAAAA) -->
+    <Color x:Key="ColorTextMuted">#6C7086</Color>
+    <SolidColorBrush x:Key="BrushTextMuted" Color="{StaticResource ColorTextMuted}"/>
+
+    <!-- Rubovi i granice (bio #E0E0E0, #CCCCCC) -->
+    <Color x:Key="ColorBorder">#45475A</Color>
+    <SolidColorBrush x:Key="BrushBorder" Color="{StaticResource ColorBorder}"/>
+
+    <!-- Opasnost / greška -->
+    <Color x:Key="ColorDanger">#F38BA8</Color>
+    <SolidColorBrush x:Key="BrushDanger" Color="{StaticResource ColorDanger}"/>
+
+    <!-- Uspeh -->
+    <Color x:Key="ColorSuccess">#A6E3A1</Color>
+    <SolidColorBrush x:Key="BrushSuccess" Color="{StaticResource ColorSuccess}"/>
+
+    <!-- Upozorenje -->
+    <Color x:Key="ColorWarning">#FAB387</Color>
+    <SolidColorBrush x:Key="BrushWarning" Color="{StaticResource ColorWarning}"/>
+
+    <!-- Sjenka (za DropShadowEffect) -->
+    <Color x:Key="ColorShadow">#000000</Color>
+
+    <!-- ================================================
+         SystemColors overrides — čine WPF native kontrole
+         (ComboBox, TextBox, ListBox, MenuItem...) tamnima.
+         Mijenjajte ove zajedno sa bojama iznad.
+         ================================================ -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"                        Color="#313244"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}"                    Color="#CDD6F4"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"                       Color="#313244"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}"                   Color="#CDD6F4"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightBrushKey}"                  Color="#45475A"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkBrushKey}"                   Color="#1E1E2E"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"                     Color="#89B4FA"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"                 Color="#1E1E2E"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"    Color="#45475A"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#CDD6F4"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBrushKey}"                          Color="#313244"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuTextBrushKey}"                      Color="#CDD6F4"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuHighlightBrushKey}"                 Color="#89B4FA"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.GrayTextBrushKey}"                      Color="#6C7086"/>
+
+</ResourceDictionary>

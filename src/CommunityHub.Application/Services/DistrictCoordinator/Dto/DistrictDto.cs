@@ -10,4 +10,6 @@ public class DistrictDto
     public decimal Budget { get; set; }
 
     public string DisplayText => $"{Name} — {City}, {Country}";
+
+    public override string ToString() => DisplayText;
 }

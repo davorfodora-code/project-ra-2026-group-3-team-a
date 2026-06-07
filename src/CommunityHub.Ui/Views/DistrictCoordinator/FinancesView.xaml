@@ -1,4 +1,4 @@
-<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.FinancesView"
+﻿<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.FinancesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:CommunityHub.Ui.ViewModels.DistrictCoordinator"
@@ -17,12 +17,12 @@
         <Style x:Key="TableHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize"     Value="12"/>
             <Setter Property="FontWeight"   Value="SemiBold"/>
-            <Setter Property="Foreground"   Value="White"/>
+            <Setter Property="Foreground"   Value="{StaticResource BrushTextPrimary}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
         <Style x:Key="TableCellStyle" TargetType="TextBlock">
             <Setter Property="FontSize"     Value="12"/>
-            <Setter Property="Foreground"   Value="#2C3E50"/>
+            <Setter Property="Foreground"   Value="{StaticResource BrushTextPrimary}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
@@ -46,64 +46,76 @@
             <DockPanel Grid.Row="0" Margin="0,0,0,16" LastChildFill="False">
                 <Button DockPanel.Dock="Left" Content="Vrati se na sve kvartove"
                         Command="{Binding BackToHomeCommand}"
-                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                        Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
+                        Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
+                        Padding="12,6" FontSize="12" Foreground="{StaticResource BrushTextPrimary}" Cursor="Hand"/>
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal"
                             Margin="16,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="Kvart" FontSize="12" Foreground="#555"
+                    <TextBlock Text="Kvart" FontSize="12" Foreground="{StaticResource BrushTextSecondary}"
                                VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <ComboBox ItemsSource="{Binding Districts}" SelectedItem="{Binding SelectedDistrict}"
-                              DisplayMemberPath="DisplayText" Width="200" Height="28" FontSize="12"/>
+                              Width="200" Height="28" FontSize="12">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayText}" Margin="2,0"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal"
                             Margin="12,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="Period" FontSize="12" Foreground="#555"
+                    <TextBlock Text="Period" FontSize="12" Foreground="{StaticResource BrushTextSecondary}"
                                VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <ComboBox ItemsSource="{Binding Periods}" SelectedItem="{Binding SelectedPeriod}"
-                              DisplayMemberPath="Label" Width="110" Height="28" FontSize="12"/>
+                              Width="110" Height="28" FontSize="12">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Label}" Margin="2,0"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
             </DockPanel>
 
             <!-- Summary cards -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
-                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                        Background="White" Padding="16,12" Margin="0,0,16,0" MinWidth="220">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                        Background="{StaticResource BrushCard}" Padding="16,12" Margin="0,0,16,0" MinWidth="220">
                     <StackPanel>
-                        <TextBlock Text="Saldo kvarta" FontSize="11" Foreground="#888"/>
+                        <TextBlock Text="Saldo kvarta" FontSize="11" Foreground="{StaticResource BrushTextSecondary}"/>
                         <TextBlock Text="{Binding SaldoDisplay, Mode=OneWay}"
-                                   FontSize="20" FontWeight="Bold" Foreground="#2C3E50" Margin="0,4,0,0"/>
+                                   FontSize="20" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                        Background="White" Padding="16,12" Margin="0,0,16,0" MinWidth="220">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                        Background="{StaticResource BrushCard}" Padding="16,12" Margin="0,0,16,0" MinWidth="220">
                     <StackPanel>
-                        <TextBlock Text="Ukupno donacija" FontSize="11" Foreground="#888"/>
+                        <TextBlock Text="Ukupno donacija" FontSize="11" Foreground="{StaticResource BrushTextSecondary}"/>
                         <TextBlock Text="{Binding DonationsDisplay, Mode=OneWay}"
-                                   FontSize="20" FontWeight="Bold" Foreground="#27AE60" Margin="0,4,0,0"/>
+                                   FontSize="20" FontWeight="Bold" Foreground="{StaticResource BrushSuccess}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                        Background="White" Padding="16,12" MinWidth="220">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                        Background="{StaticResource BrushCard}" Padding="16,12" MinWidth="220">
                     <StackPanel>
-                        <TextBlock Text="Ukupno troškova" FontSize="11" Foreground="#888"/>
+                        <TextBlock Text="Ukupno troškova" FontSize="11" Foreground="{StaticResource BrushTextSecondary}"/>
                         <TextBlock Text="{Binding ExpensesDisplay, Mode=OneWay}"
-                                   FontSize="20" FontWeight="Bold" Foreground="#C0392B" Margin="0,4,0,0"/>
+                                   FontSize="20" FontWeight="Bold" Foreground="{StaticResource BrushDanger}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
 
             <!-- Error banner -->
-            <Border Grid.Row="2" Background="#FDEDEC" CornerRadius="6" Padding="14,10"
+            <Border Grid.Row="2" Background="{StaticResource BrushSurface}" CornerRadius="6" Padding="14,10"
                     Margin="0,0,0,10"
                     Visibility="{Binding HasLoadError, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{Binding LoadError, Mode=OneWay}"
-                           FontSize="12" Foreground="#C0392B" TextWrapping="Wrap"/>
+                           FontSize="12" Foreground="{StaticResource BrushDanger}" TextWrapping="Wrap"/>
             </Border>
 
             <!-- Section title -->
             <StackPanel Grid.Row="3" Margin="0,0,0,12">
-                <TextBlock Text="Kategorija budžeta" FontSize="14" FontWeight="SemiBold" Foreground="#2C3E50"/>
-                <TextBlock Text="Kliknite na karticu za detalje" FontSize="11" Foreground="#888" Margin="0,2,0,0"/>
+                <TextBlock Text="Kategorija budžeta" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}"/>
+                <TextBlock Text="Kliknite na karticu za detalje" FontSize="11" Foreground="{StaticResource BrushTextSecondary}" Margin="0,2,0,0"/>
             </StackPanel>
 
             <!-- Category cards -->
@@ -117,8 +129,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                                    Background="White" Margin="0,0,12,12" Cursor="Hand">
+                            <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                                    Background="{StaticResource BrushCard}" Margin="0,0,12,12" Cursor="Hand">
                                 <Grid Margin="14,12">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -127,25 +139,25 @@
                                     </Grid.RowDefinitions>
                                     <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="False">
                                         <TextBlock DockPanel.Dock="Left" Text="{Binding Name, Mode=OneWay}"
-                                                   FontSize="12" Foreground="#555"/>
+                                                   FontSize="12" Foreground="{StaticResource BrushTextSecondary}"/>
                                         <Button DockPanel.Dock="Right" Content="Detalji ->"
                                                 Command="{Binding OpenDetailCommand}"
                                                 Background="Transparent" BorderThickness="0"
-                                                FontSize="11" Foreground="#2980B9" Cursor="Hand" Padding="0"/>
+                                                FontSize="11" Foreground="{StaticResource BrushAccent}" Cursor="Hand" Padding="0"/>
                                     </DockPanel>
                                     <TextBlock Grid.Row="1" Text="{Binding BalanceDisplay, Mode=OneWay}"
-                                               FontSize="18" FontWeight="Bold" Foreground="#2C3E50"
+                                               FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}"
                                                Margin="0,0,0,10"/>
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" FontSize="10" Foreground="#27AE60">
+                                        <TextBlock Grid.Column="0" FontSize="10" Foreground="{StaticResource BrushSuccess}">
                                             <Run Text="Don: "/>
                                             <Run Text="{Binding DonationsDisplay, Mode=OneWay}"/>
                                         </TextBlock>
-                                        <TextBlock Grid.Column="1" FontSize="10" Foreground="#C0392B" HorizontalAlignment="Right">
+                                        <TextBlock Grid.Column="1" FontSize="10" Foreground="{StaticResource BrushDanger}" HorizontalAlignment="Right">
                                             <Run Text="Troš: "/>
                                             <Run Text="{Binding ExpensesDisplay, Mode=OneWay}"/>
                                         </TextBlock>
@@ -175,39 +187,39 @@
             <DockPanel Grid.Row="0" Margin="0,0,0,14" LastChildFill="False">
                 <Button DockPanel.Dock="Left" Content="Vrati se na finansije kvartova"
                         Command="{Binding BackToGridCommand}"
-                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                        Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"
+                        Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
+                        Padding="12,6" FontSize="12" Foreground="{StaticResource BrushTextPrimary}" Cursor="Hand"
                         Margin="0,0,12,0"/>
                 <TextBlock DockPanel.Dock="Left"
                            Text="{Binding DetailCategoryName, Mode=OneWay}"
-                           FontSize="16" FontWeight="Bold" Foreground="#2C3E50"
+                           FontSize="16" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}"
                            VerticalAlignment="Center"/>
             </DockPanel>
 
             <!-- Category summary cards -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,16">
-                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                        Background="White" Padding="16,10" Margin="0,0,12,0" MinWidth="200">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                        Background="{StaticResource BrushCard}" Padding="16,10" Margin="0,0,12,0" MinWidth="200">
                     <StackPanel>
-                        <TextBlock Text="Ukupan budžet kategorije" FontSize="10" Foreground="#888"/>
+                        <TextBlock Text="Ukupan budžet kategorije" FontSize="10" Foreground="{StaticResource BrushTextSecondary}"/>
                         <TextBlock Text="{Binding DetailBalance, Mode=OneWay}"
-                                   FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,4,0,0"/>
+                                   FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                        Background="White" Padding="16,10" Margin="0,0,12,0" MinWidth="200">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                        Background="{StaticResource BrushCard}" Padding="16,10" Margin="0,0,12,0" MinWidth="200">
                     <StackPanel>
-                        <TextBlock Text="Ukupno donacija" FontSize="10" Foreground="#888"/>
+                        <TextBlock Text="Ukupno donacija" FontSize="10" Foreground="{StaticResource BrushTextSecondary}"/>
                         <TextBlock Text="{Binding DetailTotalDonations, Mode=OneWay}"
-                                   FontSize="18" FontWeight="Bold" Foreground="#27AE60" Margin="0,4,0,0"/>
+                                   FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushSuccess}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-                <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                        Background="White" Padding="16,10" MinWidth="200">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                        Background="{StaticResource BrushCard}" Padding="16,10" MinWidth="200">
                     <StackPanel>
-                        <TextBlock Text="Ukupno troškova" FontSize="10" Foreground="#888"/>
+                        <TextBlock Text="Ukupno troškova" FontSize="10" Foreground="{StaticResource BrushTextSecondary}"/>
                         <TextBlock Text="{Binding DetailTotalExpenses, Mode=OneWay}"
-                                   FontSize="18" FontWeight="Bold" Foreground="#C0392B" Margin="0,4,0,0"/>
+                                   FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushDanger}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -216,12 +228,12 @@
             <DockPanel Grid.Row="2" Margin="0,0,0,10" LastChildFill="False">
                 <Button DockPanel.Dock="Left" Content="+ Dodaj donaciju"
                         Command="{Binding AddDonationCommand}"
-                        Background="Transparent" BorderBrush="#27AE60" BorderThickness="1"
-                        Padding="14,6" FontSize="12" Foreground="#27AE60" Cursor="Hand"/>
+                        Background="Transparent" BorderBrush="{StaticResource BrushSuccess}" BorderThickness="1"
+                        Padding="14,6" FontSize="12" Foreground="{StaticResource BrushSuccess}" Cursor="Hand"/>
                 <Button DockPanel.Dock="Right" Content="+ Dodaj trosak"
                         Command="{Binding AddExpenseCommand}"
-                        Background="Transparent" BorderBrush="#2C3E50" BorderThickness="1"
-                        Padding="14,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
+                        Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
+                        Padding="14,6" FontSize="12" Foreground="{StaticResource BrushTextPrimary}" Cursor="Hand"/>
             </DockPanel>
 
             <!-- Two tables -->
@@ -244,10 +256,10 @@
                     <!-- Donations header bar -->
                     <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="False">
                         <TextBlock DockPanel.Dock="Left" Text="Donacije"
-                                   FontSize="13" FontWeight="SemiBold" Foreground="#2C3E50"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}"
                                    VerticalAlignment="Center"/>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <TextBlock Text="Datum" FontSize="11" Foreground="#555"
+                            <TextBlock Text="Datum" FontSize="11" Foreground="{StaticResource BrushTextSecondary}"
                                        VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <ComboBox ItemsSource="{Binding SortOptions}"
                                       SelectedItem="{Binding DonSort}"
@@ -256,7 +268,7 @@
                     </DockPanel>
 
                     <!-- Column headers -->
-                    <Border Grid.Row="1" Background="#2C3E50" Padding="8,6" CornerRadius="4,4,0,0">
+                    <Border Grid.Row="1" Background="{StaticResource BrushSurface}" Padding="8,6" CornerRadius="4,4,0,0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -268,13 +280,13 @@
                     </Border>
 
                     <!-- Donation rows -->
-                    <Border Grid.Row="2" BorderBrush="#D5D8DC" BorderThickness="1,0,1,1">
+                    <Border Grid.Row="2" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1,0,1,1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding Donations}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="#EAECEE" BorderThickness="0,0,0,1"
-                                                Background="White" Padding="8,7">
+                                        <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,0,1"
+                                                Background="{StaticResource BrushCard}" Padding="8,7">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
@@ -300,14 +312,14 @@
                     <DockPanel Grid.Row="3" Margin="0,6,0,0" LastChildFill="False">
                         <Button DockPanel.Dock="Left" Content="‹" Command="{Binding DonPrevCommand}"
                                 Width="28" Height="28" Background="Transparent"
-                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" Cursor="Hand"/>
                         <TextBlock DockPanel.Dock="Left"
                                    Text="{Binding DonPageLabel, Mode=OneWay}"
-                                   FontSize="12" Foreground="#555"
+                                   FontSize="12" Foreground="{StaticResource BrushTextSecondary}"
                                    VerticalAlignment="Center" Margin="8,0"/>
                         <Button DockPanel.Dock="Left" Content="›" Command="{Binding DonNextCommand}"
                                 Width="28" Height="28" Background="Transparent"
-                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" Cursor="Hand"/>
                     </DockPanel>
                 </Grid>
 
@@ -323,10 +335,10 @@
                     <!-- Expenses header bar -->
                     <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="False">
                         <TextBlock DockPanel.Dock="Left" Text="Troškovi"
-                                   FontSize="13" FontWeight="SemiBold" Foreground="#2C3E50"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}"
                                    VerticalAlignment="Center"/>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <TextBlock Text="Datum" FontSize="11" Foreground="#555"
+                            <TextBlock Text="Datum" FontSize="11" Foreground="{StaticResource BrushTextSecondary}"
                                        VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <ComboBox ItemsSource="{Binding SortOptions}"
                                       SelectedItem="{Binding ExpSort}"
@@ -335,7 +347,7 @@
                     </DockPanel>
 
                     <!-- Column headers -->
-                    <Border Grid.Row="1" Background="#2C3E50" Padding="8,6" CornerRadius="4,4,0,0">
+                    <Border Grid.Row="1" Background="{StaticResource BrushSurface}" Padding="8,6" CornerRadius="4,4,0,0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="110"/>
@@ -350,13 +362,13 @@
                     </Border>
 
                     <!-- Expense rows (inline Edit/Delete) -->
-                    <Border Grid.Row="2" BorderBrush="#D5D8DC" BorderThickness="1,0,1,1">
+                    <Border Grid.Row="2" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1,0,1,1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding Expenses}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="#EAECEE" BorderThickness="0,0,0,1"
-                                                Background="White" Padding="8,6">
+                                        <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,0,1"
+                                                Background="{StaticResource BrushCard}" Padding="8,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="110"/>
@@ -375,7 +387,7 @@
                                                         Padding="0" HorizontalContentAlignment="Left"
                                                         Cursor="Hand"
                                                         ToolTip="{Binding Description, Mode=OneWay}"
-                                                        FontSize="12" Foreground="#2C3E50"
+                                                        FontSize="12" Foreground="{StaticResource BrushTextPrimary}"
                                                         Command="{Binding DataContext.ShowFullDescCommand,
                                                             RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                         CommandParameter="{Binding Description, Mode=OneWay}"/>
@@ -387,7 +399,7 @@
                                                 <Button Grid.Column="3" Content="✏" ToolTip="Uredi"
                                                         Width="24" Height="24" Margin="2,0,0,0"
                                                         Background="Transparent" BorderThickness="0"
-                                                        FontSize="11" Foreground="#2980B9" Cursor="Hand"
+                                                        FontSize="11" Foreground="{StaticResource BrushAccent}" Cursor="Hand"
                                                         Command="{Binding DataContext.EditExpenseCommand,
                                                             RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                         CommandParameter="{Binding}"/>
@@ -395,7 +407,7 @@
                                                 <Button Grid.Column="4" Content="✕" ToolTip="Obriši"
                                                         Width="24" Height="24"
                                                         Background="Transparent" BorderThickness="0"
-                                                        FontSize="11" Foreground="#C0392B" Cursor="Hand"
+                                                        FontSize="11" Foreground="{StaticResource BrushDanger}" Cursor="Hand"
                                                         Command="{Binding DataContext.DeleteExpenseCommand,
                                                             RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                         CommandParameter="{Binding}"/>
@@ -411,14 +423,14 @@
                     <DockPanel Grid.Row="3" Margin="0,6,0,0" LastChildFill="False">
                         <Button DockPanel.Dock="Left" Content="‹" Command="{Binding ExpPrevCommand}"
                                 Width="28" Height="28" Background="Transparent"
-                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" Cursor="Hand"/>
                         <TextBlock DockPanel.Dock="Left"
                                    Text="{Binding ExpPageLabel, Mode=OneWay}"
-                                   FontSize="12" Foreground="#555"
+                                   FontSize="12" Foreground="{StaticResource BrushTextSecondary}"
                                    VerticalAlignment="Center" Margin="8,0"/>
                         <Button DockPanel.Dock="Left" Content="›" Command="{Binding ExpNextCommand}"
                                 Width="28" Height="28" Background="Transparent"
-                                BorderBrush="#BDC3C7" BorderThickness="1" Cursor="Hand"/>
+                                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" Cursor="Hand"/>
                     </DockPanel>
                 </Grid>
             </Grid>
@@ -430,17 +442,17 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" FontSize="11" Foreground="#888" FontStyle="Italic">
+                <TextBlock Grid.Column="0" FontSize="11" Foreground="{StaticResource BrushTextSecondary}" FontStyle="Italic">
                     Levim klikom na opis prikazujete punu verziju opisa
                 </TextBlock>
-                <Border Grid.Column="1" Background="#2ECC71" CornerRadius="6"
+                <Border Grid.Column="1" Background="{StaticResource BrushSuccess}" CornerRadius="6"
                         Padding="16,8" HorizontalAlignment="Center"
                         Visibility="{Binding HasNotification, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="{Binding NotificationText, Mode=OneWay}"
                                FontSize="12" FontStyle="Italic" FontWeight="SemiBold"
-                               Foreground="White"/>
+                               Foreground="{StaticResource BrushTextPrimary}"/>
                 </Border>
-                <TextBlock Grid.Column="2" FontSize="11" Foreground="#888"
+                <TextBlock Grid.Column="2" FontSize="11" Foreground="{StaticResource BrushTextSecondary}"
                            FontStyle="Italic" HorizontalAlignment="Right">
                     Desnim klikom na trosak iskace meni sa akcijama
                 </TextBlock>
@@ -451,17 +463,17 @@
         <Border Background="#CC000000"
                 Visibility="{Binding ShowFullDescription, Converter={StaticResource BoolToVis}}"
                 Panel.ZIndex="5">
-            <Border Background="White" CornerRadius="8" MaxWidth="540"
+            <Border Background="{StaticResource BrushCard}" CornerRadius="8" MaxWidth="540"
                     Padding="28,20" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel>
                     <TextBlock Text="Pun opis" FontSize="13" FontWeight="SemiBold"
-                               Foreground="#2C3E50" Margin="0,0,0,12"/>
+                               Foreground="{StaticResource BrushTextPrimary}" Margin="0,0,0,12"/>
                     <TextBlock Text="{Binding FullDescriptionText, Mode=OneWay}"
-                               FontSize="13" Foreground="#2C3E50" TextWrapping="Wrap"
+                               FontSize="13" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"
                                Margin="0,0,0,20"/>
                     <Button Content="Zatvori" Command="{Binding HideFullDescCommand}"
                             HorizontalAlignment="Right"
-                            Background="#2C3E50" Foreground="White" BorderThickness="0"
+                            Background="{StaticResource BrushSurface}" Foreground="{StaticResource BrushTextPrimary}" BorderThickness="0"
                             Padding="20,8" FontSize="13" Cursor="Hand"/>
                 </StackPanel>
             </Border>
