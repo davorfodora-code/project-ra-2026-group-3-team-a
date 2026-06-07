@@ -73,37 +73,42 @@ public class IssueReportDbRepository : IIssueReportRepository
 
     private static IssueReport ReadReport(IDataReader r)
     {
-        User user = new User(
-            r.GetInt64(r.GetOrdinal("tenant_id")),
-            r.GetString(r.GetOrdinal("username")),
-            r.GetString(r.GetOrdinal("password")),
-            r.GetString(r.GetOrdinal("name")),
-            r.GetString(r.GetOrdinal("surname")),
-            r.GetDateTime(r.GetOrdinal("birthday")),
-            r.GetString(r.GetOrdinal("role")));
-        Address address = new Address(
-            r.GetInt64(r.GetOrdinal("address_id")),
-            r.GetString(r.GetOrdinal("street")),
-            r.GetString(r.GetOrdinal("street_number")));
-        Location location = new Location(
-            r.GetInt64(r.GetOrdinal("location_id")),
-            r.GetString(r.GetOrdinal("city")),
-            r.GetString(r.GetOrdinal("country")));
-        Building building = new Building(
-            r.GetInt64(r.GetOrdinal("building_id")),
-            address,
-            r.GetString(r.GetOrdinal("neighborhood")),
-            location,
-            r.GetInt32(r.GetOrdinal("number_of_floors")),
-            r.GetInt64(r.GetOrdinal("manager_id")));
+        Building building = ReadBuilding(r, ReadAddress(r), ReadLocation(r));
         return new IssueReport(
             r.GetInt64(r.GetOrdinal("id")),
-            user, building,
+            ReadTenant(r), building,
             r.GetString(r.GetOrdinal("description")),
             r.GetString(r.GetOrdinal("priority")),
             r.GetDateTime(r.GetOrdinal("reported_at")),
             r.GetString(r.GetOrdinal("status")));
     }
+
+    private static User ReadTenant(IDataReader r) => new User(
+        r.GetInt64(r.GetOrdinal("tenant_id")),
+        r.GetString(r.GetOrdinal("username")),
+        r.GetString(r.GetOrdinal("password")),
+        r.GetString(r.GetOrdinal("name")),
+        r.GetString(r.GetOrdinal("surname")),
+        r.GetDateTime(r.GetOrdinal("birthday")),
+        r.GetString(r.GetOrdinal("role")));
+
+    private static Address ReadAddress(IDataReader r) => new Address(
+        r.GetInt64(r.GetOrdinal("address_id")),
+        r.GetString(r.GetOrdinal("street")),
+        r.GetString(r.GetOrdinal("street_number")));
+
+    private static Location ReadLocation(IDataReader r) => new Location(
+        r.GetInt64(r.GetOrdinal("location_id")),
+        r.GetString(r.GetOrdinal("city")),
+        r.GetString(r.GetOrdinal("country")));
+
+    private static Building ReadBuilding(IDataReader r, Address address, Location location) => new Building(
+        r.GetInt64(r.GetOrdinal("building_id")),
+        address,
+        r.GetString(r.GetOrdinal("neighborhood")),
+        location,
+        r.GetInt32(r.GetOrdinal("number_of_floors")),
+        r.GetInt64(r.GetOrdinal("manager_id")));
 
     private static void AddParam(IDbCommand cmd, string name, object value)
     {

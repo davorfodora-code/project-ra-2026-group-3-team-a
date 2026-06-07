@@ -15,10 +15,28 @@ public class AssemblyDbRepository : IAssemblyRepository
         cmd.CommandText = SelectAssemblyJoins +
             "WHERE b.manager_id = @managerId ORDER BY ta.scheduled_at DESC, t.id ASC";
         AddParam(cmd, "@managerId", managerId);
+        using IDataReader r = cmd.ExecuteReader();
+        return ReadAssembliesWithTopics(r);
+    }
 
+    // Vraća jednu skupštinu sa temama
+    public TenantAssembly? GetById(long assemblyId)
+    {
+        using IDbConnection conn = PostgresConnection.CreateConnection();
+        IDbCommand cmd = conn.CreateCommand();
+        cmd.CommandText = SelectAssemblyJoins +
+            "WHERE ta.id = @assemblyId ORDER BY t.id ASC";
+        AddParam(cmd, "@assemblyId", assemblyId);
+        using IDataReader r = cmd.ExecuteReader();
+        return ReadAssembliesWithTopics(r).FirstOrDefault();
+    }
+
+    // Cita rezultate SelectAssemblyJoins SELECT-a: deduplikuje skupstine po id-u
+    // i pridruzuje sve teme istoj instanci (jer LEFT JOIN daje vise redova po skupstini)
+    private static List<TenantAssembly> ReadAssembliesWithTopics(IDataReader r)
+    {
         var dict  = new Dictionary<long, TenantAssembly>();
         var order = new List<long>();
-        using IDataReader r = cmd.ExecuteReader();
         while (r.Read())
         {
             long id = r.GetInt64(r.GetOrdinal("id"));
@@ -32,26 +50,6 @@ public class AssemblyDbRepository : IAssemblyRepository
             if (topic != null) assembly.AddTopic(topic);
         }
         return order.Select(id => dict[id]).ToList();
-    }
-
-    // Vraća jednu skupštinu sa temama
-    public TenantAssembly? GetById(long assemblyId)
-    {
-        using IDbConnection conn = PostgresConnection.CreateConnection();
-        IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = SelectAssemblyJoins +
-            "WHERE ta.id = @assemblyId ORDER BY t.id ASC";
-        AddParam(cmd, "@assemblyId", assemblyId);
-
-        TenantAssembly? assembly = null;
-        using IDataReader r = cmd.ExecuteReader();
-        while (r.Read())
-        {
-            assembly ??= ReadAssembly(r);
-            AssemblyTopic? topic = TryReadTopic(r);
-            if (topic != null) assembly.AddTopic(topic);
-        }
-        return assembly;
     }
 
     // Proverava da li vec postoji skupstina u istom terminu za bilo koju zgradu ovog upravnika
