@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -19,9 +20,8 @@ public partial class HomePage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Početna stranica prikazuje pregled nadolazeće skupštine i statistiku zahteva.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Početna stranica prikazuje pregled nadolazeće skupštine i statistiku zahteva.");
     }
 
     private void SkupstineLink_Click(object sender, RoutedEventArgs e)

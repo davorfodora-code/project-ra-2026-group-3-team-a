@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -43,10 +44,9 @@ public partial class ProblemsPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Pregled svih prijavljenih problema za vaše zgrade.\n" +
-            "Koristite filter da vidite probleme po zgradi.\n" +
-            "Kliknite 'Označi kao rešen' da promenite status problema.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Pregled svih prijavljenih problema za vaše zgrade.\n\n" +
+            "Koristite filter da vidite probleme po zgradi.\n\n" +
+            "Kliknite 'Označi kao rešen' da promenite status problema.");
     }
 }

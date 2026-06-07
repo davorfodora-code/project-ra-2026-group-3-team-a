@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -33,9 +34,8 @@ public partial class AssemblyDetailPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Pregled detalja skupštine.\n" +
-            "Prisustvo po stanovima prikazuje ko je potvrdio dolazak.",
-            "Pomoć", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Pregled detalja skupštine.\n\n" +
+            "Prisustvo po stanovima prikazuje ko je potvrdio dolazak.");
     }
 }

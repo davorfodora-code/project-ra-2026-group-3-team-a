@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using CommunityHub.Application.Services.BuildingManager.Dto;
+using CommunityHub.Ui.Controls;
 using CommunityHub.Ui.ViewModels.BuildingManager;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
@@ -29,9 +30,8 @@ public partial class NewCommonRoomPage : Page
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "Unesite naziv i opis prostorije, odaberite sprat i tip iznajmljivanja.",
-            "Pomoc", MessageBoxButton.OK, MessageBoxImage.Information);
+        HelpDialog.Show(this,
+            "Unesite naziv i opis prostorije, odaberite sprat i tip iznajmljivanja.");
     }
 
     private void Submit_Click(object sender, RoutedEventArgs e)

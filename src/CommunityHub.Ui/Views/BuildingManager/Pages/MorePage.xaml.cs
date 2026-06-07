@@ -1,4 +1,7 @@
+using System.Windows;
 using System.Windows.Controls;
+using CommunityHub.Ui.Controls;
+using CommunityHub.Ui.Views;
 
 namespace CommunityHub.Ui.Views.BuildingManager.Pages;
 
@@ -10,5 +13,34 @@ public partial class MorePage : Page
     {
         InitializeComponent();
         _shell = shell;
+    }
+
+    private void Settings_Click(object sender, RoutedEventArgs e)
+    {
+        _shell.MainFrame.Navigate(new SettingsPage(_shell));
+    }
+
+    private void Wizard_Click(object sender, RoutedEventArgs e)
+    {
+        HelpDialog.Show(this, "Pokretni vodič", "Pokretni vodič dolazi uskoro.");
+    }
+
+    private void Logout_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBoxResult result = MessageBox.Show(
+            "Da li ste sigurni da želite da se odjavite?",
+            "Odjava", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (result != MessageBoxResult.Yes) return;
+
+        LogInForm loginForm = new LogInForm();
+        loginForm.Show();
+        _shell.Close();
+    }
+
+    private void HelpButton_Click(object sender, RoutedEventArgs e)
+    {
+        HelpDialog.Show(this,
+            "Dodatne opcije: podešavanja aplikacije, pokretni vodič i odjava.");
     }
 }

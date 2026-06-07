@@ -2,6 +2,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+      xmlns:ctrl="clr-namespace:CommunityHub.Ui.Controls"
       Title="Nova prostorija" Background="#F5F5F5">
 
     <Page.Resources>
@@ -89,11 +90,24 @@
                               SelectedItem="{Binding SelectedFloor, Mode=TwoWay}"/>
                     <TextBlock Text="{Binding FloorHint}" FontSize="12" Foreground="#888888"
                                VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <ctrl:InfoButton TargetName="FloorHelp"
+                                     Margin="6,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBlock Margin="0,0,0,16"/>
+                <TextBlock x:Name="FloorHelp" Visibility="Collapsed"
+                           Text="Dostupni su samo spratovi koje zgrada poseduje (0 = prizemlje)."
+                           FontSize="11" Foreground="#888888"
+                           TextWrapping="Wrap" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Iznajmljivanje:" FontSize="13" FontWeight="SemiBold"
-                           Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="Iznajmljivanje:" FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                    <ctrl:InfoButton TargetName="RentalTypeHelp"
+                                     Margin="6,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock x:Name="RentalTypeHelp" Visibility="Collapsed"
+                           Text="Na 1 dan: stanar bira jedan dan iz opsega. Na više dana: stanar traži opseg datuma, vi predlažete termin."
+                           FontSize="11" Foreground="#888888"
+                           TextWrapping="Wrap" Margin="0,0,0,8"/>
                 <RadioButton Content="Na 1 dan" FontSize="13"
                              IsChecked="True" Margin="0,0,0,6"/>
                 <RadioButton Content="Na vise dana" FontSize="13"
