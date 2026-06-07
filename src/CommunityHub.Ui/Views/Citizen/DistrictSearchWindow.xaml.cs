@@ -44,11 +44,6 @@ public partial class DistrictSearchWindow : Page
         };
     }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenHomeWindow(_userId));
-    }
-
     private void SearchButton_Click(object sender, RoutedEventArgs e)
     {
         PerformSearch();
@@ -124,39 +119,49 @@ public partial class DistrictSearchWindow : Page
 
     private void ShowResult(AccessResultDto result, bool wasMember)
     {
-        MessageBoxImage image = result.Type switch
+        MessageBoxResult dialogResult = ShowAccessResultMessage(result);
+
+        if (ShouldRefreshMembershipState(dialogResult, result, wasMember))
+        {
+            CitizenShellNavigation.RefreshMembershipState(this);
+        }
+    }
+
+    private static MessageBoxResult ShowAccessResultMessage(AccessResultDto result)
+    {
+        return MessageBox.Show(
+            result.Message,
+            GetCaption(result.Type),
+            MessageBoxButton.OK,
+            GetMessageBoxImage(result.Type));
+    }
+
+    private bool ShouldRefreshMembershipState(
+        MessageBoxResult dialogResult,
+        AccessResultDto result,
+        bool wasMember)
+    {
+        return dialogResult == MessageBoxResult.OK &&
+            result.Type == AccessResultType.Success &&
+            !wasMember &&
+            new CitizenMembershipService().HasMembership(_userId);
+    }
+
+    private static MessageBoxImage GetMessageBoxImage(AccessResultType resultType) =>
+        resultType switch
         {
             AccessResultType.Success => MessageBoxImage.Information,
             AccessResultType.Warning => MessageBoxImage.Warning,
             _ => MessageBoxImage.Error
         };
 
-        string caption = result.Type switch
+    private static string GetCaption(AccessResultType resultType) =>
+        resultType switch
         {
             AccessResultType.Success => "Uspeh",
             AccessResultType.Warning => "Upozorenje",
             _ => "Greška"
         };
-
-        MessageBoxResult dialogResult = MessageBox.Show(
-            result.Message,
-            caption,
-            MessageBoxButton.OK,
-            image);
-
-        if (dialogResult != MessageBoxResult.OK ||
-            result.Type != AccessResultType.Success ||
-            wasMember)
-        {
-            return;
-        }
-
-        bool isMemberNow = new CitizenMembershipService().HasMembership(_userId);
-        if (isMemberNow)
-        {
-            CitizenShellNavigation.RefreshMembershipState(this);
-        }
-    }
 
     private static void ShowMessageBox(string text, string caption, MessageBoxImage image)
     {

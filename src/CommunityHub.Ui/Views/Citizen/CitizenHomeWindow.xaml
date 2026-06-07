@@ -99,12 +99,6 @@
                             Padding="14,10"
                             Click="DistrictEventsButton_Click"
                             Margin="0,0,0,8"/>
-                    <Button x:Name="MeetingsButton"
-                            Content="Sastanci"
-                            Style="{StaticResource Win11SecondaryButtonStyle}"
-                            Padding="14,10"
-                            Click="MeetingsButton_Click"
-                            Visibility="Collapsed"/>
                 </StackPanel>
             </Border>
 
@@ -176,9 +170,6 @@
                     <Button Content="📊  Izveštaji"
                             Style="{StaticResource CitizenNavButtonStyle}"
                             Click="ReportsNotImplementedButton_Click"/>
-                    <Button Content="🤝  Sastanci"
-                            Style="{StaticResource CitizenNavButtonStyle}"
-                            Click="MeetingsButton_Click"/>
                     <Button Content="🏛  Gradski objekti"
                             Style="{StaticResource CitizenNavButtonStyle}"
                             Click="ObjectsNotImplementedButton_Click"/>

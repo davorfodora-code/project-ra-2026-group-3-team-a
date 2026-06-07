@@ -11,34 +11,7 @@ public class CitizenTrustRecordDbRepository : ICitizenTrustRecordRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT
-                dm.user_id AS citizen_id,
-                dm.district_id,
-                CONCAT(u.name, ' ', u.surname) AS citizen_full_name,
-                dm.join_date,
-                dm.trust_level,
-                (
-                    SELECT COUNT(*)
-                    FROM district_events e
-                    WHERE e.district_id = dm.district_id
-                      AND e.organizer_id = dm.user_id
-                      AND e.status = 'Zavrsen'
-                ) AS organized_completed_events_count,
-                (
-                    SELECT COUNT(*)
-                    FROM district_event_volunteer_attendances va
-                    JOIN district_events e ON e.id = va.event_id
-                    WHERE e.district_id = dm.district_id
-                      AND va.volunteer_id = dm.user_id
-                      AND va.attended = TRUE
-                ) AS confirmed_volunteer_events_count
-            FROM district_memberships dm
-            JOIN users u ON u.id = dm.user_id
-            WHERE dm.user_id = @userId
-              AND dm.district_id = @districtId
-            ORDER BY dm.join_date DESC
-            LIMIT 1";
+        cmd.CommandText = TrustRecordByUserAndDistrictQuery;
 
         AddParameter(cmd, "@userId", userId);
         AddParameter(cmd, "@districtId", districtId);
@@ -52,43 +25,11 @@ public class CitizenTrustRecordDbRepository : ICitizenTrustRecordRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT
-                dm.user_id AS citizen_id,
-                dm.district_id,
-                CONCAT(u.name, ' ', u.surname) AS citizen_full_name,
-                dm.join_date,
-                dm.trust_level,
-                (
-                    SELECT COUNT(*)
-                    FROM district_events e
-                    WHERE e.district_id = dm.district_id
-                      AND e.organizer_id = dm.user_id
-                      AND e.status = 'Zavrsen'
-                ) AS organized_completed_events_count,
-                (
-                    SELECT COUNT(*)
-                    FROM district_event_volunteer_attendances va
-                    JOIN district_events e ON e.id = va.event_id
-                    WHERE e.district_id = dm.district_id
-                      AND va.volunteer_id = dm.user_id
-                      AND va.attended = TRUE
-                ) AS confirmed_volunteer_events_count
-            FROM district_memberships dm
-            JOIN users u ON u.id = dm.user_id
-            WHERE dm.district_id = @districtId
-            ORDER BY u.name, u.surname";
+        cmd.CommandText = TrustRecordsByDistrictQuery;
 
         AddParameter(cmd, "@districtId", districtId);
 
-        List<CitizenTrustRecordEntry> entries = new();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            entries.Add(MapEntry(reader));
-        }
-
-        return entries;
+        return ReadList(cmd, MapEntry);
     }
 
     public void UpdateTrustLevel(long userId, long districtId, CitizenTrustLevel trustLevel)
@@ -129,4 +70,51 @@ public class CitizenTrustRecordDbRepository : ICitizenTrustRecordRepository
         param.Value = value;
         command.Parameters.Add(param);
     }
+
+    private static List<T> ReadList<T>(IDbCommand command, Func<IDataReader, T> map)
+    {
+        List<T> items = new();
+        using IDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            items.Add(map(reader));
+        }
+
+        return items;
+    }
+
+    private const string TrustRecordSelect = @"
+            SELECT
+                dm.user_id AS citizen_id,
+                dm.district_id,
+                CONCAT(u.name, ' ', u.surname) AS citizen_full_name,
+                dm.join_date,
+                dm.trust_level,
+                (
+                    SELECT COUNT(*)
+                    FROM district_events e
+                    WHERE e.district_id = dm.district_id
+                      AND e.organizer_id = dm.user_id
+                      AND e.status = 'Zavrsen'
+                ) AS organized_completed_events_count,
+                (
+                    SELECT COUNT(*)
+                    FROM district_event_volunteer_attendances va
+                    JOIN district_events e ON e.id = va.event_id
+                    WHERE e.district_id = dm.district_id
+                      AND va.volunteer_id = dm.user_id
+                      AND va.attended = TRUE
+                ) AS confirmed_volunteer_events_count
+            FROM district_memberships dm
+            JOIN users u ON u.id = dm.user_id";
+
+    private const string TrustRecordByUserAndDistrictQuery = TrustRecordSelect + @"
+            WHERE dm.user_id = @userId
+              AND dm.district_id = @districtId
+            ORDER BY dm.join_date DESC
+            LIMIT 1";
+
+    private const string TrustRecordsByDistrictQuery = TrustRecordSelect + @"
+            WHERE dm.district_id = @districtId
+            ORDER BY u.name, u.surname";
 }

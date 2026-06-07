@@ -83,9 +83,4 @@ public partial class MyDistrictWindow : Page
     {
         CitizenShellNavigation.Navigate(this, new CitizenEventsWindow(_userId));
     }
-
-    private void MeetingsNavButton_Click(object sender, RoutedEventArgs e)
-    {
-        CitizenShellNavigation.Navigate(this, new CitizenMeetingsWindow(_userId));
-    }
 }

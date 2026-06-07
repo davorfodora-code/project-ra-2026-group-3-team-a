@@ -12,7 +12,8 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
         try
         {
             long applicationId = CreateApplicationRecord(connection, transaction, eventId, citizenId, appliedAt);
-            AssignItemsToApplication(connection, transaction, eventId, citizenId, applicationId, selectedItemIds, allowReassignToSameCitizen: false);
+            ItemAssignmentContext context = new(connection, transaction, eventId, citizenId, applicationId, AllowReassignToSameCitizen: false);
+            AssignItemsToApplication(context, selectedItemIds);
             transaction.Commit();
             return applicationId;
         }
@@ -31,7 +32,8 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
         try
         {
             long applicationId = GetExistingApplicationId(connection, transaction, eventId, citizenId);
-            AssignItemsToApplication(connection, transaction, eventId, citizenId, applicationId, selectedItemIds, allowReassignToSameCitizen: true);
+            ItemAssignmentContext context = new(connection, transaction, eventId, citizenId, applicationId, AllowReassignToSameCitizen: true);
+            AssignItemsToApplication(context, selectedItemIds);
             transaction.Commit();
         }
         catch
@@ -77,34 +79,89 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
         return Convert.ToInt64(appIdObj);
     }
 
-    private static void AssignItemsToApplication(
-        IDbConnection connection,
-        IDbTransaction transaction,
-        long eventId,
-        long citizenId,
-        long applicationId,
-        IEnumerable<long>? selectedItemIds,
-        bool allowReassignToSameCitizen)
+    private static void AssignItemsToApplication(ItemAssignmentContext context, IEnumerable<long>? selectedItemIds)
     {
         foreach (long itemId in selectedItemIds?.Distinct() ?? Enumerable.Empty<long>())
         {
-            AssignItemToVolunteer(connection, transaction, eventId, citizenId, itemId, allowReassignToSameCitizen);
-            LinkItemToApplication(connection, transaction, applicationId, itemId, allowDuplicateLink: allowReassignToSameCitizen);
+            AssignItemToVolunteer(context, itemId);
+            LinkItemToApplication(context, itemId);
         }
     }
 
-    private static void AssignItemToVolunteer(
-        IDbConnection connection,
-        IDbTransaction transaction,
-        long eventId,
-        long citizenId,
-        long itemId,
-        bool allowReassignToSameCitizen)
+    private static void AssignItemToVolunteer(ItemAssignmentContext context, long itemId)
     {
-        IDbCommand updateItemCmd = connection.CreateCommand();
-        updateItemCmd.Transaction = transaction;
-        updateItemCmd.CommandText = allowReassignToSameCitizen
-            ? @"
+        IDbCommand updateItemCmd = CreateAssignmentCommand(context, itemId);
+        int affectedRows = updateItemCmd.ExecuteNonQuery();
+        if (affectedRows == 0)
+        {
+            throw new InvalidOperationException("Nije moguce preuzeti stavku jer je vec preuzeta ili ne postoji.");
+        }
+    }
+
+    private static IDbCommand CreateAssignmentCommand(ItemAssignmentContext context, long itemId)
+    {
+        IDbCommand updateItemCmd = context.Connection.CreateCommand();
+        updateItemCmd.Transaction = context.Transaction;
+        updateItemCmd.CommandText = context.AllowReassignToSameCitizen
+            ? ReassignItemToSameCitizenCommandText
+            : AssignNewItemCommandText;
+
+        AddParameter(updateItemCmd, "@citizenId", context.CitizenId);
+        AddParameter(updateItemCmd, "@itemId", itemId);
+        AddParameter(updateItemCmd, "@eventId", context.EventId);
+        return updateItemCmd;
+    }
+
+    private static void LinkItemToApplication(ItemAssignmentContext context, long itemId)
+    {
+        if (!context.AllowReassignToSameCitizen && IsItemLinkedToAnotherApplication(context, itemId))
+        {
+            throw new InvalidOperationException("Nije moguce preuzeti stavku jer je vec preuzeta ili ne postoji.");
+        }
+
+        IDbCommand linkCmd = context.Connection.CreateCommand();
+        linkCmd.Transaction = context.Transaction;
+        linkCmd.CommandText = context.AllowReassignToSameCitizen
+            ? LinkExistingApplicationItemCommandText
+            : LinkNewApplicationItemCommandText;
+
+        AddParameter(linkCmd, "@applicationId", context.ApplicationId);
+        AddParameter(linkCmd, "@requiredItemId", itemId);
+        linkCmd.ExecuteNonQuery();
+    }
+
+    private static bool IsItemLinkedToAnotherApplication(ItemAssignmentContext context, long itemId)
+    {
+        IDbCommand checkCmd = context.Connection.CreateCommand();
+        checkCmd.Transaction = context.Transaction;
+        checkCmd.CommandText = @"
+            SELECT 1
+            FROM district_event_application_items
+            WHERE required_item_id = @requiredItemId
+              AND application_id <> @applicationId
+            LIMIT 1";
+        AddParameter(checkCmd, "@requiredItemId", itemId);
+        AddParameter(checkCmd, "@applicationId", context.ApplicationId);
+        return checkCmd.ExecuteScalar() != null;
+    }
+
+    private static void AddParameter(IDbCommand command, string name, object value)
+    {
+        IDbDataParameter param = command.CreateParameter();
+        param.ParameterName = name;
+        param.Value = value;
+        command.Parameters.Add(param);
+    }
+
+    private sealed record ItemAssignmentContext(
+        IDbConnection Connection,
+        IDbTransaction Transaction,
+        long EventId,
+        long CitizenId,
+        long ApplicationId,
+        bool AllowReassignToSameCitizen);
+
+    private const string ReassignItemToSameCitizenCommandText = @"
                 UPDATE district_event_required_items ri
                 SET assigned_volunteer_id = @citizenId
                 WHERE ri.id = @itemId
@@ -117,8 +174,9 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
                       WHERE ai.required_item_id = ri.id
                         AND a.event_id = @eventId
                         AND a.citizen_id <> @citizenId
-                  )"
-            : @"
+                  )";
+
+    private const string AssignNewItemCommandText = @"
                 UPDATE district_event_required_items ri
                 SET assigned_volunteer_id = @citizenId
                 WHERE ri.id = @itemId
@@ -130,69 +188,12 @@ internal sealed class CitizenDistrictEventApplicationCommandDbRepository
                       WHERE ai.required_item_id = ri.id
                   )";
 
-        AddParameter(updateItemCmd, "@citizenId", citizenId);
-        AddParameter(updateItemCmd, "@itemId", itemId);
-        AddParameter(updateItemCmd, "@eventId", eventId);
-
-        int affectedRows = updateItemCmd.ExecuteNonQuery();
-        if (affectedRows == 0)
-        {
-            throw new InvalidOperationException("Nije moguce preuzeti stavku jer je vec preuzeta ili ne postoji.");
-        }
-    }
-
-    private static void LinkItemToApplication(
-        IDbConnection connection,
-        IDbTransaction transaction,
-        long applicationId,
-        long itemId,
-        bool allowDuplicateLink)
-    {
-        if (!allowDuplicateLink && IsItemLinkedToAnotherApplication(connection, transaction, applicationId, itemId))
-        {
-            throw new InvalidOperationException("Nije moguce preuzeti stavku jer je vec preuzeta ili ne postoji.");
-        }
-
-        IDbCommand linkCmd = connection.CreateCommand();
-        linkCmd.Transaction = transaction;
-        linkCmd.CommandText = allowDuplicateLink
-            ? @"
+    private const string LinkExistingApplicationItemCommandText = @"
                 INSERT INTO district_event_application_items (application_id, required_item_id)
                 VALUES (@applicationId, @requiredItemId)
-                ON CONFLICT (required_item_id) DO NOTHING"
-            : @"
+                ON CONFLICT (required_item_id) DO NOTHING";
+
+    private const string LinkNewApplicationItemCommandText = @"
                 INSERT INTO district_event_application_items (application_id, required_item_id)
                 VALUES (@applicationId, @requiredItemId)";
-
-        AddParameter(linkCmd, "@applicationId", applicationId);
-        AddParameter(linkCmd, "@requiredItemId", itemId);
-        linkCmd.ExecuteNonQuery();
-    }
-
-    private static bool IsItemLinkedToAnotherApplication(
-        IDbConnection connection,
-        IDbTransaction transaction,
-        long applicationId,
-        long itemId)
-    {
-        IDbCommand checkCmd = connection.CreateCommand();
-        checkCmd.Transaction = transaction;
-        checkCmd.CommandText = @"
-            SELECT 1
-            FROM district_event_application_items
-            WHERE required_item_id = @requiredItemId
-              AND application_id <> @applicationId
-            LIMIT 1";
-        AddParameter(checkCmd, "@requiredItemId", itemId);
-        AddParameter(checkCmd, "@applicationId", applicationId);
-        return checkCmd.ExecuteScalar() != null;
-    }
-
-    private static void AddParameter(IDbCommand command, string name, object value)
-    {
-        IDbDataParameter param = command.CreateParameter();
-        param.ParameterName = name;
-        param.Value = value;
-        command.Parameters.Add(param);
-    }
 }

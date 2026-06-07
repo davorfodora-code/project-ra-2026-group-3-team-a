@@ -102,14 +102,8 @@ public class DistrictEvent
         if (HasVolunteer(citizen.Id))
             throw new InvalidOperationException("Gradjanin je vec prijavljen kao volonter.");
 
-        List<long> chosenIds = selectedItemIds?.Distinct().ToList() ?? new List<long>();
-
-        foreach (long itemId in chosenIds)
-        {
-            DistrictEventRequiredItem item = RequiredItems.FirstOrDefault(i => i.Id == itemId)
-                ?? throw new InvalidOperationException("Odabrana stavka ne postoji.");
-            item.AssignToVolunteer(citizen.Id);
-        }
+        List<long> chosenIds = NormalizeSelectedItemIds(selectedItemIds);
+        AssignItemsToVolunteer(citizen.Id, chosenIds, allowAlreadyAssignedToSameVolunteer: false);
 
         VolunteerApplications.Add(new DistrictEventVolunteerApplication(citizen, now, chosenIds));
         TryScheduleIfReady();
@@ -120,27 +114,13 @@ public class DistrictEvent
         if (!CanAcceptVolunteerApplications(now))
             throw new InvalidOperationException("Dopuna stavki nije dozvoljena jer dogadjaj nije u pripremi.");
 
-        DistrictEventVolunteerApplication application = VolunteerApplications
-            .FirstOrDefault(a => a.Citizen.Id == citizenId)
-            ?? throw new InvalidOperationException("Gradjanin nije prijavljen kao volonter.");
+        DistrictEventVolunteerApplication application = GetVolunteerApplication(citizenId);
 
-        List<long> chosenIds = selectedItemIds?.Distinct().ToList() ?? new List<long>();
+        List<long> chosenIds = NormalizeSelectedItemIds(selectedItemIds);
         if (chosenIds.Count == 0)
             throw new InvalidOperationException("Izaberite bar jednu slobodnu stavku za dopunu prijave.");
 
-        foreach (long itemId in chosenIds)
-        {
-            DistrictEventRequiredItem item = RequiredItems.FirstOrDefault(i => i.Id == itemId)
-                ?? throw new InvalidOperationException("Odabrana stavka ne postoji.");
-
-            if (item.AssignedVolunteerId == citizenId)
-            {
-                continue;
-            }
-
-            item.AssignToVolunteer(citizenId);
-        }
-
+        AssignItemsToVolunteer(citizenId, chosenIds, allowAlreadyAssignedToSameVolunteer: true);
         application.AddSelectedItems(chosenIds);
         TryScheduleIfReady();
     }
@@ -165,27 +145,12 @@ public class DistrictEvent
             return;
         }
 
-        if (Status == DistrictEventStatus.Zakazan)
-        {
-            if (now >= GetEventEndDateTime())
-            {
-                Status = DistrictEventStatus.Zavrsen;
-            }
-
+        if (TryFinishScheduledEvent(now))
             return;
-        }
-
-        if (IsReadyToSchedule())
-        {
-            Status = DistrictEventStatus.Zakazan;
+        if (TrySchedulePreparedEvent())
             return;
-        }
 
-        DateTime cancellationThreshold = GetEventStartDateTime().AddHours(-12);
-        if (now >= cancellationThreshold)
-        {
-            Status = DistrictEventStatus.Otkazan;
-        }
+        CancelIfPreparationExpired(now);
     }
 
     public bool CanOrganizerMarkAttendance(long organizerId, DateTime now)
@@ -199,12 +164,9 @@ public class DistrictEvent
         if (!CanOrganizerMarkAttendance(organizerId, now))
             throw new InvalidOperationException("Prisustvo moze da evidentira samo organizator nakon zavrsetka dogadjaja.");
 
-        DistrictEventVolunteerApplication volunteerApplication = VolunteerApplications
-            .FirstOrDefault(a => a.Citizen.Id == volunteerId)
-            ?? throw new InvalidOperationException("Nije moguce evidentirati prisustvo za neprijavljenog volontera.");
+        DistrictEventVolunteerApplication volunteerApplication = GetVolunteerApplicationForAttendance(volunteerId);
 
-        DistrictEventVolunteerAttendance? existing = VolunteerAttendances
-            .FirstOrDefault(a => a.Volunteer.Id == volunteerApplication.Citizen.Id);
+        DistrictEventVolunteerAttendance? existing = FindExistingAttendance(volunteerApplication.Citizen.Id);
 
         if (existing != null)
         {
@@ -213,6 +175,86 @@ public class DistrictEvent
         }
 
         VolunteerAttendances.Add(new DistrictEventVolunteerAttendance(volunteerApplication.Citizen, attended));
+    }
+
+    private static List<long> NormalizeSelectedItemIds(IEnumerable<long>? selectedItemIds)
+    {
+        return selectedItemIds?.Distinct().ToList() ?? new List<long>();
+    }
+
+    private void AssignItemsToVolunteer(
+        long citizenId,
+        IEnumerable<long> itemIds,
+        bool allowAlreadyAssignedToSameVolunteer)
+    {
+        foreach (long itemId in itemIds)
+        {
+            DistrictEventRequiredItem item = GetRequiredItem(itemId);
+            if (allowAlreadyAssignedToSameVolunteer && item.AssignedVolunteerId == citizenId)
+            {
+                continue;
+            }
+
+            item.AssignToVolunteer(citizenId);
+        }
+    }
+
+    private DistrictEventRequiredItem GetRequiredItem(long itemId)
+    {
+        return RequiredItems.FirstOrDefault(i => i.Id == itemId)
+            ?? throw new InvalidOperationException("Odabrana stavka ne postoji.");
+    }
+
+    private DistrictEventVolunteerApplication GetVolunteerApplication(long citizenId)
+    {
+        return VolunteerApplications.FirstOrDefault(a => a.Citizen.Id == citizenId)
+            ?? throw new InvalidOperationException("Gradjanin nije prijavljen kao volonter.");
+    }
+
+    private DistrictEventVolunteerApplication GetVolunteerApplicationForAttendance(long volunteerId)
+    {
+        return VolunteerApplications.FirstOrDefault(a => a.Citizen.Id == volunteerId)
+            ?? throw new InvalidOperationException("Nije moguce evidentirati prisustvo za neprijavljenog volontera.");
+    }
+
+    private DistrictEventVolunteerAttendance? FindExistingAttendance(long volunteerId)
+    {
+        return VolunteerAttendances.FirstOrDefault(a => a.Volunteer.Id == volunteerId);
+    }
+
+    private bool TryFinishScheduledEvent(DateTime now)
+    {
+        if (Status != DistrictEventStatus.Zakazan)
+        {
+            return false;
+        }
+
+        if (now >= GetEventEndDateTime())
+        {
+            Status = DistrictEventStatus.Zavrsen;
+        }
+
+        return true;
+    }
+
+    private bool TrySchedulePreparedEvent()
+    {
+        if (!IsReadyToSchedule())
+        {
+            return false;
+        }
+
+        Status = DistrictEventStatus.Zakazan;
+        return true;
+    }
+
+    private void CancelIfPreparationExpired(DateTime now)
+    {
+        DateTime cancellationThreshold = GetEventStartDateTime().AddHours(-12);
+        if (now >= cancellationThreshold)
+        {
+            Status = DistrictEventStatus.Otkazan;
+        }
     }
 
     private void EnsureValidCreationData()

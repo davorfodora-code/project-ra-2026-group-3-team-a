@@ -47,35 +47,60 @@ internal static class CitizenDistrictEventDtoMapper
 
     private static List<EventRequiredItemDto> MapRequiredItems(DistrictEvent districtEvent)
     {
-        Dictionary<long, string> citizenNames = districtEvent.VolunteerApplications
-            .GroupBy(a => a.Citizen.Id)
-            .ToDictionary(
-                g => g.Key,
-                g => $"{g.First().Citizen.Name} {g.First().Citizen.Surname}".Trim());
+        Dictionary<long, string> citizenNames = BuildCitizenNameLookup(districtEvent);
+        Dictionary<long, long> itemOwnerFromApplications = BuildItemOwnerLookup(districtEvent);
 
-        Dictionary<long, long> itemOwnerFromApplications = districtEvent.VolunteerApplications
+        return districtEvent.RequiredItems
+            .Select(item => MapRequiredItem(item, citizenNames, itemOwnerFromApplications))
+            .ToList();
+    }
+
+    private static Dictionary<long, string> BuildCitizenNameLookup(DistrictEvent districtEvent)
+    {
+        return districtEvent.VolunteerApplications
+            .GroupBy(a => a.Citizen.Id)
+            .ToDictionary(g => g.Key, g => FormatCitizenName(g.First().Citizen));
+    }
+
+    private static Dictionary<long, long> BuildItemOwnerLookup(DistrictEvent districtEvent)
+    {
+        return districtEvent.VolunteerApplications
             .SelectMany(a => a.SelectedItemIds.Select(itemId => (itemId, a.Citizen.Id)))
             .GroupBy(x => x.itemId)
             .ToDictionary(g => g.Key, g => g.First().Item2);
+    }
 
-        return districtEvent.RequiredItems
-            .Select(item =>
-            {
-                long? volunteerId = item.AssignedVolunteerId;
-                if (!volunteerId.HasValue && itemOwnerFromApplications.TryGetValue(item.Id, out long ownerId))
-                {
-                    volunteerId = ownerId;
-                }
+    private static EventRequiredItemDto MapRequiredItem(
+        DistrictEventRequiredItem item,
+        Dictionary<long, string> citizenNames,
+        Dictionary<long, long> itemOwnerFromApplications)
+    {
+        long? volunteerId = ResolveVolunteerId(item, itemOwnerFromApplications);
 
-                return new EventRequiredItemDto
-                {
-                    ItemId = item.Id,
-                    Name = item.Name,
-                    AssignedVolunteerId = volunteerId,
-                    AssignedVolunteerName = ResolveVolunteerName(citizenNames, volunteerId)
-                };
-            })
-            .ToList();
+        return new EventRequiredItemDto
+        {
+            ItemId = item.Id,
+            Name = item.Name,
+            AssignedVolunteerId = volunteerId,
+            AssignedVolunteerName = ResolveVolunteerName(citizenNames, volunteerId)
+        };
+    }
+
+    private static long? ResolveVolunteerId(
+        DistrictEventRequiredItem item,
+        Dictionary<long, long> itemOwnerFromApplications)
+    {
+        if (item.AssignedVolunteerId.HasValue)
+        {
+            return item.AssignedVolunteerId;
+        }
+
+        return itemOwnerFromApplications.TryGetValue(item.Id, out long ownerId) ? ownerId : null;
+    }
+
+    private static string FormatCitizenName(User citizen)
+    {
+        return $"{citizen.Name} {citizen.Surname}".Trim();
     }
 
     private static string? ResolveVolunteerName(Dictionary<long, string> citizenNames, long? volunteerId)

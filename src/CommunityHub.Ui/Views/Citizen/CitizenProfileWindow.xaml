@@ -201,9 +201,6 @@
                     <Button Content="📊  Izveštaji"
                             Style="{StaticResource CitizenNavButtonStyle}"
                             Click="ReportsNotImplementedButton_Click"/>
-                    <Button Content="🤝  Sastanci"
-                            Style="{StaticResource CitizenNavButtonStyle}"
-                            Click="MeetingsNavButton_Click"/>
                     <Button Content="🏛  Gradski objekti"
                             Style="{StaticResource CitizenNavButtonStyle}"
                             Click="ObjectsNotImplementedButton_Click"/>
