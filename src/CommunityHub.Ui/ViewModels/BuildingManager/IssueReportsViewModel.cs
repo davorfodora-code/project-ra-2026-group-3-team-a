@@ -81,16 +81,7 @@ public class IssueReportsViewModel : BaseViewModel
         if (_selectedFilter?.BuildingId != null)
             filtered = filtered.Where(i => i.BuildingId == _selectedFilter.BuildingId);
 
-        UrgentIssues.Clear();
-        SolveSoonIssues.Clear();
-        CanWaitIssues.Clear();
-        foreach (IssueReportDto dto in filtered)
-        {
-            IssueReportItemViewModel item = new IssueReportItemViewModel(dto);
-            if (dto.Priority == "Urgent")         UrgentIssues.Add(item);
-            else if (dto.Priority == "SolveSoon") SolveSoonIssues.Add(item);
-            else                                  CanWaitIssues.Add(item);
-        }
+        IssueGrouping.RefillByPriority(filtered, UrgentIssues, SolveSoonIssues, CanWaitIssues);
         OnPropertyChanged(nameof(HasUrgentIssues));
         OnPropertyChanged(nameof(HasSolveSoonIssues));
         OnPropertyChanged(nameof(HasCanWaitIssues));

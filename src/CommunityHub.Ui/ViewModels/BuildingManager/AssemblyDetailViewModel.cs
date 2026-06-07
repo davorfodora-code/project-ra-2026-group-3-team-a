@@ -9,7 +9,17 @@ public class AssemblyDetailViewModel : BaseViewModel
 {
     private readonly AssemblyService _service;
     private readonly long _assemblyId;
-    private AssemblyDetailDto? _detail;
+
+    // Detail-derived snapshot (svi se osvezavaju u Load-u)
+    private string _buildingLine     = string.Empty;
+    private string _dateLine         = string.Empty;
+    private string _timeLine         = string.Empty;
+    private string _statusLine       = string.Empty;
+    private string _editDeadlineLine = string.Empty;
+    private bool   _hasSuggestions;
+    private bool   _canEditTopics;
+    private bool   _mustAddSuggestion;
+    private string _errorMessage     = string.Empty;
 
     public AssemblyDetailViewModel(long assemblyId)
     {
@@ -27,21 +37,19 @@ public class AssemblyDetailViewModel : BaseViewModel
     public ObservableCollection<TopicSuggestionDto> Suggestions { get; }
     public ObservableCollection<AttendanceItemDto>  Attendances { get; }
 
-    public string BuildingLine     => _detail != null ? $"Zgrada: {_detail.BuildingAddress}"                  : string.Empty;
-    public string DateLine         => _detail != null ? $"Datum: {_detail.DateLine}"                          : string.Empty;
-    public string TimeLine         => _detail != null ? $"Vreme: {_detail.TimeLine}"                          : string.Empty;
-    public string StatusLine       => _detail != null ? $"Status: {_detail.StatusDisplay}"                    : string.Empty;
-    public string EditDeadlineLine => _detail != null ? $"Rok za izmenu tema: {_detail.EditDeadlineDisplay}"  : string.Empty;
+    public string BuildingLine     => _buildingLine;
+    public string DateLine         => _dateLine;
+    public string TimeLine         => _timeLine;
+    public string StatusLine       => _statusLine;
+    public string EditDeadlineLine => _editDeadlineLine;
 
-    public bool HasSuggestions   => (_detail?.HasSuggestions) == true;
-    public bool CanEditTopics    => (_detail?.CanEditTopics)  == true;
-    // Upozorenje se prikazuje samo kad ima predloga I nijedan nije jos dodat
-    public bool CanNotEditTopics  => !CanEditTopics;
-    public bool MustAddSuggestion => HasSuggestions && CanEditTopics && !Topics.Any(t => t.IsAdditional);
-    public bool HasAttendances   => Attendances.Count > 0;
-    public bool HasNoAttendances => Attendances.Count == 0;
+    public bool HasSuggestions    => _hasSuggestions;
+    public bool CanEditTopics     => _canEditTopics;
+    public bool CanNotEditTopics  => !_canEditTopics;
+    public bool MustAddSuggestion => _mustAddSuggestion;
+    public bool HasAttendances    => Attendances.Count > 0;
+    public bool HasNoAttendances  => Attendances.Count == 0;
 
-    private string _errorMessage = string.Empty;
     public string ErrorMessage
     {
         get => _errorMessage;
@@ -55,31 +63,16 @@ public class AssemblyDetailViewModel : BaseViewModel
 
     public void Load()
     {
-        try
-        {
-            _detail = _service.GetDetail(_assemblyId);
-            if (_detail == null) return;
+        AssemblyDetailDto? detail;
+        try { detail = _service.GetDetail(_assemblyId); }
+        catch { return; }
+        if (detail == null) return;
 
-            Topics.Clear();
-            foreach (var t in _detail.Topics)      Topics.Add(t);
-            Suggestions.Clear();
-            foreach (var s in _detail.Suggestions) Suggestions.Add(s);
-            Attendances.Clear();
-            foreach (var a in _detail.Attendances) Attendances.Add(a);
-
-            OnPropertyChanged(nameof(BuildingLine));
-            OnPropertyChanged(nameof(DateLine));
-            OnPropertyChanged(nameof(TimeLine));
-            OnPropertyChanged(nameof(StatusLine));
-            OnPropertyChanged(nameof(EditDeadlineLine));
-            OnPropertyChanged(nameof(HasSuggestions));
-            OnPropertyChanged(nameof(CanEditTopics));
-            OnPropertyChanged(nameof(CanNotEditTopics));
-            OnPropertyChanged(nameof(MustAddSuggestion));
-            OnPropertyChanged(nameof(HasAttendances));
-            OnPropertyChanged(nameof(HasNoAttendances));
-        }
-        catch { /* prikazuje prazne kolekcije */ }
+        RefillCollection(Topics,      detail.Topics);
+        RefillCollection(Suggestions, detail.Suggestions);
+        RefillCollection(Attendances, detail.Attendances);
+        UpdateSnapshot(detail);
+        NotifyAllChanged();
     }
 
     // Dodaje predlozenu temu kao dodatnu i uklanja je iz predloga (1.7)
@@ -92,5 +85,46 @@ public class AssemblyDetailViewModel : BaseViewModel
             Load();
         }
         catch (Exception ex) { ErrorMessage = ex.Message; }
+    }
+
+    private void UpdateSnapshot(AssemblyDetailDto detail)
+    {
+        _buildingLine     = $"Zgrada: {detail.BuildingAddress}";
+        _dateLine         = $"Datum: {detail.DateLine}";
+        _timeLine         = $"Vreme: {detail.TimeLine}";
+        _statusLine       = $"Status: {detail.StatusDisplay}";
+        _editDeadlineLine = $"Rok za izmenu tema: {detail.EditDeadlineDisplay}";
+        _hasSuggestions   = detail.HasSuggestions;
+        _canEditTopics    = detail.CanEditTopics;
+        _mustAddSuggestion = ComputeMustAddSuggestion();
+    }
+
+    private bool ComputeMustAddSuggestion()
+    {
+        if (!_hasSuggestions || !_canEditTopics) return false;
+        foreach (AssemblyTopicDto t in Topics)
+            if (t.IsAdditional) return false;
+        return true;
+    }
+
+    private static void RefillCollection<T>(ObservableCollection<T> target, IEnumerable<T> source)
+    {
+        target.Clear();
+        foreach (T item in source) target.Add(item);
+    }
+
+    private void NotifyAllChanged()
+    {
+        OnPropertyChanged(nameof(BuildingLine));
+        OnPropertyChanged(nameof(DateLine));
+        OnPropertyChanged(nameof(TimeLine));
+        OnPropertyChanged(nameof(StatusLine));
+        OnPropertyChanged(nameof(EditDeadlineLine));
+        OnPropertyChanged(nameof(HasSuggestions));
+        OnPropertyChanged(nameof(CanEditTopics));
+        OnPropertyChanged(nameof(CanNotEditTopics));
+        OnPropertyChanged(nameof(MustAddSuggestion));
+        OnPropertyChanged(nameof(HasAttendances));
+        OnPropertyChanged(nameof(HasNoAttendances));
     }
 }
