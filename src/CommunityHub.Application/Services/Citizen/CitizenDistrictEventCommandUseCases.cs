@@ -81,39 +81,72 @@ internal sealed class CitizenDistrictEventCommandUseCases
 
     public EventActionResultDto ConfirmAttendance(long organizerId, long eventId, IReadOnlyList<VolunteerAttendanceDto> attendances)
     {
-        DistrictEvent? districtEvent = _eventRepository.GetById(eventId);
+        EventActionResultDto? validation = TryLoadAttendanceTargetEvent(organizerId, eventId, out DistrictEvent? districtEvent);
+        if (validation != null)
+        {
+            return validation;
+        }
+
+        try
+        {
+            HashSet<long> affectedCitizenIds = SaveVolunteerAttendances(organizerId, eventId, attendances, districtEvent!);
+            RefreshTrustRecords(affectedCitizenIds, districtEvent!.District.Id);
+            return Success("Prisustvo volontera je uspesno evidentirano.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Failure(ex.Message);
+        }
+    }
+
+    private EventActionResultDto? TryLoadAttendanceTargetEvent(long organizerId, long eventId, out DistrictEvent? districtEvent)
+    {
+        districtEvent = _eventRepository.GetById(eventId);
         if (districtEvent == null)
         {
             return Failure("Dogadjaj nije pronadjen.");
         }
 
         RefreshAndPersistStatus(districtEvent);
+        return districtEvent.CanOrganizerMarkAttendance(organizerId, DateTime.Now)
+            ? null
+            : Failure("Prisustvo moze da evidentira samo organizator nakon zavrsetka dogadjaja.");
+    }
 
-        if (!districtEvent.CanOrganizerMarkAttendance(organizerId, DateTime.Now))
+    private HashSet<long> SaveVolunteerAttendances(
+        long organizerId,
+        long eventId,
+        IReadOnlyList<VolunteerAttendanceDto> attendances,
+        DistrictEvent districtEvent)
+    {
+        DateTime operationTime = DateTime.Now;
+        HashSet<long> affectedCitizenIds = new() { districtEvent.Organizer.Id };
+
+        foreach (VolunteerAttendanceDto attendance in attendances)
         {
-            return Failure("Prisustvo moze da evidentira samo organizator nakon zavrsetka dogadjaja.");
+            SaveVolunteerAttendance(organizerId, eventId, attendance, districtEvent, operationTime);
+            affectedCitizenIds.Add(attendance.VolunteerId);
         }
 
-        try
-        {
-            HashSet<long> affectedCitizenIds = new() { districtEvent.Organizer.Id };
-            foreach (VolunteerAttendanceDto attendance in attendances)
-            {
-                districtEvent.MarkVolunteerAttendance(organizerId, attendance.VolunteerId, attendance.Attended, DateTime.Now);
-                _applicationRepository.UpsertAttendance(eventId, attendance.VolunteerId, attendance.Attended, DateTime.Now);
-                affectedCitizenIds.Add(attendance.VolunteerId);
-            }
+        return affectedCitizenIds;
+    }
 
-            foreach (long citizenId in affectedCitizenIds)
-            {
-                _trustRecordService.RefreshTrustForCitizen(citizenId, districtEvent.District.Id);
-            }
+    private void SaveVolunteerAttendance(
+        long organizerId,
+        long eventId,
+        VolunteerAttendanceDto attendance,
+        DistrictEvent districtEvent,
+        DateTime operationTime)
+    {
+        districtEvent.MarkVolunteerAttendance(organizerId, attendance.VolunteerId, attendance.Attended, operationTime);
+        _applicationRepository.UpsertAttendance(eventId, attendance.VolunteerId, attendance.Attended, operationTime);
+    }
 
-            return Success("Prisustvo volontera je uspesno evidentirano.");
-        }
-        catch (InvalidOperationException ex)
+    private void RefreshTrustRecords(IEnumerable<long> citizenIds, long districtId)
+    {
+        foreach (long citizenId in citizenIds)
         {
-            return Failure(ex.Message);
+            _trustRecordService.RefreshTrustForCitizen(citizenId, districtId);
         }
     }
 

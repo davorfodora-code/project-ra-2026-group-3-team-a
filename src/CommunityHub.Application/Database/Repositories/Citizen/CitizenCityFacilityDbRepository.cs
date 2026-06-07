@@ -11,43 +11,11 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            SELECT
-                f.id,
-                f.district_id,
-                f.name,
-                f.description,
-                f.address,
-                COALESCE(v.vote_count, 0) AS vote_count,
-                CASE WHEN my_vote.id IS NULL THEN FALSE ELSE TRUE END AS has_my_vote,
-                last_res.last_reserved_at
-            FROM city_facilities f
-            LEFT JOIN (
-                SELECT facility_id, COUNT(*) AS vote_count
-                FROM city_facility_interest_votes
-                GROUP BY facility_id
-            ) v ON v.facility_id = f.id
-            LEFT JOIN city_facility_interest_votes my_vote
-                ON my_vote.facility_id = f.id AND my_vote.citizen_id = @citizenId
-            LEFT JOIN (
-                SELECT facility_id, MAX(reserved_at) AS last_reserved_at
-                FROM city_facility_reservations
-                GROUP BY facility_id
-            ) last_res ON last_res.facility_id = f.id
-            WHERE f.district_id = @districtId
-            ORDER BY vote_count DESC, f.name";
-
+        cmd.CommandText = CitizenCityFacilitySql.FacilitiesByDistrict;
         AddParameter(cmd, "@districtId", districtId);
         AddParameter(cmd, "@citizenId", citizenId);
 
-        List<CityFacilityListItemDto> facilities = new();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            facilities.Add(MapFacility(reader));
-        }
-
-        return facilities;
+        return ReadList(cmd, MapFacility);
     }
 
     public CityFacilityListItemDto? GetFacilityById(long facilityId, long citizenId)
@@ -55,31 +23,7 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            SELECT
-                f.id,
-                f.district_id,
-                f.name,
-                f.description,
-                f.address,
-                COALESCE(v.vote_count, 0) AS vote_count,
-                CASE WHEN my_vote.id IS NULL THEN FALSE ELSE TRUE END AS has_my_vote,
-                last_res.last_reserved_at
-            FROM city_facilities f
-            LEFT JOIN (
-                SELECT facility_id, COUNT(*) AS vote_count
-                FROM city_facility_interest_votes
-                GROUP BY facility_id
-            ) v ON v.facility_id = f.id
-            LEFT JOIN city_facility_interest_votes my_vote
-                ON my_vote.facility_id = f.id AND my_vote.citizen_id = @citizenId
-            LEFT JOIN (
-                SELECT facility_id, MAX(reserved_at) AS last_reserved_at
-                FROM city_facility_reservations
-                GROUP BY facility_id
-            ) last_res ON last_res.facility_id = f.id
-            WHERE f.id = @facilityId";
-
+        cmd.CommandText = CitizenCityFacilitySql.FacilityById;
         AddParameter(cmd, "@facilityId", facilityId);
         AddParameter(cmd, "@citizenId", citizenId);
 
@@ -92,11 +36,7 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            INSERT INTO city_facility_interest_votes (facility_id, citizen_id, voted_at)
-            VALUES (@facilityId, @citizenId, @votedAt)
-            ON CONFLICT (facility_id, citizen_id) DO NOTHING";
-
+        cmd.CommandText = CitizenCityFacilitySql.Vote;
         AddParameter(cmd, "@facilityId", facilityId);
         AddParameter(cmd, "@citizenId", citizenId);
         AddParameter(cmd, "@votedAt", DateTime.Now);
@@ -109,12 +49,7 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            SELECT 1
-            FROM city_facility_interest_votes
-            WHERE facility_id = @facilityId AND citizen_id = @citizenId
-            LIMIT 1";
-
+        cmd.CommandText = CitizenCityFacilitySql.HasVote;
         AddParameter(cmd, "@facilityId", facilityId);
         AddParameter(cmd, "@citizenId", citizenId);
 
@@ -126,12 +61,7 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            SELECT 1
-            FROM city_facilities
-            WHERE id = @facilityId AND district_id = @districtId
-            LIMIT 1";
-
+        cmd.CommandText = CitizenCityFacilitySql.FacilityBelongsToDistrict;
         AddParameter(cmd, "@facilityId", facilityId);
         AddParameter(cmd, "@districtId", districtId);
 
@@ -143,46 +73,18 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            SELECT
-                f.id AS facility_id,
-                f.name AS facility_name,
-                COUNT(r.id) AS visit_count
-            FROM city_facilities f
-            JOIN city_facility_reservations r ON r.facility_id = f.id
-            WHERE r.district_id = @districtId
-              AND EXTRACT(YEAR FROM r.reserved_at) = @year";
-
+        cmd.CommandText = CitizenCityFacilitySql.StatisticsBase;
         if (month.HasValue)
         {
-            cmd.CommandText += " AND EXTRACT(MONTH FROM r.reserved_at) = @month";
+            cmd.CommandText += CitizenCityFacilitySql.StatisticsMonthFilter;
             AddParameter(cmd, "@month", month.Value);
         }
 
-        cmd.CommandText += @"
-            GROUP BY f.id, f.name
-            ORDER BY visit_count DESC, f.name";
-
+        cmd.CommandText += CitizenCityFacilitySql.StatisticsGroupAndOrder;
         AddParameter(cmd, "@districtId", districtId);
         AddParameter(cmd, "@year", year);
 
-        CityFacilityStatisticsDto stats = new();
-
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            int count = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("visit_count")));
-            stats.TotalReservations += count;
-
-            stats.FacilityStats.Add(new CityFacilityVisitStatDto
-            {
-                FacilityId = reader.GetInt64(reader.GetOrdinal("facility_id")),
-                FacilityName = reader.GetString(reader.GetOrdinal("facility_name")),
-                VisitCount = count
-            });
-        }
-
-        return stats;
+        return MapStatistics(ReadList(cmd, MapVisitStat));
     }
 
     public List<CityFacilityReservationHistoryDto> GetReservationHistory(long districtId, long facilityId)
@@ -190,35 +92,32 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
         IDbCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"
-            SELECT
-                f.id AS facility_id,
-                f.name AS facility_name,
-                r.reserved_at,
-                COALESCE(r.note, '') AS note
-            FROM city_facility_reservations r
-            JOIN city_facilities f ON f.id = r.facility_id
-            WHERE r.district_id = @districtId
-              AND r.facility_id = @facilityId
-            ORDER BY r.reserved_at DESC";
-
+        cmd.CommandText = CitizenCityFacilitySql.ReservationHistory;
         AddParameter(cmd, "@districtId", districtId);
         AddParameter(cmd, "@facilityId", facilityId);
 
-        List<CityFacilityReservationHistoryDto> history = new();
-        using IDataReader reader = cmd.ExecuteReader();
+        return ReadList(cmd, MapReservationHistory);
+    }
+
+    private static List<T> ReadList<T>(IDbCommand command, Func<IDataReader, T> map)
+    {
+        List<T> items = new();
+        using IDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-            history.Add(new CityFacilityReservationHistoryDto
-            {
-                FacilityId = reader.GetInt64(reader.GetOrdinal("facility_id")),
-                FacilityName = reader.GetString(reader.GetOrdinal("facility_name")),
-                ReservedAt = reader.GetDateTime(reader.GetOrdinal("reserved_at")),
-                Note = reader.GetString(reader.GetOrdinal("note"))
-            });
+            items.Add(map(reader));
         }
 
-        return history;
+        return items;
+    }
+
+    private static CityFacilityStatisticsDto MapStatistics(List<CityFacilityVisitStatDto> visitStats)
+    {
+        return new CityFacilityStatisticsDto
+        {
+            TotalReservations = visitStats.Sum(stat => stat.VisitCount),
+            FacilityStats = visitStats
+        };
     }
 
     private static CityFacilityListItemDto MapFacility(IDataReader reader)
@@ -237,6 +136,27 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
             LastReservationDate = reader.IsDBNull(lastReservationOrdinal)
                 ? null
                 : reader.GetDateTime(lastReservationOrdinal)
+        };
+    }
+
+    private static CityFacilityVisitStatDto MapVisitStat(IDataReader reader)
+    {
+        return new CityFacilityVisitStatDto
+        {
+            FacilityId = reader.GetInt64(reader.GetOrdinal("facility_id")),
+            FacilityName = reader.GetString(reader.GetOrdinal("facility_name")),
+            VisitCount = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("visit_count")))
+        };
+    }
+
+    private static CityFacilityReservationHistoryDto MapReservationHistory(IDataReader reader)
+    {
+        return new CityFacilityReservationHistoryDto
+        {
+            FacilityId = reader.GetInt64(reader.GetOrdinal("facility_id")),
+            FacilityName = reader.GetString(reader.GetOrdinal("facility_name")),
+            ReservedAt = reader.GetDateTime(reader.GetOrdinal("reserved_at")),
+            Note = reader.GetString(reader.GetOrdinal("note"))
         };
     }
 

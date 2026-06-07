@@ -12,33 +12,12 @@ public class CitizenMeetingDbRepository : ICitizenMeetingRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT m.id, m.district_id, m.meeting_type, m.meeting_time,
-                   m.date_range_start, m.date_range_end, m.status, m.scheduled_date,
-                   v.preferred_date AS my_preferred_date
-            FROM district_meetings m
-            LEFT JOIN district_meeting_votes v
-                ON v.meeting_id = m.id AND v.citizen_id = @citizenId
-            WHERE m.district_id = @districtId
-            ORDER BY
-                CASE m.status
-                    WHEN 'UPripremi' THEN 0
-                    WHEN 'Zakazan' THEN 1
-                    ELSE 2
-                END,
-                m.date_range_start DESC";
+        cmd.CommandText = MeetingsByDistrictQuery;
 
         AddParameter(cmd, "@districtId", districtId);
         AddParameter(cmd, "@citizenId", citizenId);
 
-        List<CitizenMeetingDto> meetings = new();
-        using IDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            meetings.Add(MapMeeting(reader));
-        }
-
-        return meetings;
+        return ReadList(cmd, MapMeeting);
     }
 
     public CitizenMeetingDto? GetById(long meetingId, long citizenId)
@@ -46,14 +25,7 @@ public class CitizenMeetingDbRepository : ICitizenMeetingRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT m.id, m.district_id, m.meeting_type, m.meeting_time,
-                   m.date_range_start, m.date_range_end, m.status, m.scheduled_date,
-                   v.preferred_date AS my_preferred_date
-            FROM district_meetings m
-            LEFT JOIN district_meeting_votes v
-                ON v.meeting_id = m.id AND v.citizen_id = @citizenId
-            WHERE m.id = @meetingId";
+        cmd.CommandText = MeetingByIdQuery;
 
         AddParameter(cmd, "@meetingId", meetingId);
         AddParameter(cmd, "@citizenId", citizenId);
@@ -67,11 +39,7 @@ public class CitizenMeetingDbRepository : ICitizenMeetingRepository
         using IDbConnection connection = PostgresConnection.CreateConnection();
 
         IDbCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"
-            INSERT INTO district_meeting_votes (meeting_id, citizen_id, preferred_date)
-            VALUES (@meetingId, @citizenId, @preferredDate)
-            ON CONFLICT (meeting_id, citizen_id)
-            DO UPDATE SET preferred_date = EXCLUDED.preferred_date";
+        cmd.CommandText = UpsertVoteCommandText;
 
         AddParameter(cmd, "@meetingId", meetingId);
         AddParameter(cmd, "@citizenId", citizenId);
@@ -81,42 +49,53 @@ public class CitizenMeetingDbRepository : ICitizenMeetingRepository
 
     private static CitizenMeetingDto MapMeeting(IDataReader reader)
     {
-        MeetingType meetingType = Enum.Parse<MeetingType>(
-            reader.GetString(reader.GetOrdinal("meeting_type")));
-
-        object rawTime = reader.GetValue(reader.GetOrdinal("meeting_time"));
-        TimeSpan meetingTime = rawTime switch
-        {
-            TimeOnly t => t.ToTimeSpan(),
-            TimeSpan ts => ts,
-            _ => throw new InvalidCastException($"Neočekivani tip za meeting_time: {rawTime.GetType()}")
-        };
-
-        MeetingStatus status = Enum.Parse<MeetingStatus>(
-            reader.GetString(reader.GetOrdinal("status")));
-
-        int scheduledOrd = reader.GetOrdinal("scheduled_date");
-        DateTime? scheduledDate = reader.IsDBNull(scheduledOrd)
-            ? null
-            : reader.GetDateTime(scheduledOrd);
-
-        int myVoteOrd = reader.GetOrdinal("my_preferred_date");
-        DateTime? myPreferredDate = reader.IsDBNull(myVoteOrd)
-            ? null
-            : reader.GetDateTime(myVoteOrd);
-
         return new CitizenMeetingDto
         {
             Id = reader.GetInt64(reader.GetOrdinal("id")),
             DistrictId = reader.GetInt64(reader.GetOrdinal("district_id")),
-            MeetingType = meetingType,
-            MeetingTime = meetingTime,
+            MeetingType = ReadEnum<MeetingType>(reader, "meeting_type"),
+            MeetingTime = ReadMeetingTime(reader),
             DateRangeStart = reader.GetDateTime(reader.GetOrdinal("date_range_start")),
             DateRangeEnd = reader.GetDateTime(reader.GetOrdinal("date_range_end")),
-            Status = status,
-            ScheduledDate = scheduledDate,
-            MyPreferredDate = myPreferredDate
+            Status = ReadEnum<MeetingStatus>(reader, "status"),
+            ScheduledDate = ReadNullableDateTime(reader, "scheduled_date"),
+            MyPreferredDate = ReadNullableDateTime(reader, "my_preferred_date")
         };
+    }
+
+    private static List<T> ReadList<T>(IDbCommand command, Func<IDataReader, T> map)
+    {
+        List<T> items = new();
+        using IDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            items.Add(map(reader));
+        }
+
+        return items;
+    }
+
+    private static T ReadEnum<T>(IDataReader reader, string columnName)
+        where T : struct
+    {
+        return Enum.Parse<T>(reader.GetString(reader.GetOrdinal(columnName)));
+    }
+
+    private static TimeSpan ReadMeetingTime(IDataReader reader)
+    {
+        object rawTime = reader.GetValue(reader.GetOrdinal("meeting_time"));
+        return rawTime switch
+        {
+            TimeOnly time => time.ToTimeSpan(),
+            TimeSpan timeSpan => timeSpan,
+            _ => throw new InvalidCastException($"Neočekivani tip za meeting_time: {rawTime.GetType()}")
+        };
+    }
+
+    private static DateTime? ReadNullableDateTime(IDataReader reader, string columnName)
+    {
+        int ordinal = reader.GetOrdinal(columnName);
+        return reader.IsDBNull(ordinal) ? null : reader.GetDateTime(ordinal);
     }
 
     private static void AddParameter(IDbCommand command, string name, object value)
@@ -126,4 +105,31 @@ public class CitizenMeetingDbRepository : ICitizenMeetingRepository
         param.Value = value;
         command.Parameters.Add(param);
     }
+
+    private const string MeetingSelect = @"
+            SELECT m.id, m.district_id, m.meeting_type, m.meeting_time,
+                   m.date_range_start, m.date_range_end, m.status, m.scheduled_date,
+                   v.preferred_date AS my_preferred_date
+            FROM district_meetings m
+            LEFT JOIN district_meeting_votes v
+                ON v.meeting_id = m.id AND v.citizen_id = @citizenId";
+
+    private const string MeetingsByDistrictQuery = MeetingSelect + @"
+            WHERE m.district_id = @districtId
+            ORDER BY
+                CASE m.status
+                    WHEN 'UPripremi' THEN 0
+                    WHEN 'Zakazan' THEN 1
+                    ELSE 2
+                END,
+                m.date_range_start DESC";
+
+    private const string MeetingByIdQuery = MeetingSelect + @"
+            WHERE m.id = @meetingId";
+
+    private const string UpsertVoteCommandText = @"
+            INSERT INTO district_meeting_votes (meeting_id, citizen_id, preferred_date)
+            VALUES (@meetingId, @citizenId, @preferredDate)
+            ON CONFLICT (meeting_id, citizen_id)
+            DO UPDATE SET preferred_date = EXCLUDED.preferred_date";
 }

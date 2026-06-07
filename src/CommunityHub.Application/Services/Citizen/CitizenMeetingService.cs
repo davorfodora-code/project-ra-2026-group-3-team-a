@@ -29,19 +29,44 @@ public class CitizenMeetingService : ICitizenMeetingService
 
     public MeetingVoteResultDto CastOrUpdateVote(long citizenId, CastMeetingVoteDto dto)
     {
+        MeetingVoteResultDto? validation = ValidateVoteRequest(citizenId, dto);
+        if (validation != null)
+        {
+            return validation;
+        }
+
+        DateTime preferredDate = dto.PreferredDate.Date;
+        _meetingRepository.UpsertVote(dto.MeetingId, citizenId, preferredDate);
+        return new MeetingVoteResultDto
+        {
+            Success = true,
+            Message = "Vaš glas je sačuvan."
+        };
+    }
+
+    private MeetingVoteResultDto? ValidateVoteRequest(long citizenId, CastMeetingVoteDto dto)
+    {
         long? districtId = _membershipRepository.GetMembershipDistrictId(citizenId);
         if (!districtId.HasValue)
         {
             return Fail("Niste član kvarta.");
         }
 
+        return ValidateMeetingVoteRules(citizenId, dto, districtId.Value);
+    }
+
+    private MeetingVoteResultDto? ValidateMeetingVoteRules(
+        long citizenId,
+        CastMeetingVoteDto dto,
+        long districtId)
+    {
         CitizenMeetingDto? meeting = _meetingRepository.GetById(dto.MeetingId, citizenId);
         if (meeting == null)
         {
             return Fail("Sastanak nije pronađen.");
         }
 
-        if (meeting.DistrictId != districtId.Value)
+        if (meeting.DistrictId != districtId)
         {
             return Fail("Sastanak ne pripada vašem kvartu.");
         }
@@ -62,12 +87,7 @@ public class CitizenMeetingService : ICitizenMeetingService
             return Fail("Izabrani datum nije u ponuđenom opsegu.");
         }
 
-        _meetingRepository.UpsertVote(dto.MeetingId, citizenId, preferredDate);
-        return new MeetingVoteResultDto
-        {
-            Success = true,
-            Message = "Vaš glas je sačuvan."
-        };
+        return null;
     }
 
     private static MeetingVoteResultDto Fail(string message) =>
