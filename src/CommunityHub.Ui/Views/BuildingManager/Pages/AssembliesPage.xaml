@@ -27,10 +27,26 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="16,16,16,80">
 
-                <!-- Hero kartica — predstojeća skupština -->
-                <Border Visibility="{Binding HasNextAssembly, Converter={StaticResource BoolToVisibility}}"
-                        Background="White" BorderBrush="#1A1A1A" BorderThickness="1"
-                        CornerRadius="10" Padding="16,14" Margin="0,0,0,20">
+                <!-- Hero kartica — predstojeća skupština (klik vodi na detalje) -->
+                <Button Visibility="{Binding HasNextAssembly, Converter={StaticResource BoolToVisibility}}"
+                        Click="HeroCard_Click"
+                        Background="White" BorderThickness="0" Padding="0"
+                        Margin="0,0,0,20" Cursor="Hand"
+                        HorizontalContentAlignment="Stretch">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="#1A1A1A" BorderThickness="1"
+                                    CornerRadius="10" Padding="16,14">
+                                <ContentPresenter/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#F5F5F5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
                     <StackPanel>
                         <TextBlock Text="Predstojeća skupština" FontSize="16" FontWeight="Bold"
                                    HorizontalAlignment="Center" Margin="0,0,0,6"/>
@@ -39,7 +55,7 @@
                         <TextBlock Text="{Binding NextDateTimeLine}" FontSize="14"
                                    HorizontalAlignment="Center" Foreground="#555555"/>
                     </StackPanel>
-                </Border>
+                </Button>
 
                 <!-- Lista skupstina -->
                 <TextBlock Text="Skupštine:" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>

@@ -29,6 +29,13 @@ public partial class AssembliesPage : Page
         NavigationService?.Navigate(new AssemblyDetailPage(_shell, item.Id));
     }
 
+    // Klik na hero karticu vodi direkt na detalje prve naredne skupstine
+    private void HeroCard_Click(object sender, RoutedEventArgs e)
+    {
+        if (_vm.NextAssembly is { } next)
+            NavigationService?.Navigate(new AssemblyDetailPage(_shell, next.Id));
+    }
+
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
         HelpDialog.Show(this,

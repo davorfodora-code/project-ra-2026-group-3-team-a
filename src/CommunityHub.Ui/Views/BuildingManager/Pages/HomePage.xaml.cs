@@ -27,7 +27,12 @@ public partial class HomePage : Page
     private void SkupstineLink_Click(object sender, RoutedEventArgs e)
     {
         _shell.SetActiveNav(3);
-        _shell.MainFrame.Navigate(new AssembliesPage(_shell));
+        // Ako postoji predstojeca skupstina — idi pravo na njene detalje;
+        // inace samo otvori listu skupstina (gde se vidi prazno stanje i FAB +).
+        if (_vm.NextAssemblyId is long id)
+            _shell.MainFrame.Navigate(new AssemblyDetailPage(_shell, id));
+        else
+            _shell.MainFrame.Navigate(new AssembliesPage(_shell));
     }
 
     private void ZahteviPristup_Click(object sender, RoutedEventArgs e)
