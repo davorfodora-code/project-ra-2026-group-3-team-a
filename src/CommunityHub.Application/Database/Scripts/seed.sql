@@ -243,28 +243,27 @@ INSERT INTO district_event_volunteer_attendances (id, event_id, volunteer_id, at
 
 
 -- ============================================================
---  Gradski objekti (4.6)
+--  Gradski objekti (3.5 i 4.6)
 -- ============================================================
-INSERT INTO city_facilities (id, district_id, name, description, address) VALUES
-(-1, -2, 'Muzej savremene umetnosti', 'Muzej sa stalnim i tematskim izlozbama.', 'Usce 10, Beograd'),
-(-2, -2, 'Sportski centar Novi Beograd', 'Sportski kompleks za rekreaciju i grupne posete.', 'Bulevar Zorana Djindjica 44, Beograd'),
-(-3, -2, 'Dom kulture Studentski grad', 'Kulturni centar sa predstavama, projekcijama i radionicama.', 'Bulevar Zorana Djindjica 179, Beograd'),
-(-4, -1, 'Zemunski kej', 'Setaliste i prostor za organizovane obilaske.', 'Kej oslobodjenja, Beograd'),
-(-5, -1, 'Zavicajni muzej Zemun', 'Muzej posvecen istoriji Zemuna.', 'Glavna 9, Beograd');
+INSERT INTO city_objects (id, name, type, location_id, capacity) VALUES
+(-1, 'Bioskop Zvezda',    'Bioskop',      -1, 200),
+(-2, 'Gradski Bazen',     'Bazen',        -1, 150),
+(-3, 'Luna Park',         'Luna park',    -1, 500),
+(-4, 'Narodno Pozoriste', 'Pozoriste',    -1, 300),
+(-5, 'Zooloski Vrt',      'Zooloski vrt', -1, 1000),
+(-6, 'Aquapark',          'Aquapark',     -1, 600);
 
-INSERT INTO city_facility_interest_votes (id, facility_id, citizen_id, voted_at) VALUES
-(-1, -1, -8,  '2026-05-01 10:00:00'),
-(-2, -1, -10, '2026-05-02 11:00:00'),
-(-3, -2, -11, '2026-05-03 12:00:00'),
-(-4, -3, -14, '2026-05-04 13:00:00'),
-(-5, -4, -22, '2026-05-05 14:00:00');
+INSERT INTO city_object_votes (id, city_object_id, citizen_id, voted_at) VALUES
+(-1, -1, -7,  '2026-05-01 10:00:00'),
+(-2, -1, -8,  '2026-05-02 11:00:00'),
+(-3, -2, -10, '2026-05-03 12:00:00'),
+(-4, -2, -9,  '2026-05-04 09:00:00'),
+(-5, -3, -11, '2026-05-05 14:00:00'),
+(-6, -4, -22, '2026-05-06 16:00:00');
 
-INSERT INTO city_facility_reservations (id, facility_id, district_id, reserved_at, note) VALUES
-(-1, -1, -2, '2026-01-15 11:00:00', 'Grupni obilazak muzeja.'),
-(-2, -1, -2, '2026-03-20 12:00:00', 'Tematska izlozba za gradjane kvarta.'),
-(-3, -2, -2, '2026-02-10 17:00:00', 'Sportski dan za clanove kvarta.'),
-(-4, -3, -2, '2025-12-05 19:00:00', 'Kulturno vece.'),
-(-5, -4, -1, '2026-04-12 10:00:00', 'Setnja i obilazak keja.');
+INSERT INTO city_object_reservations (id, city_object_id, district_id, start_time, end_time, reserved_at) VALUES
+(-1, -1, -2, '2026-03-01 10:00:00', '2026-03-01 14:00:00', '2026-02-25 09:00:00'),
+(-2, -2, -1, '2026-04-15 09:00:00', '2026-04-15 12:00:00', '2026-04-10 10:00:00');
 
 
 -- ============================================================
@@ -286,29 +285,71 @@ VALUES
 
 
 -- ============================================================
---  Donacije gradjana (4.8)
+--  Forumi koordinatora kvartova (3.4)
 -- ============================================================
-INSERT INTO district_donations (id, district_id, citizen_id, category, amount, donated_at) VALUES
-(-1, -2, -8,  'Uredjenje parkova', 12000.00, '2026-05-03 10:15:00'),
-(-2, -2, -10, 'Rasveta',            8000.00, '2026-05-06 18:30:00'),
-(-3, -2, -11, 'Cistoca',            5000.00, '2026-05-08 09:45:00'),
-(-4, -2, -14, 'Zelenilo',           6500.00, '2026-05-11 13:20:00'),
-(-5, -1, -22, 'Hitne popravke',     9000.00, '2026-05-09 12:00:00');
+INSERT INTO coordinator_forums (id, title, content, created_by_user_id, created_at, is_closed) VALUES
+(-1, 'Problemi sa komunalnim preduzecima',
+     'Zelim da pokrenemo diskusiju o nacinu saradnje sa JKP-om u nasim kvartovima. Kakva su vasa iskustva?',
+     -5, '2026-04-10 10:00:00', FALSE),
+(-2, 'Predlog za zajednicki budzet kvartova',
+     'Predlazem da koordinatori zajedno razmotre model zajednickog finansiranja vecih projekata.',
+     -6, '2026-04-15 14:00:00', FALSE);
 
-INSERT INTO district_expenses (id, district_id, category, amount, description, spent_at) VALUES
-(-1, -2, 'Uredjenje parkova', 3500.00, 'Popravka dve klupe u parku kod skole.', '2026-05-14 11:00:00'),
-(-2, -2, 'Rasveta',           2200.00, 'Zamena sijalica kod pesacke staze.',    '2026-05-16 16:30:00'),
-(-3, -2, 'Cistoca',           1800.00, 'Vanredno odnosenje kabastog otpada.',   '2026-05-18 09:00:00'),
-(-4, -1, 'Hitne popravke',    2500.00, 'Sanacija ostecenog poklopca sahta.',    '2026-05-15 10:45:00');
+INSERT INTO coordinator_forum_comments (id, forum_id, author_id, content, created_at) VALUES
+(-1, -1, -6, 'Potpuno se slazem, imali smo slicnih problema u Zemunu proslog meseca.', '2026-04-11 08:30:00'),
+(-2, -1, -5, 'Predlazem da zakazemo zajednicki sastanak sa predstavnicima JKP-a.', '2026-04-12 11:00:00');
+
+INSERT INTO coordinator_forum_comment_reactions (id, comment_id, user_id, is_positive) VALUES
+(-1, -1, -5, TRUE),
+(-2, -2, -6, TRUE);
+
+
+-- ============================================================
+--  Kategorije budzeta, donacije i rashodi (3.7 i 4.8)
+-- ============================================================
+INSERT INTO budget_categories (id, name) VALUES
+(-1, 'Uredjenje ulica'),
+(-2, 'Uredjenje parkova'),
+(-3, 'Rasveta'),
+(-4, 'Cistoca'),
+(-5, 'Zelenilo'),
+(-6, 'Hitne popravke');
+
+INSERT INTO district_donations (id, district_id, category_id, citizen_id, amount, donated_at) VALUES
+(-1, -2, -2, -8,  12000.00, '2026-05-03 10:15:00'),
+(-2, -2, -3, -10,  8000.00, '2026-05-06 18:30:00'),
+(-3, -2, -4, -11,  5000.00, '2026-05-08 09:45:00'),
+(-4, -2, -5, -14,  6500.00, '2026-05-11 13:20:00'),
+(-5, -1, -6, -22,  9000.00, '2026-05-09 12:00:00');
+
+INSERT INTO district_expenses (id, district_id, category_id, amount, description, expense_date) VALUES
+(-1, -2, -2, 3500.00, 'Popravka dve klupe u parku kod skole.', '2026-05-14'),
+(-2, -2, -3, 2200.00, 'Zamena sijalica kod pesacke staze.',    '2026-05-16'),
+(-3, -2, -4, 1800.00, 'Vanredno odnosenje kabastog otpada.',   '2026-05-18'),
+(-4, -1, -6, 2500.00, 'Sanacija ostecenog poklopca sahta.',    '2026-05-15');
 
 UPDATE districts
-SET budget = donation_totals.total_amount
-FROM (
-    SELECT district_id, SUM(amount) AS total_amount
-    FROM district_donations
-    GROUP BY district_id
-) donation_totals
-WHERE districts.id = donation_totals.district_id;
+SET budget = COALESCE(don.total, 0) - COALESCE(exp.total, 0)
+FROM
+    (SELECT district_id, SUM(amount) AS total FROM district_donations GROUP BY district_id) don
+    FULL OUTER JOIN
+    (SELECT district_id, SUM(amount) AS total FROM district_expenses GROUP BY district_id) exp
+    USING (district_id)
+WHERE districts.id = COALESCE(don.district_id, exp.district_id);
+
+
+-- ============================================================
+--  Pokloni grada (3.8)
+-- ============================================================
+INSERT INTO city_gifts (id, name, amount, deadline, awarded, winner_district_id) VALUES
+(-1, 'Poklon za kontejnere',        120000.00, '2026-08-01 00:00:00', FALSE, NULL),
+(-2, 'Poklon za uredjenje parkova',  80000.00, '2026-05-01 00:00:00', FALSE, NULL),
+(-3, 'Poklon za rasvetu',            60000.00, '2026-03-01 00:00:00', TRUE,  -1);
+
+INSERT INTO city_gift_registrations (id, gift_id, district_id, coordinator_id, registered_at) VALUES
+(-1, -1, -1, -5, '2026-07-10 10:00:00'),
+(-2, -1, -2, -5, '2026-07-11 11:00:00'),
+(-3, -3, -1, -5, '2026-02-10 09:00:00');
 
 
 -- ============================================================
