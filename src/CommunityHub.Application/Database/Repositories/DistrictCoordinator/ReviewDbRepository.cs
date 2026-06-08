@@ -13,10 +13,11 @@ public class ReviewDbRepository : IReviewRepository
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, district_id, rating, comment, created_at
-            FROM district_reviews
+            SELECT id, district_id, rating, justification AS comment, created_at
+            FROM district_coordinator_reviews
             WHERE district_id = @districtId
               AND created_at  >= @since
+              AND status = 'Active'
             ORDER BY created_at DESC";
 
         AddParam(cmd, "@districtId", districtId);

@@ -3,78 +3,79 @@ namespace CommunityHub.Application.Database.Repositories.Citizen;
 internal static class CitizenCityFacilitySql
 {
     public const string FacilitiesByDistrict = FacilitySelect + @"
-            WHERE f.district_id = @districtId
-            ORDER BY vote_count DESC, f.name";
+            ORDER BY vote_count DESC, o.name";
 
     public const string FacilityById = FacilitySelect + @"
-            WHERE f.id = @facilityId";
+            WHERE o.id = @facilityId";
 
     public const string Vote = @"
-            INSERT INTO city_facility_interest_votes (facility_id, citizen_id, voted_at)
+            INSERT INTO city_object_votes (city_object_id, citizen_id, voted_at)
             VALUES (@facilityId, @citizenId, @votedAt)
-            ON CONFLICT (facility_id, citizen_id) DO NOTHING";
+            ON CONFLICT (city_object_id, citizen_id) DO NOTHING";
 
     public const string HasVote = @"
             SELECT 1
-            FROM city_facility_interest_votes
-            WHERE facility_id = @facilityId AND citizen_id = @citizenId
+            FROM city_object_votes
+            WHERE city_object_id = @facilityId AND citizen_id = @citizenId
             LIMIT 1";
 
     public const string FacilityBelongsToDistrict = @"
             SELECT 1
-            FROM city_facilities
-            WHERE id = @facilityId AND district_id = @districtId
+            FROM city_objects
+            WHERE id = @facilityId
             LIMIT 1";
 
     public const string StatisticsBase = @"
             SELECT
-                f.id AS facility_id,
-                f.name AS facility_name,
+                o.id AS facility_id,
+                o.name AS facility_name,
                 COUNT(r.id) AS visit_count
-            FROM city_facilities f
-            JOIN city_facility_reservations r ON r.facility_id = f.id
+            FROM city_objects o
+            JOIN city_object_reservations r ON r.city_object_id = o.id
             WHERE r.district_id = @districtId
-              AND EXTRACT(YEAR FROM r.reserved_at) = @year";
+              AND EXTRACT(YEAR FROM r.start_time) = @year";
 
-    public const string StatisticsMonthFilter = " AND EXTRACT(MONTH FROM r.reserved_at) = @month";
+    public const string StatisticsMonthFilter = " AND EXTRACT(MONTH FROM r.start_time) = @month";
 
     public const string StatisticsGroupAndOrder = @"
-            GROUP BY f.id, f.name
-            ORDER BY visit_count DESC, f.name";
+            GROUP BY o.id, o.name
+            ORDER BY visit_count DESC, o.name";
 
     public const string ReservationHistory = @"
             SELECT
-                f.id AS facility_id,
-                f.name AS facility_name,
-                r.reserved_at,
-                COALESCE(r.note, '') AS note
-            FROM city_facility_reservations r
-            JOIN city_facilities f ON f.id = r.facility_id
+                o.id AS facility_id,
+                o.name AS facility_name,
+                r.start_time AS reserved_at,
+                '' AS note
+            FROM city_object_reservations r
+            JOIN city_objects o ON o.id = r.city_object_id
             WHERE r.district_id = @districtId
-              AND r.facility_id = @facilityId
-            ORDER BY r.reserved_at DESC";
+              AND r.city_object_id = @facilityId
+            ORDER BY r.start_time DESC";
 
     private const string FacilitySelect = @"
             SELECT
-                f.id,
-                f.district_id,
-                f.name,
-                f.description,
-                f.address,
+                o.id,
+                @districtId::bigint AS district_id,
+                o.name,
+                o.type AS description,
+                CONCAT(l.city, ', ', l.country) AS address,
                 COALESCE(v.vote_count, 0) AS vote_count,
                 CASE WHEN my_vote.id IS NULL THEN FALSE ELSE TRUE END AS has_my_vote,
                 last_res.last_reserved_at
-            FROM city_facilities f
+            FROM city_objects o
+            JOIN locations l ON l.id = o.location_id
             LEFT JOIN (
-                SELECT facility_id, COUNT(*) AS vote_count
-                FROM city_facility_interest_votes
-                GROUP BY facility_id
-            ) v ON v.facility_id = f.id
-            LEFT JOIN city_facility_interest_votes my_vote
-                ON my_vote.facility_id = f.id AND my_vote.citizen_id = @citizenId
+                SELECT city_object_id, COUNT(*) AS vote_count
+                FROM city_object_votes
+                GROUP BY city_object_id
+            ) v ON v.city_object_id = o.id
+            LEFT JOIN city_object_votes my_vote
+                ON my_vote.city_object_id = o.id AND my_vote.citizen_id = @citizenId
             LEFT JOIN (
-                SELECT facility_id, MAX(reserved_at) AS last_reserved_at
-                FROM city_facility_reservations
-                GROUP BY facility_id
-            ) last_res ON last_res.facility_id = f.id";
+                SELECT city_object_id, MAX(start_time) AS last_reserved_at
+                FROM city_object_reservations
+                WHERE district_id = @districtId
+                GROUP BY city_object_id
+            ) last_res ON last_res.city_object_id = o.id";
 }

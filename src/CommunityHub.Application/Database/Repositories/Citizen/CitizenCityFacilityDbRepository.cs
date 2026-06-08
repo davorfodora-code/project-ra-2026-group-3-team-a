@@ -26,6 +26,7 @@ public class CitizenCityFacilityDbRepository : ICitizenCityFacilityRepository
         cmd.CommandText = CitizenCityFacilitySql.FacilityById;
         AddParameter(cmd, "@facilityId", facilityId);
         AddParameter(cmd, "@citizenId", citizenId);
+        AddParameter(cmd, "@districtId", 0L);
 
         using IDataReader reader = cmd.ExecuteReader();
         return reader.Read() ? MapFacility(reader) : null;
