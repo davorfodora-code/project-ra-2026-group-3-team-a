@@ -643,7 +643,8 @@ INSERT INTO users (id, username, password, name, surname, birthday, role, addres
 (-22, 'nina',   'nina123',   'Nina',   'Lazić',      '2000-12-05', 'Citizen',             'Glavna 9, Beograd'),
 (-23, 'filip',  'filip123',  'Filip',  'Tadić',      '1998-01-22', 'Citizen',             'Zemunska 28, Beograd'),
 (-12, 'dragan', 'dragan123', 'Dragan', 'Draganović', '1988-03-14', 'Tenant',               'Glavna 15, Zemun'),
-(-13, 'maja',   'maja123',   'Maja',   'Majić',      '1991-07-22', 'Tenant',               'Glavna 15, Zemun');
+(-13, 'maja',   'maja123',   'Maja',   'Majić',      '1991-07-22', 'Tenant',               'Glavna 15, Zemun'),
+(-99, 'zoran',  'zoran123',  'Zoran',  'Zorić',      '1985-06-03', 'Tenant',               'Glavna 15, Zemun');
 
 
 -- ============================================================
@@ -1017,7 +1018,7 @@ INSERT INTO building_access_requests (id, tenant_id, building_id, apartment_numb
 (-1, -3, -1, 1, '2026-04-01 10:00:00', 'Pending', NULL),
 (-2, -4, -1, 4, '2026-04-02 14:30:00', 'Pending', NULL),
 (-3, -3, -2, 2, '2026-04-03 09:00:00', 'Pending', NULL),
-(-4, -7, -1, 7, '2026-03-20 11:00:00', 'Accepted', NULL),
+(-4, -99, -1, 7, '2026-03-20 11:00:00', 'Accepted', NULL),
 (-5, -8, -1, 2, '2026-03-15 16:00:00', 'Rejected', 'Stan je već zauzet.');
 
 
@@ -1025,7 +1026,7 @@ INSERT INTO building_access_requests (id, tenant_id, building_id, apartment_numb
 --  Članstva u zgradama (za prethodno odobren zahtev -4)
 -- ============================================================
 INSERT INTO building_memberships (id, building_id, tenant_id, floor_number, apartment_number, joined_at) VALUES
-(-1, -1, -7,  3, 7, '2026-03-20 11:00:00'),
+(-1, -1, -99, 3, 7, '2026-03-20 11:00:00'),
 (-2, -1, -3,  1, 1, '2026-04-05 10:00:00'),
 (-3, -1, -4,  2, 4, '2026-04-06 14:30:00'),
 (-4, -2, -3,  1, 2, '2026-04-10 10:00:00'),
@@ -1162,7 +1163,7 @@ INSERT INTO assembly_topics (id, assembly_id, text, is_additional) VALUES
 INSERT INTO assembly_attendances (id, assembly_id, apartment_number, tenant_id) VALUES
 (-3, -2, 1,  -3),
 (-4, -2, 4,  -4),
-(-5, -2, 7,  -7),
+(-5, -2, 7,  -99),
 (-6, -2, 2,  -12),
 (-7, -2, 5,  -13);
 
