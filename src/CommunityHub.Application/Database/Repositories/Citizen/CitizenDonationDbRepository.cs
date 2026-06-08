@@ -40,15 +40,9 @@ public class CitizenDonationDbRepository : ICitizenDonationRepository
             insertCommand.Transaction = transaction;
             insertCommand.CommandText = @"
                 INSERT INTO district_donations
-                    (district_id, citizen_id, category_id, amount, donated_at)
+                    (district_id, citizen_id, category, amount, donated_at)
                 VALUES
-                    (
-                        @districtId,
-                        @citizenId,
-                        (SELECT id FROM budget_categories WHERE name = @category),
-                        @amount,
-                        @donatedAt
-                    )";
+                    (@districtId, @citizenId, @category, @amount, @donatedAt)";
 
             AddParameter(insertCommand, "@districtId", districtId);
             AddParameter(insertCommand, "@citizenId", citizenId);
@@ -104,11 +98,10 @@ public class CitizenDonationDbRepository : ICitizenDonationRepository
     {
         IDbCommand command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT bc.name AS category, SUM(dd.amount) AS total_amount
-            FROM district_donations dd
-            JOIN budget_categories bc ON bc.id = dd.category_id
-            WHERE dd.district_id = @districtId
-            GROUP BY bc.name";
+            SELECT category, SUM(amount) AS total_amount
+            FROM district_donations
+            WHERE district_id = @districtId
+            GROUP BY category";
 
         AddParameter(command, "@districtId", districtId);
 
@@ -127,11 +120,10 @@ public class CitizenDonationDbRepository : ICitizenDonationRepository
     {
         IDbCommand command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT bc.name AS category, SUM(de.amount) AS total_amount
-            FROM district_expenses de
-            JOIN budget_categories bc ON bc.id = de.category_id
-            WHERE de.district_id = @districtId
-            GROUP BY bc.name";
+            SELECT category, SUM(amount) AS total_amount
+            FROM district_expenses
+            WHERE district_id = @districtId
+            GROUP BY category";
 
         AddParameter(command, "@districtId", districtId);
 
@@ -150,11 +142,10 @@ public class CitizenDonationDbRepository : ICitizenDonationRepository
     {
         IDbCommand command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT de.id, bc.name AS category, de.amount, de.description, de.expense_date AS spent_at
-            FROM district_expenses de
-            JOIN budget_categories bc ON bc.id = de.category_id
-            WHERE de.district_id = @districtId
-            ORDER BY de.expense_date DESC";
+            SELECT id, category, amount, description, spent_at
+            FROM district_expenses
+            WHERE district_id = @districtId
+            ORDER BY spent_at DESC";
 
         AddParameter(command, "@districtId", districtId);
 
@@ -179,11 +170,10 @@ public class CitizenDonationDbRepository : ICitizenDonationRepository
     {
         IDbCommand command = connection.CreateCommand();
         command.CommandText = @"
-            SELECT dd.id, bc.name AS category, dd.amount, dd.donated_at
-            FROM district_donations dd
-            JOIN budget_categories bc ON bc.id = dd.category_id
-            WHERE dd.district_id = @districtId
-              AND dd.citizen_id = @citizenId
+            SELECT id, category, amount, donated_at
+            FROM district_donations
+            WHERE district_id = @districtId
+              AND citizen_id = @citizenId
             ORDER BY donated_at DESC";
 
         AddParameter(command, "@districtId", districtId);
