@@ -123,29 +123,21 @@ public class CityGiftDbRepository : ICityGiftRepository
         return Convert.ToDecimal(cmd.ExecuteScalar()!);
     }
 
-    public List<long> GetCategoryIds()
-    {
-        using IDbConnection conn = PostgresConnection.CreateConnection();
-        IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT id FROM budget_categories ORDER BY id";
-
-        var list = new List<long>();
-        using IDataReader r = cmd.ExecuteReader();
-        while (r.Read())
-            list.Add(Convert.ToInt64(r["id"]));
-        return list;
-    }
+    public List<long> GetCategoryIds() => BudgetCategoryCatalog.AllIds.ToList();
 
     public void AddGiftDonation(long districtId, long categoryId, long coordinatorId, decimal amount, DateTime donatedAt)
     {
+        string? category = BudgetCategoryCatalog.ResolveName(categoryId)
+            ?? throw new ArgumentException($"Nepoznata kategorija: {categoryId}", nameof(categoryId));
+
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO district_donations (district_id, category_id, citizen_id, amount, donated_at)
-            VALUES (@districtId, @categoryId, @citizenId, @amount, @donatedAt)";
+            INSERT INTO district_donations (district_id, citizen_id, category, amount, donated_at)
+            VALUES (@districtId, @citizenId, @category, @amount, @donatedAt)";
         AddParam(cmd, "@districtId", districtId);
-        AddParam(cmd, "@categoryId", categoryId);
         AddParam(cmd, "@citizenId",  coordinatorId);
+        AddParam(cmd, "@category",   category);
         AddParam(cmd, "@amount",     amount);
         AddParam(cmd, "@donatedAt",  donatedAt);
         cmd.ExecuteNonQuery();

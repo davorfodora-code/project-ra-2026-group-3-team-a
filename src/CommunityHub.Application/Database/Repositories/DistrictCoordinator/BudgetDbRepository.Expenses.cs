@@ -9,20 +9,23 @@ public partial class BudgetDbRepository
 {
     public List<ExpenseDto> GetExpenses(long districtId, long categoryId, DateTime start, DateTime end)
     {
+        string? category = BudgetCategoryCatalog.ResolveName(categoryId)
+            ?? throw new ArgumentException($"Nepoznata kategorija: {categoryId}", nameof(categoryId));
+
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            SELECT id, amount, description, expense_date
+            SELECT id, amount, description, spent_at
             FROM district_expenses
             WHERE district_id = @districtId
-              AND category_id = @categoryId
-              AND expense_date BETWEEN @start AND @end
-            ORDER BY expense_date DESC";
+              AND category = @category
+              AND spent_at BETWEEN @start AND @end
+            ORDER BY spent_at DESC";
 
         AddParam(cmd, "@districtId", districtId);
-        AddParam(cmd, "@categoryId", categoryId);
-        AddParam(cmd, "@start",      DateOnly.FromDateTime(start));
-        AddParam(cmd, "@end",        DateOnly.FromDateTime(end));
+        AddParam(cmd, "@category",   category);
+        AddParam(cmd, "@start",      start);
+        AddParam(cmd, "@end",        end);
 
         var list = new List<ExpenseDto>();
         using IDataReader r = cmd.ExecuteReader();
@@ -32,7 +35,7 @@ public partial class BudgetDbRepository
                 Id          = Convert.ToInt64(r["id"]),
                 Amount      = Convert.ToDecimal(r["amount"]),
                 Description = r["description"].ToString()!,
-                ExpenseDate = ((DateOnly)r["expense_date"]).ToDateTime(TimeOnly.MinValue)
+                ExpenseDate = Convert.ToDateTime(r["spent_at"])
             });
         return list;
     }
@@ -41,7 +44,7 @@ public partial class BudgetDbRepository
     {
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT id, amount, description, expense_date FROM district_expenses WHERE id = @id";
+        cmd.CommandText = "SELECT id, amount, description, spent_at FROM district_expenses WHERE id = @id";
         AddParam(cmd, "@id", expenseId);
         using IDataReader r = cmd.ExecuteReader();
         if (!r.Read()) return null;
@@ -50,23 +53,26 @@ public partial class BudgetDbRepository
             Id          = Convert.ToInt64(r["id"]),
             Amount      = Convert.ToDecimal(r["amount"]),
             Description = r["description"].ToString()!,
-            ExpenseDate = ((DateOnly)r["expense_date"]).ToDateTime(TimeOnly.MinValue)
+            ExpenseDate = Convert.ToDateTime(r["spent_at"])
         };
     }
 
     public long AddExpense(long districtId, long categoryId, decimal amount, string description, DateTime expenseDate)
     {
+        string? category = BudgetCategoryCatalog.ResolveName(categoryId)
+            ?? throw new ArgumentException($"Nepoznata kategorija: {categoryId}", nameof(categoryId));
+
         using IDbConnection conn = PostgresConnection.CreateConnection();
         IDbCommand cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO district_expenses (district_id, category_id, amount, description, expense_date)
-            VALUES (@districtId, @categoryId, @amount, @description, @expenseDate)
+            INSERT INTO district_expenses (district_id, category, amount, description, spent_at)
+            VALUES (@districtId, @category, @amount, @description, @expenseDate)
             RETURNING id";
         AddParam(cmd, "@districtId",  districtId);
-        AddParam(cmd, "@categoryId",  categoryId);
+        AddParam(cmd, "@category",   category);
         AddParam(cmd, "@amount",      amount);
         AddParam(cmd, "@description", description);
-        AddParam(cmd, "@expenseDate", DateOnly.FromDateTime(expenseDate));
+        AddParam(cmd, "@expenseDate", expenseDate);
         return Convert.ToInt64(cmd.ExecuteScalar());
     }
 
@@ -76,12 +82,12 @@ public partial class BudgetDbRepository
         IDbCommand cmd = conn.CreateCommand();
         cmd.CommandText = @"
             UPDATE district_expenses
-            SET amount = @amount, description = @description, expense_date = @expenseDate
+            SET amount = @amount, description = @description, spent_at = @expenseDate
             WHERE id = @id";
         AddParam(cmd, "@id",          expenseId);
         AddParam(cmd, "@amount",      amount);
         AddParam(cmd, "@description", description);
-        AddParam(cmd, "@expenseDate", DateOnly.FromDateTime(expenseDate));
+        AddParam(cmd, "@expenseDate", expenseDate);
         cmd.ExecuteNonQuery();
     }
 
