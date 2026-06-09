@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Media;
+using CommunityHub.Ui.Settings;
 using CommunityHub.Ui.Views.BuildingManager.Pages;
+using CommunityHub.Ui.Views.BuildingManager.Wizard;
 using FontAwesome.Sharp;
 
 namespace CommunityHub.Ui.Views.BuildingManager;
@@ -31,6 +33,30 @@ public partial class BuildingManagerWindow : Window
 
         SetActiveNav(0);
         MainFrame.Navigate(new HomePage(this));
+
+        // Auto-trigger wizard-a pri prvom pokretanju (pre nego sto je flag setovan u AppSettings)
+        if (!AppSettings.WizardCompleted)
+            Loaded += (s, e) => StartWizard();
+    }
+
+    // Pokreni Pokretni vodič (poziva se i automatski i ručno iz MorePage)
+    public void StartWizard()
+    {
+        WizardController controller = new WizardController(this, Wizard);
+        controller.Start();
+    }
+
+    // Programatska navigacija na tab (koristi je wizard pre highlight-a koraka)
+    public void NavigateToTab(int index)
+    {
+        switch (index)
+        {
+            case 0: NavPocetna_Click(this, new RoutedEventArgs()); break;
+            case 1: NavZgrade_Click(this, new RoutedEventArgs()); break;
+            case 2: NavZahtevi_Click(this, new RoutedEventArgs()); break;
+            case 3: NavSkupstine_Click(this, new RoutedEventArgs()); break;
+            case 4: NavVise_Click(this, new RoutedEventArgs()); break;
+        }
     }
 
     // Postavlja aktivnu stavku navigacije i osvežava boje

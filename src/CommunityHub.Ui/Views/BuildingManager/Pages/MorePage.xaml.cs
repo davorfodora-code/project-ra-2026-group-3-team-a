@@ -22,7 +22,7 @@ public partial class MorePage : Page
 
     private void Wizard_Click(object sender, RoutedEventArgs e)
     {
-        HelpDialog.Show(this, "Pokretni vodič", "Pokretni vodič dolazi uskoro.");
+        _shell.StartWizard();
     }
 
     private void Logout_Click(object sender, RoutedEventArgs e)
