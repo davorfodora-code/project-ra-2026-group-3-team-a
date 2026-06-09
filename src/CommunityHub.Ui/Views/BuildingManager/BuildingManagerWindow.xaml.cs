@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Media;
 using CommunityHub.Ui.Settings;
 using CommunityHub.Ui.Views.BuildingManager.Pages;
+using CommunityHub.Ui.Views.BuildingManager.Toast;
 using CommunityHub.Ui.Views.BuildingManager.Wizard;
 using FontAwesome.Sharp;
 
@@ -44,6 +45,12 @@ public partial class BuildingManagerWindow : Window
     {
         WizardController controller = new WizardController(this, Wizard);
         controller.Start();
+    }
+
+    // Prikazuje toast notifikaciju na dnu ekrana (uspeh / greška / info)
+    public void ShowToast(string message, ToastType type = ToastType.Success)
+    {
+        Toast.Show(message, type);
     }
 
     // Programatska navigacija na tab (koristi je wizard pre highlight-a koraka)

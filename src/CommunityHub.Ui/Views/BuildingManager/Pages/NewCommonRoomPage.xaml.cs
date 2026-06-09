@@ -38,6 +38,7 @@ public partial class NewCommonRoomPage : Page
     {
         if (!_vm.TrySubmit()) return;
         _onRoomAdded?.Invoke();
+        _shell.ShowToast("Prostorija je uspešno dodata.");
         if (NavigationService?.CanGoBack == true)
             NavigationService.GoBack();
     }

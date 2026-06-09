@@ -48,6 +48,7 @@ public partial class BuildingDetailPage : Page
     {
         IssueReportItemViewModel item = (IssueReportItemViewModel)((Button)sender).Tag;
         _vm.Issues.MarkAsResolved(item.Id);
+        _shell.ShowToast("Problem označen kao rešen.");
     }
 
     private void RoomCard_Click(object sender, RoutedEventArgs e)
