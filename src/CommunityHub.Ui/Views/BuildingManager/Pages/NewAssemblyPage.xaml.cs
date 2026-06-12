@@ -41,6 +41,7 @@ public partial class NewAssemblyPage : Page
     {
         if (!_vm.TrySubmit()) return;
         _onCreated?.Invoke();
+        _shell.ShowToast("Skupština je uspešno zakazana.");
         if (NavigationService?.CanGoBack == true)
             NavigationService.GoBack();
     }

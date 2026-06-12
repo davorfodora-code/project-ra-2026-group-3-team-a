@@ -14,22 +14,25 @@ public class BulletinBoardPageViewModel : BaseViewModel
         _service = new BulletinBoardStatsService();
         var buildings = _service.GetManagedBuildings(managerId);
         Buildings   = buildings.Select(b => new BuildingOption(b.BuildingId, b.Address)).ToList();
-        Periods     = PeriodOption.GenerateList();
+        Years       = YearOptions.Recent();
+        Months      = MonthOption.All();
         FilteredAds = new ObservableCollection<BulletinBoardAdDto>();
         Stats       = new BulletinBoardStatsViewModel(_service);
         if (Buildings.Count == 0) return;
+
+        // Default selekcija: tekuca godina + tekuci mesec
         _selectedBuildingIndex = 0;
-        _selectedPeriodIndex   = Periods.FindIndex(p =>
-            p.Month == DateTime.Today.Month && p.Year == DateTime.Today.Year);
-        if (_selectedPeriodIndex < 0) _selectedPeriodIndex = 0;
+        _selectedYear  = DateTime.Today.Year;
+        _selectedMonth = Months[DateTime.Today.Month];   // index 0 = "Svi meseci", 1-12 su meseci
         LoadAds();
         ReloadStats();
     }
 
-    public List<BuildingOption>             Buildings { get; }
-    public List<PeriodOption>               Periods   { get; }
+    public List<BuildingOption> Buildings { get; }
+    public List<int>            Years     { get; }
+    public List<MonthOption>    Months    { get; }
     public ObservableCollection<BulletinBoardAdDto> FilteredAds { get; }
-    public BulletinBoardStatsViewModel      Stats     { get; }
+    public BulletinBoardStatsViewModel Stats { get; }
 
     private int _selectedBuildingIndex;
     public int SelectedBuildingIndex
@@ -43,11 +46,18 @@ public class BulletinBoardPageViewModel : BaseViewModel
         }
     }
 
-    private int _selectedPeriodIndex;
-    public int SelectedPeriodIndex
+    private int _selectedYear;
+    public int SelectedYear
     {
-        get => _selectedPeriodIndex;
-        set { if (SetProperty(ref _selectedPeriodIndex, value)) ReloadStats(); }
+        get => _selectedYear;
+        set { if (SetProperty(ref _selectedYear, value)) ReloadStats(); }
+    }
+
+    private MonthOption? _selectedMonth;
+    public MonthOption? SelectedMonth
+    {
+        get => _selectedMonth;
+        set { if (SetProperty(ref _selectedMonth, value)) ReloadStats(); }
     }
 
     private int _activeTabIndex;
@@ -94,10 +104,10 @@ public class BulletinBoardPageViewModel : BaseViewModel
         OnPropertyChanged(nameof(HasNoAds));
     }
 
+    // Posalji null mesec kad je izabrano "Svi meseci" — servis to interpretira kao celu godinu
     private void ReloadStats()
     {
-        if (Buildings.Count == 0 || Periods.Count == 0) return;
-        PeriodOption period = Periods[_selectedPeriodIndex];
-        Stats.Reload(CurrentBuildingId, period.Year, period.Month);
+        if (Buildings.Count == 0) return;
+        Stats.Reload(CurrentBuildingId, _selectedYear, _selectedMonth?.Month);
     }
 }

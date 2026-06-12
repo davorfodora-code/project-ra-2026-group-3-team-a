@@ -30,6 +30,7 @@ public partial class AssemblyDetailPage : Page
     {
         TopicSuggestionDto suggestion = (TopicSuggestionDto)((Button)sender).Tag;
         _vm.AddSuggestedTopic(suggestion);
+        _shell.ShowToast("Tema je dodata na dnevni red.");
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)

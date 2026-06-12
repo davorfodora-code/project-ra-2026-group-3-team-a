@@ -63,7 +63,9 @@ public partial class RoomCalendarPage : Page
 
     private void Confirm_Click(object sender, RoutedEventArgs e)
     {
-        if (_vm.TryConfirm() && NavigationService?.CanGoBack == true)
+        if (!_vm.TryConfirm()) return;
+        _shell.ShowToast("Termin je uspešno potvrđen.");
+        if (NavigationService?.CanGoBack == true)
             NavigationService.GoBack();
     }
 

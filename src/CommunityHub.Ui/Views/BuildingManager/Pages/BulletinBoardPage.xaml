@@ -143,14 +143,18 @@
                 </ComboBox>
             </Grid>
 
-            <!-- Statistika: period dropdown -->
-            <Grid Visibility="{Binding IsStatsTabActive, Converter={StaticResource BoolToVisibility}}">
-                <ComboBox HorizontalAlignment="Left"
-                          ItemsSource="{Binding Periods}"
+            <!-- Statistika: godina + mesec (mesec opcioni — "Svi meseci") -->
+            <StackPanel Orientation="Horizontal"
+                        Visibility="{Binding IsStatsTabActive, Converter={StaticResource BoolToVisibility}}">
+                <ComboBox ItemsSource="{Binding Years}"
+                          SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                          MinWidth="90" FontSize="13"
+                          Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding Months}"
+                          SelectedItem="{Binding SelectedMonth, Mode=TwoWay}"
                           DisplayMemberPath="Label"
-                          SelectedIndex="{Binding SelectedPeriodIndex, Mode=TwoWay}"
-                          MinWidth="140" FontSize="13"/>
-            </Grid>
+                          MinWidth="130" FontSize="13"/>
+            </StackPanel>
         </Grid>
 
         <!-- Sadržaj -->

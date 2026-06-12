@@ -36,6 +36,11 @@ public partial class AssembliesPage : Page
             NavigationService?.Navigate(new AssemblyDetailPage(_shell, next.Id));
     }
 
+    private void GenerateReport_Click(object sender, RoutedEventArgs e)
+    {
+        NavigationService?.Navigate(new GenerateReportPage(_shell));
+    }
+
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
         HelpDialog.Show(this,

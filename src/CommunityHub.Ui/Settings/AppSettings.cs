@@ -13,6 +13,7 @@ public static class AppSettings
         "settings.json");
 
     public static bool TooltipsEnabled { get; set; } = true;
+    public static bool WizardCompleted { get; set; } = false;
 
     // Pozvati pri pokretanju aplikacije (u App.xaml.cs)
     public static void Load()
@@ -24,6 +25,7 @@ public static class AppSettings
             SettingsData? data = JsonSerializer.Deserialize<SettingsData>(json);
             if (data == null) return;
             TooltipsEnabled = data.TooltipsEnabled;
+            WizardCompleted = data.WizardCompleted;
         }
         catch
         {
@@ -39,7 +41,11 @@ public static class AppSettings
             string? dir = Path.GetDirectoryName(SettingsPath);
             if (dir != null) Directory.CreateDirectory(dir);
 
-            SettingsData data = new SettingsData { TooltipsEnabled = TooltipsEnabled };
+            SettingsData data = new SettingsData
+            {
+                TooltipsEnabled = TooltipsEnabled,
+                WizardCompleted = WizardCompleted,
+            };
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(SettingsPath, json);
         }
@@ -52,5 +58,6 @@ public static class AppSettings
     private class SettingsData
     {
         public bool TooltipsEnabled { get; set; } = true;
+        public bool WizardCompleted { get; set; } = false;
     }
 }

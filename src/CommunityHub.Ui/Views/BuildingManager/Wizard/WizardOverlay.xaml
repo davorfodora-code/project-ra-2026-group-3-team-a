@@ -1,0 +1,154 @@
+<UserControl x:Class="CommunityHub.Ui.Views.BuildingManager.Wizard.WizardOverlay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <!-- Stil za sva 3 dugmeta u footer-u (Nazad / Preskoči / Sledeće) -->
+        <Style x:Key="WizardSecondaryBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="Padding" Value="18,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WizardPrimaryBtn" TargetType="Button">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="22,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#333333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="RootGrid">
+
+        <!-- 4 zatamnjene oblasti oko target elementa ("spotlight" rupa) -->
+        <Canvas x:Name="DimCanvas">
+            <Rectangle x:Name="DimTop"    Fill="#B3000000" Canvas.Left="0" Canvas.Top="0"/>
+            <Rectangle x:Name="DimBottom" Fill="#B3000000" Canvas.Left="0"/>
+            <Rectangle x:Name="DimLeft"   Fill="#B3000000" Canvas.Left="0"/>
+            <Rectangle x:Name="DimRight"  Fill="#B3000000"/>
+        </Canvas>
+
+        <!-- Welcome / Finish modal — centriran, bez highlight-a -->
+        <Border x:Name="CenterModal" Visibility="Collapsed"
+                Background="White" CornerRadius="14" Padding="26,22"
+                Width="340" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.25" BlurRadius="20" ShadowDepth="0"/>
+            </Border.Effect>
+            <StackPanel>
+                <!-- Korak X od Y — na vrhu -->
+                <TextBlock x:Name="CenterProgressText" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#999999" HorizontalAlignment="Center"
+                           Margin="0,0,0,14"/>
+                <fa:IconBlock Icon="WandMagicSparkles" FontSize="34"
+                              Foreground="#1A1A1A" HorizontalAlignment="Center"
+                              Margin="0,0,0,14"/>
+                <TextBlock x:Name="CenterTitle" FontSize="19" FontWeight="Bold"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           Margin="0,0,0,12"/>
+                <TextBlock x:Name="CenterDescription" FontSize="14" Foreground="#555555"
+                           TextWrapping="Wrap" TextAlignment="Center" LineHeight="22"
+                           Margin="0,0,0,20"/>
+
+                <!-- Footer: Nazad / Center / Next (kolone se sakrivaju u code-behindu) -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="CenterBackCol" Width="*"/>
+                        <ColumnDefinition x:Name="CenterSkipCol" Width="*"/>
+                        <ColumnDefinition x:Name="CenterNextCol" Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="CenterBackBtn" Grid.Column="0" Content="Nazad"
+                            Style="{StaticResource WizardSecondaryBtn}"
+                            HorizontalAlignment="Center" Click="Back_Click"/>
+                    <Button x:Name="CenterSkipBtn" Grid.Column="1" Content="Preskoči"
+                            Style="{StaticResource WizardSecondaryBtn}"
+                            HorizontalAlignment="Center" Click="Skip_Click"/>
+                    <Button x:Name="CenterNextBtn" Grid.Column="2" Content="Započni"
+                            Style="{StaticResource WizardPrimaryBtn}"
+                            HorizontalAlignment="Center" Click="Next_Click"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Tooltip kartica pored highlight-ovanog elementa -->
+        <Border x:Name="TooltipCard" Visibility="Collapsed"
+                Background="White" CornerRadius="12" Padding="22,18"
+                Width="360" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.30" BlurRadius="16" ShadowDepth="0"/>
+            </Border.Effect>
+            <StackPanel>
+                <!-- Korak X od Y — na vrhu, centrirano -->
+                <TextBlock x:Name="TooltipProgressText" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#999999" HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+                <TextBlock x:Name="TooltipTitle" FontSize="17" FontWeight="Bold"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           Margin="0,0,0,8"/>
+                <TextBlock x:Name="TooltipDescription" FontSize="14" Foreground="#555555"
+                           TextWrapping="Wrap" TextAlignment="Center" LineHeight="22"
+                           Margin="0,0,0,16"/>
+
+                <!-- Footer: Nazad (levo) / Preskoči (sredina) / Sledeće (desno) -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="TooltipBackBtn" Grid.Column="0" Content="Nazad"
+                            Style="{StaticResource WizardSecondaryBtn}"
+                            HorizontalAlignment="Center" Click="Back_Click"/>
+                    <Button x:Name="TooltipSkipBtn" Grid.Column="1" Content="Preskoči"
+                            Style="{StaticResource WizardSecondaryBtn}"
+                            HorizontalAlignment="Center" Click="Skip_Click"/>
+                    <Button x:Name="TooltipNextBtn" Grid.Column="2" Content="Sledeće"
+                            Style="{StaticResource WizardPrimaryBtn}"
+                            HorizontalAlignment="Center" Click="Next_Click"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

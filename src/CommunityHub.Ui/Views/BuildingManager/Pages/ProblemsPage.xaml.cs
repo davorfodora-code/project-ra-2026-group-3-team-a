@@ -29,6 +29,7 @@ public partial class ProblemsPage : Page
     {
         IssueReportItemViewModel item = (IssueReportItemViewModel)((Button)sender).Tag;
         _vm.MarkIssueAsResolved(item.Id);
+        _shell.ShowToast("Problem označen kao rešen.");
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
