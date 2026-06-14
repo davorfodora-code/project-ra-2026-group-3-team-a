@@ -16,4 +16,7 @@ public class SchedulingService
 
     public List<BookedOnMyPostDto> GetBookedOnMyPosts(long tenantId)
         => _repository.GetBookedOnMyPosts(tenantId);
+
+    public List<ReportAppointmentDto> GetReportAppointments(long tenantId, DateTime from, DateTime to)
+        => _repository.GetReportAppointments(tenantId, from, to);
 }

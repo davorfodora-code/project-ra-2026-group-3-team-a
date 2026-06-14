@@ -150,4 +150,10 @@ public partial class SchedulingPage : System.Windows.Controls.Page
         MyBookingsPanel.Visibility   = Visibility.Collapsed;
         _shell.SetBreadcrumb("Rezervisano na mom oglasu");
     }
+
+    private void ReportPdf_Click(object sender, RoutedEventArgs e)
+    {
+        _shell.SetActiveNav(7);
+        NavigationService?.Navigate(new ReportsPage(_shell));
+    }
 }

@@ -12,21 +12,35 @@
         <!-- Tab traka -->
         <Border Grid.Row="0" Background="White" Padding="24,16"
                 BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Button x:Name="TabMyBookingsBtn" Tag="active"
-                        Style="{StaticResource TabBtnStyle}"
-                        Click="TabMyBookings_Click"
-                        Margin="0,0,32,0" Padding="0,0,0,12">
-                    <TextBlock x:Name="TabMyBookingsText" Text="Moje rezervacije"
-                               FontSize="24" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="TabMyBookingsBtn" Tag="active"
+                            Style="{StaticResource TabBtnStyle}"
+                            Click="TabMyBookings_Click"
+                            Margin="0,0,32,0" Padding="0,0,0,12">
+                        <TextBlock x:Name="TabMyBookingsText" Text="Moje rezervacije"
+                                   FontSize="24" FontWeight="SemiBold" Foreground="#1A1A1A"/>
+                    </Button>
+                    <Button x:Name="TabBookedOnPostBtn"
+                            Style="{StaticResource TabBtnStyle}"
+                            Click="TabBookedOnPost_Click" Padding="0,0,0,12">
+                        <TextBlock x:Name="TabBookedOnPostText" Text="Rezervisano na mom oglasu"
+                                   FontSize="22" Foreground="#888888"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Brzi pristup izveštaju o terminima -->
+                <Button HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="ReportPdf_Click"
+                        Style="{StaticResource SecondaryBtnStyle}"
+                        Padding="14,8" ToolTip="Izveštaj o zakazanim terminima pomoći">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconBlock Icon="FilePdf" FontSize="15" Foreground="#555555"
+                                      Margin="0,0,7,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Generiši izveštaj" FontSize="15" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Button>
-                <Button x:Name="TabBookedOnPostBtn"
-                        Style="{StaticResource TabBtnStyle}"
-                        Click="TabBookedOnPost_Click" Padding="0,0,0,12">
-                    <TextBlock x:Name="TabBookedOnPostText" Text="Rezervisano na mom oglasu"
-                               FontSize="22" Foreground="#888888"/>
-                </Button>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <!-- ===== TAB: My bookings ===== -->

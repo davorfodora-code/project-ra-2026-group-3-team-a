@@ -35,6 +35,7 @@ public partial class TenantWindow : Window
             (NavZajednickeHighlight,  NavZajednickeIcon,   NavZajednickeText,   "Zajedničke prostorije"),
             (NavProblemiHighlight,    NavProblemiIcon,     NavProblemiText,     "Problemi"),
             (NavSkupstineHighlight,   NavSkupstineIcon,    NavSkupstineText,    "Skupštine"),
+            (NavIzvestajiHighlight,   NavIzvestajiIcon,    NavIzvestajiText,    "Izveštaji"),
         ];
 
         SetActiveNav(0);
@@ -105,6 +106,12 @@ public partial class TenantWindow : Window
     {
         SetActiveNav(6);
         MainFrame.Navigate(new AssembliesPage(this));
+    }
+
+    private void NavIzvestaji_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav(7);
+        MainFrame.Navigate(new ReportsPage(this));
     }
 
     private void Avatar_Click(object sender, MouseButtonEventArgs e)

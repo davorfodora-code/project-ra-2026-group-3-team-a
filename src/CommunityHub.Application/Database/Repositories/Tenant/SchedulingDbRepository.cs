@@ -137,6 +137,67 @@ public class SchedulingDbRepository : ISchedulingRepository
             EndTime   = reader.GetDateTime(reader.GetOrdinal("end_time")),
         };
 
+    public List<ReportAppointmentDto> GetReportAppointments(long tenantId, DateTime from, DateTime to)
+    {
+        using IDbConnection connection = PostgresConnection.CreateConnection();
+        IDbCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT s.start_time, s.end_time,
+                   ou.name || ' ' || ou.surname AS other_person_name,
+                   ra.is_offering               AS i_am_offering,
+                   oa.category,
+                   oa.description               AS ad_description,
+                   'Moja rezervacija'           AS source
+            FROM slot_reservations sr
+            JOIN advertisement_slots s  ON s.id  = sr.slot_id
+            JOIN advertisements oa      ON oa.id = s.advertisement_id
+            JOIN users ou               ON ou.id = oa.tenant_id
+            JOIN advertisements ra      ON ra.id = sr.requester_ad_id
+            WHERE sr.tenant_id = @tenantId
+              AND s.start_time >= @from
+              AND s.start_time <= @to
+
+            UNION ALL
+
+            SELECT s.start_time, s.end_time,
+                   bu.name || ' ' || bu.surname AS other_person_name,
+                   ma.is_offering               AS i_am_offering,
+                   ma.category,
+                   ma.description               AS ad_description,
+                   'Na mom oglasu'              AS source
+            FROM slot_reservations sr
+            JOIN advertisement_slots s  ON s.id  = sr.slot_id
+            JOIN advertisements ma      ON ma.id = s.advertisement_id
+            JOIN users bu               ON bu.id = sr.tenant_id
+            WHERE ma.tenant_id = @tenantId
+              AND sr.tenant_id != @tenantId
+              AND s.start_time >= @from
+              AND s.start_time <= @to
+
+            ORDER BY start_time";
+
+        AddParameter(cmd, "@tenantId", tenantId);
+        AddParameter(cmd, "@from",     from);
+        AddParameter(cmd, "@to",       to);
+
+        var result = new List<ReportAppointmentDto>();
+        using IDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            result.Add(new ReportAppointmentDto
+            {
+                SlotStart       = reader.GetDateTime(reader.GetOrdinal("start_time")),
+                SlotEnd         = reader.GetDateTime(reader.GetOrdinal("end_time")),
+                OtherPersonName = reader.GetString(reader.GetOrdinal("other_person_name")),
+                IAmOffering     = reader.GetBoolean(reader.GetOrdinal("i_am_offering")),
+                Category        = reader.GetString(reader.GetOrdinal("category")),
+                AdDescription   = reader.GetString(reader.GetOrdinal("ad_description")),
+                Source          = reader.GetString(reader.GetOrdinal("source")),
+            });
+        }
+        return result;
+    }
+
     private static void AddParameter(IDbCommand command, string name, object value)
     {
         IDbDataParameter param = command.CreateParameter();
