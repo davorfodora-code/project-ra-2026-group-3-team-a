@@ -63,6 +63,7 @@ public class Injector
         { typeof(TenantSvc.INotificationRepository),                  new TenantDb.NotificationDbRepository() },
         { typeof(TenantSvc.ITenantIssueRepository),                   new TenantDb.TenantIssueDbRepository() },
         { typeof(TenantSvc.ITenantAssemblyRepository),                new TenantDb.TenantAssemblyDbRepository() },
+        { typeof(TenantSvc.ITenantProfileRepository),                 new TenantDb.TenantProfileDbRepository() },
 
         // User
         { typeof(IUserRepository),                      new UserDbRepository() },

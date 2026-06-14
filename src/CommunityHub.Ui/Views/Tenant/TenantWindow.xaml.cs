@@ -109,7 +109,14 @@ public partial class TenantWindow : Window
 
     private void Avatar_Click(object sender, MouseButtonEventArgs e)
     {
-        new ProfileWindow(UserId).Show();
+        foreach (var item in _navItems)
+        {
+            item.Highlight.Visibility = Visibility.Collapsed;
+            item.Icon.Foreground = new SolidColorBrush(Color.FromRgb(0xB0, 0xBE, 0xC5));
+            item.Text.Foreground = new SolidColorBrush(Color.FromRgb(0xB0, 0xBE, 0xC5));
+        }
+        TopBarTitle.Text = "Profil";
+        MainFrame.Navigate(new TenantProfilePage(this));
     }
 
     private static string ComputeInitials(string? name, string? surname)
