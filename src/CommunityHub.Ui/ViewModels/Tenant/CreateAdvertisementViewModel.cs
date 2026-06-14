@@ -4,13 +4,25 @@ namespace CommunityHub.Ui.ViewModels.Tenant;
 
 public class CreateAdvertisementViewModel : BaseViewModel
 {
-    private string _errorMessage = string.Empty;
+    private string _errorMessage      = string.Empty;
+    private string _descriptionError  = string.Empty;
 
     public string ErrorMessage
     {
         get => _errorMessage;
         private set => SetProperty(ref _errorMessage, value);
     }
+
+    public string DescriptionError
+    {
+        get => _descriptionError;
+        private set
+        {
+            if (SetProperty(ref _descriptionError, value))
+                OnPropertyChanged(nameof(HasDescriptionError));
+        }
+    }
+    public bool HasDescriptionError => !string.IsNullOrEmpty(_descriptionError);
 
     public CreateAdvertisementDto? TryBuildDto(
         long tenantId,
@@ -21,11 +33,14 @@ public class CreateAdvertisementViewModel : BaseViewModel
         string description,
         string category)
     {
-        ErrorMessage = string.Empty;
+        ErrorMessage     = string.Empty;
+        DescriptionError = string.Empty;
+
+        string? descError = ValidateDescription(description);
+        if (descError != null) { DescriptionError = descError; return null; }
+
         string? dateError = ValidateDateRange(startDate, endDate);
         if (dateError != null) { ErrorMessage = dateError; return null; }
-        string? descError = ValidateDescription(description);
-        if (descError != null) { ErrorMessage = descError; return null; }
         return new CreateAdvertisementDto
         {
             TenantId    = tenantId,

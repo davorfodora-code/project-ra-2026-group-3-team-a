@@ -36,7 +36,7 @@
                             <TextBlock x:Name="HelpPostsCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Aktivni oglasi za pomoć" FontSize="16"
+                            <TextBlock Text="Aktivni oglasi za pomoć" FontSize="18"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
                                        MaxWidth="160"/>
@@ -54,7 +54,7 @@
                             <TextBlock x:Name="IssuesCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nerešeni problemi" FontSize="16"
+                            <TextBlock Text="Nerešeni problemi" FontSize="18"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
                                        MaxWidth="160"/>
@@ -72,7 +72,7 @@
                             <TextBlock x:Name="PendingRequestsCount" Text="0"
                                        FontSize="48" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Zahtev za pristup na čekanju" FontSize="16"
+                            <TextBlock Text="Zahtev za pristup na čekanju" FontSize="18"
                                        Foreground="#666666" TextAlignment="Center"
                                        HorizontalAlignment="Center" TextWrapping="Wrap"
                                        MaxWidth="160"/>

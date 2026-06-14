@@ -22,7 +22,10 @@
                  FontSize="18" AcceptsReturn="True"
                  Height="90" TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto"
-                 Padding="8,6" Margin="0,0,0,16"/>
+                 Padding="8,6" Margin="0,0,0,4"/>
+        <TextBlock x:Name="ErrorText" Text="" Foreground="#C0392B"
+                   FontSize="15" TextWrapping="Wrap" Margin="0,0,0,12"
+                   Visibility="Collapsed"/>
 
         <!-- Priority -->
         <TextBlock Text="Prioritet:" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>

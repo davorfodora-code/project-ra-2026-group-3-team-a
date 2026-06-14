@@ -16,14 +16,19 @@ public partial class ReportIssueDialog : Window
 
     private void Submit_Click(object sender, RoutedEventArgs e)
     {
+        ErrorText.Visibility = Visibility.Collapsed;
+        ErrorText.Text = string.Empty;
+
         if (BuildingCombo.SelectedItem is not TenantBuildingDto building)
         {
-            MessageBox.Show("Izaberite zgradu.", "Greška", MessageBoxButton.OK, MessageBoxImage.Warning);
+            ErrorText.Text = "Izaberite zgradu.";
+            ErrorText.Visibility = Visibility.Visible;
             return;
         }
         if (string.IsNullOrWhiteSpace(DescriptionBox.Text))
         {
-            MessageBox.Show("Unesite opis problema.", "Greška", MessageBoxButton.OK, MessageBoxImage.Warning);
+            ErrorText.Text = "Unesite opis problema.";
+            ErrorText.Visibility = Visibility.Visible;
             return;
         }
         string priority = RadioHitno.IsChecked == true ? "Urgent"

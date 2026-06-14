@@ -25,7 +25,10 @@
                  FontSize="16" AcceptsReturn="True"
                  Height="90" TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto"
-                 Padding="10,8" Margin="0,0,0,10"/>
+                 Padding="10,8" Margin="0,0,0,6"/>
+        <TextBlock x:Name="ErrorText" Text="" Foreground="#C0392B"
+                   FontSize="15" TextWrapping="Wrap" Margin="0,0,0,6"
+                   Visibility="Collapsed"/>
         <TextBlock Text="Teme se mogu predlagati najkasnije 24h pre skupštine."
                    FontSize="14" Foreground="#AAAAAA" Margin="0,0,0,20"/>
 

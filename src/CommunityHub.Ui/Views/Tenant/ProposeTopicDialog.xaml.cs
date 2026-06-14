@@ -16,9 +16,13 @@ public partial class ProposeTopicDialog : Window
 
     private void Submit_Click(object sender, RoutedEventArgs e)
     {
+        ErrorText.Visibility = Visibility.Collapsed;
+        ErrorText.Text = string.Empty;
+
         if (string.IsNullOrWhiteSpace(TopicInput.Text))
         {
-            MessageBox.Show("Unesite temu.", "Greška", MessageBoxButton.OK, MessageBoxImage.Warning);
+            ErrorText.Text = "Unesite temu.";
+            ErrorText.Visibility = Visibility.Visible;
             return;
         }
         ProposedTopic = TopicInput.Text.Trim();
