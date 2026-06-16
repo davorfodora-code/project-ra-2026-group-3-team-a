@@ -42,7 +42,7 @@ public partial class RequestsPage : Page
     private void Approve_Click(object sender, RoutedEventArgs e)
     {
         AccessRequestItemViewModel item = (AccessRequestItemViewModel)((Button)sender).DataContext;
-        try { _vm.Approve(item.RequestId); }
+        try { _vm.Approve(item.RequestId); _shell.ShowToast("Zahtev je odobren."); }
         catch (Exception ex) { MessageBox.Show(ex.Message, "Greska"); }
     }
 
@@ -63,7 +63,7 @@ public partial class RequestsPage : Page
     {
         AccessRequestItemViewModel item = (AccessRequestItemViewModel)((Button)sender).DataContext;
         string reason = item.RejectReason.Trim();
-        try { _vm.Reject(item.RequestId, reason); }
+        try { _vm.Reject(item.RequestId, reason); _shell.ShowToast("Zahtev je odbijen."); }
         catch (Exception ex) { MessageBox.Show(ex.Message, "Greska"); }
     }
 

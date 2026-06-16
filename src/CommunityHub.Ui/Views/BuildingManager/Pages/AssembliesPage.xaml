@@ -15,11 +15,18 @@
                 BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
             <Grid>
                 <TextBlock Text="Skupštine" FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/>
-                <Button HorizontalAlignment="Right"
-                        Style="{StaticResource CircleButtonStyle}"
-                        Width="32" Height="32" Click="HelpButton_Click">
-                    <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
-                </Button>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <!-- PDF dugme — vodi na stranicu za generisanje izveštaja -->
+                    <Button Style="{StaticResource CircleButtonStyle}"
+                            Width="32" Height="32" Margin="0,0,8,0"
+                            Click="GenerateReport_Click">
+                        <fa:IconBlock Icon="FilePdf" FontSize="14"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleButtonStyle}"
+                            Width="32" Height="32" Click="HelpButton_Click">
+                        <TextBlock Text="?" FontSize="14" FontWeight="SemiBold"/>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Border>
 

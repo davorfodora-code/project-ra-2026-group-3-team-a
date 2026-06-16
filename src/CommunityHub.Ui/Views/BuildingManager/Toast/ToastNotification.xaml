@@ -1,0 +1,35 @@
+<UserControl x:Class="CommunityHub.Ui.Views.BuildingManager.Toast.ToastNotification"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+             IsHitTestVisible="False"
+             Background="Transparent">
+
+    <!-- Toast se pozicionira na dnu ekrana, levo-desno centrirano,
+         ne reaguje na klikove (IsHitTestVisible=False) — samo prikazuje. -->
+    <Grid>
+        <Border x:Name="ToastCard"
+                Background="#2E7D32"
+                CornerRadius="10"
+                Padding="18,12"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,90"
+                Opacity="0">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.30" BlurRadius="16" ShadowDepth="2"/>
+            </Border.Effect>
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="ToastTransform" Y="40"/>
+            </Border.RenderTransform>
+            <StackPanel Orientation="Horizontal">
+                <fa:IconBlock x:Name="ToastIcon" Icon="CircleCheck" FontSize="16"
+                              Foreground="White" VerticalAlignment="Center"
+                              Margin="0,0,10,0"/>
+                <TextBlock x:Name="ToastText"
+                           FontSize="13" FontWeight="SemiBold"
+                           Foreground="White" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

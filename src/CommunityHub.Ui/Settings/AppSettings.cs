@@ -13,6 +13,7 @@ public static class AppSettings
         "settings.json");
 
     public static bool TooltipsEnabled { get; set; } = true;
+    public static bool WizardCompleted { get; set; } = false;
 
     // Da li je korisnik već vidio uvodni "welcome" banner (prikazuje se samo prvi put)
     public static bool HasSeenWelcome { get; set; } = false;
@@ -27,6 +28,7 @@ public static class AppSettings
             SettingsData? data = JsonSerializer.Deserialize<SettingsData>(json);
             if (data == null) return;
             TooltipsEnabled = data.TooltipsEnabled;
+            WizardCompleted = data.WizardCompleted;
             HasSeenWelcome  = data.HasSeenWelcome;
         }
         catch
@@ -43,7 +45,12 @@ public static class AppSettings
             string? dir = Path.GetDirectoryName(SettingsPath);
             if (dir != null) Directory.CreateDirectory(dir);
 
-            SettingsData data = new SettingsData { TooltipsEnabled = TooltipsEnabled, HasSeenWelcome = HasSeenWelcome };
+            SettingsData data = new SettingsData
+            {
+                TooltipsEnabled = TooltipsEnabled,
+                WizardCompleted = WizardCompleted,
+                HasSeenWelcome  = HasSeenWelcome,
+            };
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(SettingsPath, json);
         }
@@ -56,6 +63,7 @@ public static class AppSettings
     private class SettingsData
     {
         public bool TooltipsEnabled { get; set; } = true;
+        public bool WizardCompleted { get; set; } = false;
         public bool HasSeenWelcome  { get; set; } = false;
     }
 }

@@ -1,20 +1,30 @@
+using System;
+using System.Collections.Generic;
+
 namespace CommunityHub.Ui.ViewModels.BuildingManager;
 
-public record PeriodOption(string Label, int Year, int? Month)
+// Stavka u dropdown-u meseci. Null Month = "Svi meseci" (cela godina).
+public record MonthOption(string Label, int? Month)
 {
-    public static List<PeriodOption> GenerateList()
+    public static List<MonthOption> All()
     {
-        var periods = new List<PeriodOption>();
-        int year  = DateTime.Today.Year;
-        int month = DateTime.Today.Month;
         string[] meseci = ["Januar", "Februar", "Mart", "April", "Maj", "Jun",
                            "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"];
-        for (int m = month; m >= 1; m--)
-            periods.Add(new PeriodOption($"{meseci[m - 1]} {year}", year, m));
-        periods.Add(new PeriodOption(year.ToString(), year, null));
-        periods.Add(new PeriodOption((year - 1).ToString(), year - 1, null));
-        for (int m = 12; m >= 1; m--)
-            periods.Add(new PeriodOption($"{meseci[m - 1]} {year - 1}", year - 1, m));
-        return periods;
+        var list = new List<MonthOption> { new MonthOption("Svi meseci", null) };
+        for (int m = 1; m <= 12; m++)
+            list.Add(new MonthOption(meseci[m - 1], m));
+        return list;
+    }
+}
+
+// Lista godina za dropdown — tekuca + 2 prethodne
+public static class YearOptions
+{
+    public static List<int> Recent(int howMany = 3)
+    {
+        var list = new List<int>();
+        int year = DateTime.Today.Year;
+        for (int i = 0; i < howMany; i++) list.Add(year - i);
+        return list;
     }
 }

@@ -104,7 +104,7 @@
                 </Button>
                 <TextBlock Grid.Column="1" Text="|" Foreground="#CCCCCC" VerticalAlignment="Center"/>
 
-                <Button Grid.Column="2" Content="Clanovi" Click="Tab_Click" Tag="1">
+                <Button Grid.Column="2" Content="Članovi" Click="Tab_Click" Tag="1">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource TabBtnStyle}">
                             <Style.Triggers>

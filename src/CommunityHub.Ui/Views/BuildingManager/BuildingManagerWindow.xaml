@@ -2,6 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
+        xmlns:wiz="clr-namespace:CommunityHub.Ui.Views.BuildingManager.Wizard"
+        xmlns:toast="clr-namespace:CommunityHub.Ui.Views.BuildingManager.Toast"
         Title="CommunityHub" Height="760" Width="400"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -111,5 +113,14 @@
 
             </Grid>
         </Border>
+
+        <!-- Pokretni vodič overlay — sakriven po default-u, prikazuje se preko svega -->
+        <wiz:WizardOverlay x:Name="Wizard"
+                           Grid.RowSpan="2"
+                           Visibility="Collapsed"/>
+
+        <!-- Toast notifikacije — prikazuju se na dnu, ne blokiraju klikove -->
+        <toast:ToastNotification x:Name="Toast"
+                                 Grid.RowSpan="2"/>
     </Grid>
 </Window>

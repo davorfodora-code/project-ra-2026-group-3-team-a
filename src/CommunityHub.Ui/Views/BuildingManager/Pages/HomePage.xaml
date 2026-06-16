@@ -9,7 +9,7 @@
 
             <!-- Zaglavlje -->
             <Grid Margin="0,0,0,14">
-                <TextBlock Text="Pocetna" FontSize="22" FontWeight="Bold"
+                <TextBlock Text="Početna" FontSize="22" FontWeight="Bold"
                            VerticalAlignment="Center"/>
                 <Button HorizontalAlignment="Right"
                         Style="{StaticResource CircleButtonStyle}"
@@ -85,7 +85,7 @@
                             <TextBlock Text="{Binding UnresolvedProblemsCount}"
                                        FontSize="42" FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
-                            <TextBlock Text="Nereseni problemi" FontSize="12"
+                            <TextBlock Text="Nerešeni problemi" FontSize="12"
                                        Foreground="#666666" TextWrapping="Wrap"
                                        TextAlignment="Center" HorizontalAlignment="Center"
                                        MaxWidth="100" MinHeight="44"/>

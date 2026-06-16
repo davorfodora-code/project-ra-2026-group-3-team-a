@@ -101,6 +101,7 @@ public partial class NewBuildingPage : Page
     {
         if (!_vm.TrySubmit()) return;
         _onBuildingAdded?.Invoke();
+        _shell.ShowToast("Zgrada je uspešno dodata.");
         if (NavigationService?.CanGoBack == true)
             NavigationService.GoBack();
     }
