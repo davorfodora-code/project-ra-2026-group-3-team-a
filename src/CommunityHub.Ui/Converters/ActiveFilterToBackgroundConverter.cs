@@ -7,8 +7,8 @@ namespace CommunityHub.Ui.Converters;
 
 public class ActiveFilterToBackgroundConverter : IValueConverter
 {
-    private static readonly Brush Active   = new SolidColorBrush(Color.FromRgb(0x2C, 0x3E, 0x50));
-    private static readonly Brush Inactive = new SolidColorBrush(Color.FromRgb(0xBD, 0xC3, 0xC7));
+    private static readonly Brush Active   = new SolidColorBrush(Color.FromRgb(0x31, 0x4B, 0x40)); // DC.Primary
+    private static readonly Brush Inactive = new SolidColorBrush(Color.FromRgb(0xDD, 0xE8, 0xE2)); // DC.Border
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

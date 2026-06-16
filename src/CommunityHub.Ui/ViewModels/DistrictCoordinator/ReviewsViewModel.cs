@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using CommunityHub.Application;
 using CommunityHub.Application.Services.DistrictCoordinator;
 using CommunityHub.Application.Services.DistrictCoordinator.Dto;
@@ -28,7 +29,11 @@ public class ReviewsViewModel : ViewModelBase
 
         Districts = new ObservableCollection<DistrictDto>();
         Reviews   = new ObservableCollection<ReviewDto>();
+
+        RefreshCommand = new RelayCommand(_ => { if (_selectedDistrict != null) LoadReviews(_selectedDistrict.Id); });
     }
+
+    public ICommand RefreshCommand { get; }
 
     public ObservableCollection<DistrictDto> Districts { get; }
     public ObservableCollection<ReviewDto>   Reviews   { get; }
@@ -59,6 +64,26 @@ public class ReviewsViewModel : ViewModelBase
     {
         get => _totalCount;
         private set => SetProperty(ref _totalCount, value);
+    }
+
+    public void RefreshDistricts()
+    {
+        if (Districts.Count == 0) return;
+        var currentId = _selectedDistrict?.Id;
+        Districts.Clear();
+        try
+        {
+            var districts = _districtService.GetDistrictsByCoordinatorId(_coordinatorId);
+            foreach (var d in districts) Districts.Add(d);
+            if (currentId.HasValue)
+                foreach (var d in Districts)
+                    if (d.Id == currentId.Value) { SelectedDistrict = d; return; }
+            if (Districts.Count > 0) SelectedDistrict = Districts[0];
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Reviews] RefreshDistricts error: {ex.Message}");
+        }
     }
 
     public void EnsureLoaded()

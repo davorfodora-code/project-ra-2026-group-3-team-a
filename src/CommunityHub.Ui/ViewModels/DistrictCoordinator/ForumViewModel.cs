@@ -16,6 +16,7 @@ public class ForumViewModel : ViewModelBase
     private ForumDto? _selectedForum;
     private string _newCommentText = string.Empty;
     private bool _isDetailView;
+    private ViewModelBase? _activeDialog;
 
     public ForumViewModel(long coordinatorId)
     {
@@ -34,8 +35,7 @@ public class ForumViewModel : ViewModelBase
             _ => SelectedForum != null && !SelectedForum.IsClosed && !string.IsNullOrWhiteSpace(_newCommentText));
         LikeCommand    = new RelayCommand(p => { if (p is ForumCommentDto c) DoToggleReaction(c.Id, true); });
         DislikeCommand = new RelayCommand(p => { if (p is ForumCommentDto c) DoToggleReaction(c.Id, false); });
-        OpenCreateForumCommand = new RelayCommand(_ =>
-            CreateForumDialogRequested?.Invoke(success => { if (success) LoadForums(); }));
+        OpenCreateForumCommand = new RelayCommand(_ => OpenCreateForumDialog());
     }
 
     public long CoordinatorId { get; }
@@ -59,6 +59,7 @@ public class ForumViewModel : ViewModelBase
                 OnPropertyChanged(nameof(CanClose));
                 OnPropertyChanged(nameof(CanComment));
                 OnPropertyChanged(nameof(IsForumClosed));
+                OnPropertyChanged(nameof(ForumClosedLabel));
             }
         }
     }
@@ -75,10 +76,20 @@ public class ForumViewModel : ViewModelBase
         private set { if (SetProperty(ref _isDetailView, value)) OnPropertyChanged(nameof(IsListView)); }
     }
 
-    public bool IsListView    => !_isDetailView;
-    public bool CanClose      => _selectedForum?.IsOwner == true && !(_selectedForum?.IsClosed ?? true);
-    public bool CanComment    => !(_selectedForum?.IsClosed ?? true);
-    public bool IsForumClosed => _selectedForum?.IsClosed ?? false;
+    public bool   IsListView       => !_isDetailView;
+    public bool   CanClose         => _selectedForum?.IsOwner == true && !(_selectedForum?.IsClosed ?? true);
+    public bool   CanComment       => !(_selectedForum?.IsClosed ?? true);
+    public bool   IsForumClosed    => _selectedForum?.IsClosed ?? false;
+    public string ForumClosedLabel => IsForumClosed ? " - zaključani" : string.Empty;
+
+    public ViewModelBase? ActiveDialog
+    {
+        get => _activeDialog;
+        private set { if (SetProperty(ref _activeDialog, value)) OnPropertyChanged(nameof(HasDialog)); }
+    }
+    public bool HasDialog => _activeDialog != null;
+
+    public void ForceCloseDialog() => ActiveDialog = null;
 
     public ICommand SearchCommand          { get; }
     public ICommand OpenForumCommand       { get; }
@@ -89,8 +100,7 @@ public class ForumViewModel : ViewModelBase
     public ICommand DislikeCommand         { get; }
     public ICommand OpenCreateForumCommand { get; }
 
-    public event Action<Action<bool>>? CreateForumDialogRequested;
-    public event Action<string, bool>?  NotificationRequested;
+    public event Action<string, bool>? NotificationRequested;
 
     public void Initialize()
     {
@@ -101,6 +111,17 @@ public class ForumViewModel : ViewModelBase
             NotificationRequested?.Invoke(
                 $"Greška pri učitavanju foruma:\n{ex.Message}\n\nProverite da li je pokrenuta migracija (migration_forum_34.sql).", false);
         }
+    }
+
+    private void OpenCreateForumDialog()
+    {
+        var vm = new CreateForumDialogViewModel(CoordinatorId);
+        vm.CloseRequested += success =>
+        {
+            ActiveDialog = null;
+            if (success) LoadForums();
+        };
+        ActiveDialog = vm;
     }
 
     private void LoadForums()

@@ -50,7 +50,17 @@ public partial class FinancesViewModel
         }
     }
 
+    private void OpenReportDialog()
+    {
+        EnsureLoaded();
+        var vm = new FinancialReportDialogViewModel(Districts, _budgetService);
+        vm.CancelRequested += CloseDialog;
+        vm.ReportGenerated += () => { CloseDialog(); ShowNotification("PDF izvestaj je uspesno generisan."); };
+        ActiveDialog = vm;
+    }
+
     private void CloseDialog() => ActiveDialog = null;
+    public  void ForceCloseDialog() => CloseDialog();
 
     private void ShowFullDesc(string? description)
     {

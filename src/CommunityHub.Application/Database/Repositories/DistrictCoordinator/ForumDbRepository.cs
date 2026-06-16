@@ -136,7 +136,8 @@ public class ForumDbRepository : IForumRepository
                    COALESCE(dislikes.cnt, 0) AS dislike_count
             FROM coordinator_forum_comments fc
             JOIN users u ON u.id = fc.author_id
-            LEFT JOIN districts d ON d.coordinator_id = u.id
+            LEFT JOIN (SELECT coordinator_id, MIN(name) AS name FROM districts GROUP BY coordinator_id) d
+                   ON d.coordinator_id = u.id
             LEFT JOIN (
                 SELECT comment_id, COUNT(*) AS cnt
                 FROM coordinator_forum_comment_reactions

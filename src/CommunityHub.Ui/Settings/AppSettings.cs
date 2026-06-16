@@ -14,6 +14,9 @@ public static class AppSettings
 
     public static bool TooltipsEnabled { get; set; } = true;
 
+    // Da li je korisnik već vidio uvodni "welcome" banner (prikazuje se samo prvi put)
+    public static bool HasSeenWelcome { get; set; } = false;
+
     // Pozvati pri pokretanju aplikacije (u App.xaml.cs)
     public static void Load()
     {
@@ -24,6 +27,7 @@ public static class AppSettings
             SettingsData? data = JsonSerializer.Deserialize<SettingsData>(json);
             if (data == null) return;
             TooltipsEnabled = data.TooltipsEnabled;
+            HasSeenWelcome  = data.HasSeenWelcome;
         }
         catch
         {
@@ -39,7 +43,7 @@ public static class AppSettings
             string? dir = Path.GetDirectoryName(SettingsPath);
             if (dir != null) Directory.CreateDirectory(dir);
 
-            SettingsData data = new SettingsData { TooltipsEnabled = TooltipsEnabled };
+            SettingsData data = new SettingsData { TooltipsEnabled = TooltipsEnabled, HasSeenWelcome = HasSeenWelcome };
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(SettingsPath, json);
         }
@@ -52,5 +56,6 @@ public static class AppSettings
     private class SettingsData
     {
         public bool TooltipsEnabled { get; set; } = true;
+        public bool HasSeenWelcome  { get; set; } = false;
     }
 }

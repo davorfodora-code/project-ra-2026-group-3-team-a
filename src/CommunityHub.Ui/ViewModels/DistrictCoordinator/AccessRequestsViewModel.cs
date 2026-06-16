@@ -32,6 +32,22 @@ public class AccessRequestsViewModel : ViewModelBase
         RequestList.RejectRequested     += d => Overlay.ShowReject(d);
         ShowRequestsSectionCommand    = new RelayCommand(_ => IsRequestsSection = true);
         ShowMembershipsSectionCommand = new RelayCommand(_ => IsRequestsSection = false);
+        RefreshCommand         = new RelayCommand(_ => Initialize());
+        CloseOverlayCommand    = new RelayCommand(_ => Overlay.Close());
+        ApproveSelectedCommand = new RelayCommand(
+            _ => Overlay.ShowApprove(RequestList.SelectedRequest!),
+            _ => RequestList.SelectedRequest != null);
+        RejectSelectedCommand  = new RelayCommand(
+            _ => Overlay.ShowReject(RequestList.SelectedRequest!),
+            _ => RequestList.SelectedRequest != null);
+        RequestList.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(RequestList.SelectedRequest))
+            {
+                (ApproveSelectedCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (RejectSelectedCommand  as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        };
     }
 
     public RequestOverlayViewModel                Overlay        { get; }
@@ -62,6 +78,10 @@ public class AccessRequestsViewModel : ViewModelBase
 
     public ICommand ShowRequestsSectionCommand    { get; }
     public ICommand ShowMembershipsSectionCommand { get; }
+    public ICommand RefreshCommand                { get; }
+    public ICommand CloseOverlayCommand           { get; }
+    public ICommand ApproveSelectedCommand        { get; }
+    public ICommand RejectSelectedCommand         { get; }
 
     public event Action<string, bool>? NotificationRequested;
 

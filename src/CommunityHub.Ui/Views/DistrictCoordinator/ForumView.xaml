@@ -4,10 +4,21 @@
              xmlns:vm="clr-namespace:CommunityHub.Ui.ViewModels.DistrictCoordinator">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid Margin="20">
+        <!-- DIALOG OVERLAY — Margin="-20" poništava Margin roditeljskog Grida;
+             pokriva cijeli content area ali NE i nav bar (koji je u Row 1 prozora) -->
+        <ContentControl Panel.ZIndex="10" Margin="-20"
+                        Content="{Binding ActiveDialog}"
+                        Visibility="{Binding HasDialog, Converter={StaticResource BoolToVis}}"/>
+
         <!-- LIST VIEW -->
         <Grid Visibility="{Binding IsListView, Converter={StaticResource BoolToVis}}">
             <Grid.RowDefinitions>
@@ -17,16 +28,14 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Top bar: Back + New forum -->
+            <!-- Top bar: heading + new forum button -->
             <DockPanel Grid.Row="0" Margin="0,0,0,12" LastChildFill="False">
-                <Button DockPanel.Dock="Left" Content="Vrati se na finansije kvarta"
-                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                        Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
+                <TextBlock DockPanel.Dock="Left" Text="Forumi"
+                           Style="{StaticResource DC.H2}" VerticalAlignment="Center"/>
                 <Button DockPanel.Dock="Right" Content="+ Novi forum"
                         Command="{Binding OpenCreateForumCommand}"
-                        Background="Transparent" BorderBrush="#2C3E50" BorderThickness="1"
-                        Padding="14,8" FontSize="13" Foreground="#2C3E50" Cursor="Hand"
-                        FontWeight="SemiBold"/>
+                        Style="{StaticResource DC.Btn.Primary}"
+                        Padding="14,8" FontSize="13"/>
             </DockPanel>
 
             <!-- Search bar -->
@@ -37,27 +46,26 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Width="32" Height="32" Background="#F0F0F0"
+                <Border Grid.Column="0" Width="32" Height="32"
+                        Background="{StaticResource DC.Bg.Subtle}"
                         CornerRadius="16" Margin="0,0,10,0" VerticalAlignment="Center">
                     <TextBlock Text="Q" FontSize="14" FontWeight="Bold"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Foreground="#2C3E50"/>
+                               Foreground="{StaticResource DC.Primary}"/>
                 </Border>
 
                 <TextBox Grid.Column="1"
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         Height="36" FontSize="13" Padding="10,6"
-                         BorderBrush="#E0E0E0" BorderThickness="1"
-                         VerticalContentAlignment="Center"/>
+                         Style="{StaticResource DC.Input}"/>
 
                 <Button Grid.Column="2" Content="Pretrazi"
                         Command="{Binding SearchCommand}"
-                        Background="#2C3E50" Foreground="White" BorderThickness="0"
-                        Padding="16,8" FontSize="13" Cursor="Hand" Margin="8,0,0,0"/>
+                        Style="{StaticResource DC.Btn.Dark}"
+                        Padding="16,8" FontSize="13" Margin="8,0,0,0"/>
             </Grid>
 
             <!-- Search result text -->
-            <TextBlock Grid.Row="2" FontSize="12" Foreground="#666" Margin="0,0,0,8">
+            <TextBlock Grid.Row="2" FontSize="12" Foreground="{StaticResource DC.Text.Caption}" Margin="0,0,0,8">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="Text">
@@ -80,14 +88,16 @@
                                     Cursor="Hand" HorizontalContentAlignment="Stretch">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Border Background="White" BorderBrush="#E0E0E0"
+                                        <Border Background="{StaticResource DC.Bg.Card}"
+                                                BorderBrush="{StaticResource DC.Border}"
                                                 BorderThickness="1" Padding="14" Margin="0,0,0,6"
-                                                CornerRadius="4">
+                                                CornerRadius="6">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Style.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Background" Value="#F8F9FA"/>
+                                                            <Setter Property="Background" Value="{StaticResource DC.Bg.Subtle}"/>
+                                                            <Setter Property="BorderBrush" Value="{StaticResource DC.Border.Strong}"/>
                                                         </Trigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -102,28 +112,28 @@
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="{Binding Title}"
                                                                    FontSize="14" FontWeight="SemiBold"
-                                                                   Foreground="#2C3E50"/>
-                                                        <Border Background="#E65C00" CornerRadius="3"
+                                                                   Foreground="{StaticResource DC.Text.Primary}"/>
+                                                        <Border Background="{StaticResource DC.Accent}" CornerRadius="3"
                                                                 Padding="6,2" Margin="8,0,0,0"
                                                                 Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}">
                                                             <TextBlock Text="Vaš forum" FontSize="10"
                                                                        Foreground="White" FontWeight="SemiBold"/>
                                                         </Border>
-                                                        <TextBlock Text="zaključan" FontSize="10" Foreground="#888"
+                                                        <TextBlock Text="zaključan" FontSize="10" Foreground="{StaticResource DC.Text.Caption}"
                                                                    Margin="8,2,0,0" FontStyle="Italic"
                                                                    Visibility="{Binding IsClosed, Converter={StaticResource BoolToVis}}"/>
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding ContentPreview}"
-                                                               FontSize="12" Foreground="#555"
+                                                               FontSize="12" Foreground="{StaticResource DC.Text.Secondary}"
                                                                TextTrimming="CharacterEllipsis"
                                                                Margin="0,4,0,4"/>
-                                                    <TextBlock FontSize="11" Foreground="#888">
+                                                    <TextBlock FontSize="11" Foreground="{StaticResource DC.Text.Caption}">
                                                         <Run Text="{Binding AuthorFullName, Mode=OneWay}"/>
                                                     </TextBlock>
                                                 </StackPanel>
 
                                                 <TextBlock Grid.Column="1" VerticalAlignment="Center"
-                                                           FontSize="12" Foreground="#888">
+                                                           FontSize="12" Foreground="{StaticResource DC.Text.Caption}">
                                                     <Run Text="{Binding CommentCount, Mode=OneWay}"/>
                                                     <Run Text=" komentar"/>
                                                 </TextBlock>
@@ -150,11 +160,11 @@
             </Grid.RowDefinitions>
 
             <!-- Back button -->
-            <Button Grid.Row="0" Content="Vrati se na forume"
+            <Button Grid.Row="0" Content="← Vrati se na forume"
                     Command="{Binding BackToListCommand}"
+                    Style="{StaticResource DC.Btn.Ghost}"
                     HorizontalAlignment="Left" Margin="0,0,0,12"
-                    Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                    Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
+                    Padding="12,6" FontSize="12"/>
 
             <!-- Closed banner -->
             <Border Grid.Row="1" Background="#FFF3CD" BorderBrush="#FFEEBA" BorderThickness="1"
@@ -173,43 +183,33 @@
                 <Button DockPanel.Dock="Right" Content="Zatvori forum"
                         Command="{Binding CloseForumCommand}"
                         Visibility="{Binding CanClose, Converter={StaticResource BoolToVis}}"
-                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                        Padding="14,8" FontSize="12" Foreground="#2C3E50" Cursor="Hand"
+                        Style="{StaticResource DC.Btn.Ghost}"
+                        Padding="14,8" FontSize="12"
                         Margin="10,0,0,0"/>
                 <StackPanel>
                     <TextBlock Text="{Binding SelectedForum.Title}"
-                               FontSize="18" FontWeight="Bold" Foreground="#2C3E50"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="{StaticResource DC.Text.Primary}"
                                TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
 
             <!-- Forum content -->
-            <Border Grid.Row="3" Background="#F8F9FA" CornerRadius="4"
-                    Padding="16" Margin="0,0,0,16"
-                    BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border Grid.Row="3" Style="{StaticResource DC.Panel}"
+                    Margin="0,0,0,16">
                 <TextBlock Text="{Binding SelectedForum.Content}"
-                           FontSize="13" Foreground="#333" TextWrapping="Wrap"
-                           LineHeight="22"/>
+                           FontSize="13" Foreground="{StaticResource DC.Text.Primary}"
+                           TextWrapping="Wrap" LineHeight="22"/>
             </Border>
 
             <!-- Comments header -->
             <TextBlock Grid.Row="4" FontSize="14" FontWeight="SemiBold"
-                       Foreground="#2C3E50" Margin="0,0,0,8"
+                       Foreground="{StaticResource DC.Text.Primary}" Margin="0,0,0,8"
                        VerticalAlignment="Top">
                 <Run Text="Komentari("/>
                 <Run Text="{Binding Comments.Count, Mode=OneWay}"/>
                 <Run Text=")"/>
-                <Run Text=" - zaključani" FontStyle="Italic" Foreground="#888">
-                    <Run.Style>
-                        <Style TargetType="Run">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsForumClosed}" Value="False">
-                                    <Setter Property="Text" Value=""/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Run.Style>
-                </Run>
+                <Run Text="{Binding ForumClosedLabel, Mode=OneWay}" FontStyle="Italic" Foreground="#888"/>
             </TextBlock>
 
             <!-- Comments list + input -->
@@ -223,7 +223,8 @@
                     <ItemsControl ItemsSource="{Binding Comments}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="White" BorderBrush="#E0E0E0"
+                                <Border Background="{StaticResource DC.Bg.Card}"
+                                        BorderBrush="{StaticResource DC.Border}"
                                         BorderThickness="1" CornerRadius="6"
                                         Padding="12" Margin="0,0,0,8">
                                     <Grid>
@@ -235,7 +236,7 @@
 
                                         <!-- Avatar circle -->
                                         <Border Grid.Column="0" Width="36" Height="36"
-                                                Background="#2C3E50" CornerRadius="18"
+                                                Background="{StaticResource DC.Primary}" CornerRadius="18"
                                                 Margin="0,0,10,0" VerticalAlignment="Top">
                                             <TextBlock Text="{Binding AuthorInitials}"
                                                        Foreground="White" FontWeight="Bold"
@@ -247,8 +248,8 @@
                                         <StackPanel Grid.Column="1">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding AuthorDistrictInfo}"
-                                                           FontSize="12" Foreground="#555"/>
-                                                <Border Background="#27AE60" CornerRadius="3"
+                                                           FontSize="12" Foreground="{StaticResource DC.Text.Secondary}"/>
+                                                <Border Background="{StaticResource DC.Success}" CornerRadius="3"
                                                         Padding="6,2" Margin="8,0,0,0"
                                                         Visibility="{Binding IsForumAuthor, Converter={StaticResource BoolToVis}}">
                                                     <TextBlock Text="Vi ste autor" FontSize="9"
@@ -256,7 +257,7 @@
                                                 </Border>
                                             </StackPanel>
                                             <TextBlock Text="{Binding Content}"
-                                                       FontSize="13" Foreground="#333"
+                                                       FontSize="13" Foreground="{StaticResource DC.Text.Primary}"
                                                        TextWrapping="Wrap" Margin="0,4,0,0"/>
                                         </StackPanel>
 
@@ -299,23 +300,22 @@
                         Visibility="{Binding CanComment, Converter={StaticResource BoolToVis}}">
                     <StackPanel>
                         <TextBlock Text="Dodajte komentar" FontSize="13"
-                                   FontWeight="SemiBold" Foreground="#2C3E50"
+                                   FontWeight="SemiBold" Foreground="{StaticResource DC.Text.Primary}"
                                    Margin="0,0,0,6"/>
                         <TextBox Text="{Binding NewCommentText, UpdateSourceTrigger=PropertyChanged}"
-                                 TextWrapping="Wrap" AcceptsReturn="True"
-                                 Height="80" Padding="10,8" FontSize="13"
-                                 BorderBrush="#E0E0E0" BorderThickness="1"/>
+                                 Style="{StaticResource DC.Input.Multiline}"
+                                 Height="80"/>
                         <Button Content="Objavi komentar"
                                 Command="{Binding PostCommentCommand}"
+                                Style="{StaticResource DC.Btn.Primary}"
                                 HorizontalAlignment="Right" Margin="0,8,0,0"
-                                Background="#2C3E50" Foreground="White" BorderThickness="0"
-                                Padding="16,8" FontSize="13" Cursor="Hand"/>
+                                Padding="16,8" FontSize="13"/>
                     </StackPanel>
                 </Border>
 
                 <!-- Closed message -->
                 <TextBlock Grid.Row="1" Margin="0,10,0,0"
-                           FontSize="12" Foreground="#888" FontStyle="Italic"
+                           FontSize="12" Foreground="{StaticResource DC.Text.Caption}" FontStyle="Italic"
                            Visibility="{Binding IsForumClosed, Converter={StaticResource BoolToVis}}">
                     Komentarisanje je onemogućeno za dati forum
                 </TextBlock>

@@ -1,0 +1,402 @@
+<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.HelpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CommunityHub.Ui.ViewModels.DistrictCoordinator"
+             xmlns:conv="clr-namespace:CommunityHub.Ui.Converters"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <conv:StringToUriConverter x:Key="StringToUri"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource DC.Bg.Page}">
+
+        <!-- ═══════════════════════════════════════════ OVERVIEW ═══ -->
+        <Grid Visibility="{Binding IsOverview, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Banner -->
+            <Border Grid.Row="0" Background="{StaticResource DC.Primary}"
+                    CornerRadius="8" Margin="20,20,20,0" Padding="28,18">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Tutorijal centar"
+                               FontSize="20" FontWeight="Bold" Foreground="White"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="2"
+                               Text="Naučite sve o DCord aplikaciji u par koraka"
+                               FontSize="13" FontStyle="Italic"
+                               Foreground="{StaticResource DC.Text.OnDark}" Opacity="0.75"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Videos grid + shortcuts panel -->
+            <Grid Grid.Row="1" Margin="20,16,20,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="276"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 3×2 thumbnail grid -->
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Tutorials}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:TutorialItemViewModel}">
+                            <Button Margin="0,0,12,14" Padding="0"
+                                    Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                    Command="{Binding DataContext.OpenCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <Border Height="120" CornerRadius="6"
+                                            BorderBrush="{StaticResource DC.Border}" BorderThickness="1"
+                                            ClipToBounds="True">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#1E3A2F" Offset="0"/>
+                                                <GradientStop Color="#2D5A45" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Grid>
+                                            <!-- Large FA icon in centre -->
+                                            <fa:IconImage Icon="{Binding Icon}" Width="48" Height="48"
+                                                          Foreground="{StaticResource DC.Accent}"
+                                                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                          Opacity="0.85"/>
+                                            <!-- Number badge -->
+                                            <Border Width="26" Height="26" CornerRadius="13"
+                                                    Background="{StaticResource DC.Accent}"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8">
+                                                <TextBlock Text="{Binding Number}" FontSize="11" FontWeight="Bold"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <!-- Play circle bottom-right -->
+                                            <Border Width="32" Height="32" CornerRadius="16"
+                                                    Background="#88FFFFFF"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                    Margin="0,0,10,10">
+                                                <TextBlock Text="▶" FontSize="12" Foreground="#1E3A2F"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Margin="3,0,0,0"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock Text="{Binding Title}"
+                                               FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"
+                                               TextAlignment="Center" Margin="2,6,2,0"
+                                               Foreground="{StaticResource DC.Text.Primary}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- App shortcuts panel -->
+                <Border Grid.Column="2" Style="{StaticResource DC.Panel}" Padding="16,14"
+                        VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="Prečice aplikacije" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource DC.Text.Primary}" Margin="0,0,0,12"/>
+                        <ItemsControl ItemsSource="{Binding AppShortcuts}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,7">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="76"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0"
+                                                Background="{StaticResource DC.Bg.Subtle}"
+                                                BorderBrush="{StaticResource DC.Border}" BorderThickness="1"
+                                                CornerRadius="4" Padding="6,3" HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Keys}" FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource DC.Text.Primary}"
+                                                       FontFamily="Consolas"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Description}"
+                                                   FontSize="12" Foreground="{StaticResource DC.Text.Secondary}"
+                                                   VerticalAlignment="Center" Margin="8,0,0,0" TextWrapping="Wrap"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- ════════════════════════════════════════════ DETAIL ════ -->
+        <Grid Visibility="{Binding IsDetail, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Back bar -->
+            <Border Grid.Row="0" Background="{StaticResource DC.Bg.Card}"
+                    BorderBrush="{StaticResource DC.Border}" BorderThickness="0,0,0,1"
+                    Padding="20,10">
+                <Button Content="← Natrag na pregled" Command="{Binding BackCommand}"
+                        Style="{StaticResource DC.Btn.Ghost}"
+                        Padding="12,6" FontSize="12" HorizontalAlignment="Left"/>
+            </Border>
+
+            <!-- Main two-column layout -->
+            <Grid Grid.Row="1" Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="320"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: video player + title -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Top">
+                    <Border Height="340" CornerRadius="8" Background="#1C2B24"
+                            BorderBrush="{StaticResource DC.Border}" BorderThickness="1"
+                            ClipToBounds="True">
+                        <Grid>
+                            <MediaElement x:Name="VideoPlayer"
+                                          LoadedBehavior="Manual"
+                                          UnloadedBehavior="Stop"
+                                          Stretch="Uniform"
+                                          MediaOpened="VideoPlayer_MediaOpened"
+                                          MediaEnded="VideoPlayer_MediaEnded"/>
+                            <!-- Poster (prikazuje se prije pokretanja umjesto crnog) -->
+                            <Border x:Name="DetailPoster" Cursor="Hand"
+                                    MouseLeftButtonUp="DetailPoster_Click">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#1E3A2F" Offset="0"/>
+                                        <GradientStop Color="#2D5A45" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Grid>
+                                    <fa:IconImage Icon="{Binding SelectedTutorial.Icon}"
+                                                  Width="120" Height="120"
+                                                  Foreground="{StaticResource DC.Accent}"
+                                                  Opacity="0.20"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                                    <Border Width="74" Height="74" CornerRadius="37"
+                                            Background="#CCFFFFFF"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="▶" FontSize="30" Foreground="#1E3A2F"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Margin="6,0,0,0"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            <!-- Controls overlay -->
+                            <Border VerticalAlignment="Bottom" Background="#CC000000" Padding="14,10">
+                                <StackPanel>
+                                    <!-- Seek bar -->
+                                    <Grid Margin="0,0,0,7">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Slider x:Name="DetailSeek" Grid.Column="0"
+                                                Minimum="0" Maximum="1" Value="0"
+                                                IsMoveToPointEnabled="True"
+                                                VerticalAlignment="Center"
+                                                PreviewMouseLeftButtonDown="DetailSeek_DragStart"
+                                                PreviewMouseLeftButtonUp="DetailSeek_DragEnd"/>
+                                        <TextBlock x:Name="DetailTime" Grid.Column="1"
+                                                   Text="0:00 / 0:00" FontSize="11"
+                                                   Foreground="White" Opacity="0.85"
+                                                   Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <!-- Buttons row -->
+                                    <DockPanel LastChildFill="False">
+                                        <Button x:Name="DetailPlayPauseBtn" Content="▶"
+                                                Click="DetailPlayPause_Click"
+                                                FontSize="14" Foreground="White"
+                                                Background="Transparent" BorderThickness="0"
+                                                Cursor="Hand" Padding="4,3" DockPanel.Dock="Left"
+                                                ToolTip="Pusti / Pauziraj"/>
+                                        <Button Content="■" Click="DetailStopBtn_Click"
+                                                FontSize="13" Foreground="White"
+                                                Background="Transparent" BorderThickness="0"
+                                                Cursor="Hand" Padding="4,3" DockPanel.Dock="Left"
+                                                Margin="6,0,0,0" ToolTip="Zaustavi"/>
+                                        <Button Click="DetailFullscreen_Click"
+                                                Background="Transparent" BorderThickness="0"
+                                                Cursor="Hand" Padding="4,3" DockPanel.Dock="Right"
+                                                ToolTip="Puni ekran (Esc za izlaz)">
+                                            <fa:IconImage Icon="Expand" Width="13" Height="13" Foreground="White"/>
+                                        </Button>
+                                        <Button x:Name="DetailSpeedBtn" Content="1.0x"
+                                                Click="DetailSpeed_Click"
+                                                FontSize="10" Foreground="White"
+                                                Background="#44FFFFFF" BorderThickness="0"
+                                                Cursor="Hand" Padding="6,3" DockPanel.Dock="Right"
+                                                Margin="0,0,8,0" ToolTip="Brzina reprodukcije"/>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="{Binding SelectedTutorial.Title}"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="{StaticResource DC.Text.Primary}"
+                               Margin="0,12,0,10" TextWrapping="Wrap"/>
+
+                    <!-- Keyboard shortcuts below title -->
+                    <TextBlock Text="Prečice za dati prozor"
+                               FontSize="12" FontWeight="SemiBold" FontStyle="Italic"
+                               Foreground="{StaticResource DC.Text.Secondary}" Margin="0,0,0,8"/>
+                    <ItemsControl ItemsSource="{Binding SelectedTutorial.WindowShortcuts}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,12,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0"
+                                            Background="{StaticResource DC.Bg.Subtle}"
+                                            BorderBrush="{StaticResource DC.Border}" BorderThickness="1"
+                                            CornerRadius="4" Padding="6,3" HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Keys}" FontSize="11" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource DC.Text.Primary}"
+                                                   FontFamily="Consolas"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Description}"
+                                               FontSize="12" Foreground="{StaticResource DC.Text.Secondary}"
+                                               VerticalAlignment="Center" Margin="8,0,0,0" TextWrapping="Wrap"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- Right: tutorial list + shortcuts + nav -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- Tutorial list -->
+                            <TextBlock Text="Tutorijali" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource DC.Text.Primary}" Margin="0,0,0,8"/>
+                            <ItemsControl ItemsSource="{Binding Tutorials}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:TutorialItemViewModel}">
+                                        <Button Margin="0,0,0,4" Padding="0"
+                                                Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                                Command="{Binding DataContext.OpenCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}">
+                                            <Border Padding="10,8" CornerRadius="6" BorderThickness="1">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background"   Value="Transparent"/>
+                                                        <Setter Property="BorderBrush"  Value="Transparent"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                <Setter Property="Background"  Value="{StaticResource DC.Accent.Light}"/>
+                                                                <Setter Property="BorderBrush" Value="{StaticResource DC.Accent}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Width="22" Height="22" CornerRadius="11"
+                                                            Margin="0,0,8,0" VerticalAlignment="Center">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="{StaticResource DC.Border}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                        <Setter Property="Background" Value="{StaticResource DC.Accent}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Text="{Binding Number}" FontSize="11" FontWeight="Bold"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="{StaticResource DC.Text.Secondary}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                            <Setter Property="Foreground" Value="White"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Title}" FontSize="12"
+                                                               TextWrapping="Wrap" VerticalAlignment="Center">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource DC.Text.Secondary}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                        <Setter Property="Foreground" Value="{StaticResource DC.Text.Primary}"/>
+                                                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Border>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Navigation buttons -->
+                    <Border Grid.Row="1" BorderBrush="{StaticResource DC.Border}" BorderThickness="0,1,0,0"
+                            Padding="0,12,0,0" Margin="0,8,0,0">
+                        <DockPanel LastChildFill="False">
+                            <Button DockPanel.Dock="Left" Content="← Prethodni"
+                                    Command="{Binding PrevCommand}"
+                                    Style="{StaticResource DC.Btn.Ghost}"
+                                    Padding="14,8" FontSize="12"/>
+                            <Button DockPanel.Dock="Right" Content="Sledeći →"
+                                    Command="{Binding NextCommand}"
+                                    Style="{StaticResource DC.Btn.Primary}"
+                                    Padding="14,8" FontSize="12"/>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

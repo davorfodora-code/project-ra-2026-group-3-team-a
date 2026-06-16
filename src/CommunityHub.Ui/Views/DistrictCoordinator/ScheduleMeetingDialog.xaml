@@ -7,23 +7,26 @@
         ResizeMode="NoResize">
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!-- Toggle-style dugme za odabir tipa sastanka.
-             Pozadina/tekst se obrću putem DataTrigger-a na bindani bool. -->
-        <Style x:Key="TypeToggleStyle" TargetType="Button">
-            <Setter Property="Height"          Value="56"/>
-            <Setter Property="FontSize"        Value="14"/>
-            <Setter Property="FontWeight"      Value="SemiBold"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="Cursor"          Value="Hand"/>
-            <Setter Property="Background"      Value="#BDC3C7"/>
-            <Setter Property="Foreground"      Value="#2C3E50"/>
-            <Setter Property="BorderBrush"     Value="#BDC3C7"/>
-        </Style>
+            <Style x:Key="TypeToggleStyle" TargetType="Button">
+                <Setter Property="Height"          Value="56"/>
+                <Setter Property="FontSize"        Value="14"/>
+                <Setter Property="FontWeight"      Value="SemiBold"/>
+                <Setter Property="BorderThickness" Value="2"/>
+                <Setter Property="Cursor"          Value="Hand"/>
+                <Setter Property="Background"      Value="{StaticResource DC.Border}"/>
+                <Setter Property="Foreground"      Value="{StaticResource DC.Text.Secondary}"/>
+                <Setter Property="BorderBrush"     Value="{StaticResource DC.Border}"/>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Margin="24">
+    <Grid Margin="24" Background="{StaticResource DC.Bg.Card}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -35,9 +38,11 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="Zakazivanje sastanka"
-                   FontSize="17" FontWeight="Bold" Margin="0,0,0,16"/>
+                   FontSize="17" FontWeight="Bold" Margin="0,0,0,16"
+                   Foreground="{StaticResource DC.Text.Primary}"/>
 
-        <TextBlock Grid.Row="1" Text="Tema sastanka:" FontSize="13" Margin="0,0,0,8"/>
+        <TextBlock Grid.Row="1" Text="Tema sastanka:" FontSize="13" Margin="0,0,0,8"
+                   Foreground="{StaticResource DC.Text.Secondary}"/>
         <Grid Grid.Row="2" Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -51,9 +56,9 @@
                     <Style TargetType="Button" BasedOn="{StaticResource TypeToggleStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsDobrodoslicaSelected}" Value="True">
-                                <Setter Property="Background"  Value="#2C3E50"/>
-                                <Setter Property="Foreground"  Value="White"/>
-                                <Setter Property="BorderBrush" Value="#2C3E50"/>
+                                <Setter Property="Background"  Value="{StaticResource DC.Primary}"/>
+                                <Setter Property="Foreground"  Value="{StaticResource DC.Text.OnDark}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource DC.Primary}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -66,9 +71,9 @@
                     <Style TargetType="Button" BasedOn="{StaticResource TypeToggleStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsMotivacijaSelected}" Value="True">
-                                <Setter Property="Background"  Value="#2C3E50"/>
-                                <Setter Property="Foreground"  Value="White"/>
-                                <Setter Property="BorderBrush" Value="#2C3E50"/>
+                                <Setter Property="Background"  Value="{StaticResource DC.Primary}"/>
+                                <Setter Property="Foreground"  Value="{StaticResource DC.Text.OnDark}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource DC.Primary}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -76,17 +81,19 @@
             </Button>
         </Grid>
 
-        <TextBlock Grid.Row="3" Text="Vreme održavanja (HH:mm):" FontSize="13" Margin="0,0,0,4"/>
+        <TextBlock Grid.Row="3" Text="Vreme održavanja (HH:mm):" FontSize="13" Margin="0,0,0,4"
+                   Foreground="{StaticResource DC.Text.Secondary}"/>
         <TextBox Grid.Row="4"
                  Text="{Binding MeetingTimeText, UpdateSourceTrigger=PropertyChanged}"
-                 Height="32" FontSize="13" Padding="6,4" Margin="0,0,0,16"/>
+                 Style="{StaticResource DC.Input}" Margin="0,0,0,16"/>
 
         <Grid Grid.Row="5" VerticalAlignment="Top">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Opseg datuma (od — do):" FontSize="13" Margin="0,0,0,4"/>
+            <TextBlock Grid.Row="0" Text="Opseg datuma (od — do):" FontSize="13" Margin="0,0,0,4"
+                       Foreground="{StaticResource DC.Text.Secondary}"/>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -97,7 +104,8 @@
                             SelectedDate="{Binding DateRangeStart, Mode=TwoWay}"
                             Height="32" FontSize="13"/>
                 <TextBlock Grid.Column="1" Text=" — " VerticalAlignment="Center"
-                           FontSize="14" Margin="6,0"/>
+                           FontSize="14" Margin="6,0"
+                           Foreground="{StaticResource DC.Text.Secondary}"/>
                 <DatePicker Grid.Column="2"
                             SelectedDate="{Binding DateRangeEnd, Mode=TwoWay}"
                             Height="32" FontSize="13"/>
@@ -107,13 +115,14 @@
         <StackPanel Grid.Row="6" Margin="0,16,0,0">
             <TextBlock Text="{Binding ErrorText}"
                        Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
-                       Foreground="Red" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                       Foreground="{StaticResource DC.Danger}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="Otkaži" Width="90" Height="32" Margin="0,0,8,0"
-                        Command="{Binding CancelCommand}" FontSize="13"/>
+                        Command="{Binding CancelCommand}" FontSize="13"
+                        Style="{StaticResource DC.Btn.Ghost}"/>
                 <Button Content="Zakaži" Width="90" Height="32"
                         Command="{Binding ConfirmCommand}" FontSize="13"
-                        Background="#2C3E50" Foreground="White" BorderThickness="0"/>
+                        Style="{StaticResource DC.Btn.Primary}"/>
             </StackPanel>
         </StackPanel>
     </Grid>

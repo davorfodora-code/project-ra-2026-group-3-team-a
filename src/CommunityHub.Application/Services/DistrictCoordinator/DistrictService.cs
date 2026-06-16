@@ -40,6 +40,23 @@ public class DistrictService
             .ToList();
     }
 
+    public List<DistrictDetailDto> GetDetailsByCoordinatorId(long coordinatorId)
+    {
+        return _repository.GetByCoordinatorId(coordinatorId)
+            .Select(d => new DistrictDetailDto
+            {
+                Id          = d.Id,
+                Name        = d.Name,
+                Description = d.Description,
+                City        = d.Location.City,
+                Country     = d.Location.Country,
+                Budget      = d.Budget,
+                Streets     = d.Streets.Select(s => $"{s.StreetName} {s.StartNumber}–{s.EndNumber}").ToList(),
+                ImagePaths  = d.Images.Select(i => i.Url).ToList()
+            })
+            .ToList();
+    }
+
     public List<DistrictHomeCardDto> GetHomeCardsByCoordinatorId(long coordinatorId)
     {
         List<District> districts = _repository.GetByCoordinatorId(coordinatorId);

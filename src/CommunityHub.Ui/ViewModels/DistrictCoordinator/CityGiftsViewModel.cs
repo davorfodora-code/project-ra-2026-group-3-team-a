@@ -32,20 +32,36 @@ public class CityGiftsViewModel : ViewModelBase
         Gifts                  = new ObservableCollection<CityGiftRowViewModel>();
         RefreshCommand         = new RelayCommand(_ => LoadGifts());
         BackToFinancesCommand  = new RelayCommand(_ => BackToFinancesRequested?.Invoke());
+        CancelDialogCommand              = new RelayCommand(_ => CloseDialog(), _ => HasDialog);
+        RegisterFirstAvailableGiftCommand = new RelayCommand(
+            _ => Gifts.FirstOrDefault(g => g.CanStillRegister)?.RegisterCommand.Execute(null),
+            _ => Gifts.Any(g => g.CanStillRegister));
     }
 
     public ObservableCollection<CityGiftRowViewModel> Gifts { get; }
-    public ICommand RefreshCommand        { get; }
-    public ICommand BackToFinancesCommand { get; }
+    public ICommand RefreshCommand                   { get; }
+    public ICommand BackToFinancesCommand            { get; }
+    public ICommand CancelDialogCommand              { get; }
+    public ICommand RegisterFirstAvailableGiftCommand { get; }
 
     public event Action? BackToFinancesRequested;
 
     public ViewModelBase? ActiveDialog
     {
         get => _activeDialog;
-        private set { if (SetProperty(ref _activeDialog, value)) OnPropertyChanged(nameof(HasDialog)); }
+        private set
+        {
+            if (SetProperty(ref _activeDialog, value))
+            {
+                OnPropertyChanged(nameof(HasDialog));
+                (CancelDialogCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                ActiveDialogChanged?.Invoke(value);
+            }
+        }
     }
     public bool HasDialog => _activeDialog != null;
+
+    public event Action<ViewModelBase?>? ActiveDialogChanged;
 
     public string NotificationText { get => _notificationText; private set => SetProperty(ref _notificationText, value); }
     public bool   HasNotification  { get => _hasNotification;  private set => SetProperty(ref _hasNotification,  value); }

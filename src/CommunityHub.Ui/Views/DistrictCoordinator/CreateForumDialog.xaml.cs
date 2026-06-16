@@ -1,17 +1,11 @@
-using System.Windows;
-using CommunityHub.Ui.ViewModels.DistrictCoordinator;
+using System.Windows.Controls;
 
 namespace CommunityHub.Ui.Views.DistrictCoordinator;
 
-public partial class CreateForumDialog : Window
+public partial class CreateForumDialog : UserControl
 {
-    private readonly CreateForumDialogViewModel _vm;
-
-    public CreateForumDialog(long coordinatorId)
+    public CreateForumDialog()
     {
         InitializeComponent();
-        _vm = new CreateForumDialogViewModel(coordinatorId);
-        _vm.CloseRequested += confirmed => DialogResult = confirmed;
-        DataContext = _vm;
     }
 }

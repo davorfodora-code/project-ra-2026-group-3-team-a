@@ -34,6 +34,7 @@ public class StatisticsViewModel : ViewModelBase
 
         SetFilterCommand       = MeetingList.SetFilterCommand;
         ScheduleMeetingCommand = new RelayCommand(_ => RequestScheduleMeetingDialog());
+        RefreshCommand         = new RelayCommand(_ => Initialize());
     }
 
     public ObservableCollection<CitizenTrustStatisticDto> Districts   { get; }
@@ -59,6 +60,7 @@ public class StatisticsViewModel : ViewModelBase
 
     public ICommand SetFilterCommand       { get; }
     public ICommand ScheduleMeetingCommand { get; }
+    public ICommand RefreshCommand         { get; }
 
     public event Action<long, MeetingType?, Action<bool>>? ScheduleMeetingDialogRequested;
     public event Action<MeetingDto, List<DateTime>, Action<DateTime?>>? ResolveTieDialogRequested;

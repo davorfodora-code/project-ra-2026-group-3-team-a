@@ -73,6 +73,7 @@ public partial class FinancesViewModel : ViewModelBase
         DeleteExpenseCommand = new RelayCommand(p => { if (p is ExpenseDto e) DoDeleteExpense(e); });
         ShowFullDescCommand  = new RelayCommand(p => ShowFullDesc(p?.ToString()));
         HideFullDescCommand  = new RelayCommand(_ => ShowFullDescription = false);
+        OpenReportCommand    = new RelayCommand(_ => OpenReportDialog());
         DonPrevCommand = new RelayCommand(_ => { if (_donPage > 1)            { _donPage--; RefreshDonationsPage(); } });
         DonNextCommand = new RelayCommand(_ => { if (_donPage < DonTotalPages) { _donPage++; RefreshDonationsPage(); } });
         ExpPrevCommand = new RelayCommand(_ => { if (_expPage > 1)            { _expPage--; RefreshExpensesPage(); } });
@@ -132,6 +133,7 @@ public partial class FinancesViewModel : ViewModelBase
     public ICommand DeleteExpenseCommand { get; }
     public ICommand ShowFullDescCommand  { get; }
     public ICommand HideFullDescCommand  { get; }
+    public ICommand OpenReportCommand    { get; }
     public ICommand DonPrevCommand       { get; }
     public ICommand DonNextCommand       { get; }
     public ICommand ExpPrevCommand       { get; }

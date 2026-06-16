@@ -51,6 +51,7 @@ public class AddDonationViewModel : ViewModelBase
 
     public bool HasAmountError   => !string.IsNullOrEmpty(_amountError);
     public bool AmountIsValid    => string.IsNullOrEmpty(_amountError) && !string.IsNullOrWhiteSpace(_amountText);
+    public bool HasUnsavedInput  => !string.IsNullOrWhiteSpace(_amountText);
 
     public ICommand SaveCommand   { get; }
     public ICommand CancelCommand { get; }

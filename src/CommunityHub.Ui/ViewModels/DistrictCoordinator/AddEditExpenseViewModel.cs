@@ -20,6 +20,8 @@ public class AddEditExpenseViewModel : ViewModelBase
     private string    _amountError     = string.Empty;
     private string    _descError       = string.Empty;
     private bool      _showLeaveConfirm;
+    private bool      _amountTouched;
+    private bool      _descTouched;
 
     public AddEditExpenseViewModel(long districtId, long categoryId, ExpenseDto? existing = null)
     {
@@ -51,13 +53,23 @@ public class AddEditExpenseViewModel : ViewModelBase
     public string AmountText
     {
         get => _amountText;
-        set { SetProperty(ref _amountText, value); ValidateAmount(); }
+        set
+        {
+            if (!_amountTouched) { _amountTouched = true; OnPropertyChanged(nameof(ShowAmountFeedback)); }
+            SetProperty(ref _amountText, value);
+            ValidateAmount();
+        }
     }
 
     public string Description
     {
         get => _description;
-        set { SetProperty(ref _description, value); ValidateDescription(); }
+        set
+        {
+            if (!_descTouched) { _descTouched = true; OnPropertyChanged(nameof(ShowDescFeedback)); }
+            SetProperty(ref _description, value);
+            ValidateDescription();
+        }
     }
 
     public DateTime? SelectedDate
@@ -78,8 +90,10 @@ public class AddEditExpenseViewModel : ViewModelBase
         private set { SetProperty(ref _descError, value); OnPropertyChanged(nameof(HasDescError)); }
     }
 
-    public bool HasAmountError => !string.IsNullOrEmpty(_amountError);
-    public bool HasDescError   => !string.IsNullOrEmpty(_descError);
+    public bool HasAmountError      => !string.IsNullOrEmpty(_amountError);
+    public bool HasDescError        => !string.IsNullOrEmpty(_descError);
+    public bool ShowAmountFeedback  => _amountTouched;
+    public bool ShowDescFeedback    => _descTouched;
 
     public bool ShowLeaveConfirm
     {
@@ -96,12 +110,14 @@ public class AddEditExpenseViewModel : ViewModelBase
     public event Action?       CancelRequested;
     public event Action<long>? Saved;
 
-    private bool HasUnsavedInput => !string.IsNullOrWhiteSpace(_amountText) ||
+    public bool HasUnsavedInput => !string.IsNullOrWhiteSpace(_amountText) ||
                                      !string.IsNullOrWhiteSpace(_description) ||
                                      _selectedDate.HasValue;
 
     private void TrySave()
     {
+        _amountTouched = true; OnPropertyChanged(nameof(ShowAmountFeedback));
+        _descTouched   = true; OnPropertyChanged(nameof(ShowDescFeedback));
         ValidateAmount();
         ValidateDescription();
         if (HasAmountError || HasDescError) return;

@@ -20,6 +20,26 @@ public partial class FinancesViewModel
         }
     }
 
+    public void RefreshDistricts()
+    {
+        if (Districts.Count == 0) return;
+        var currentId = _selectedDistrict?.Id;
+        Districts.Clear();
+        try
+        {
+            var districts = _districtService.GetDistrictsByCoordinatorId(_coordinatorId);
+            foreach (var d in districts) Districts.Add(d);
+            if (currentId.HasValue)
+                foreach (var d in Districts)
+                    if (d.Id == currentId.Value) { SelectedDistrict = d; return; }
+            if (Districts.Count > 0) SelectedDistrict = Districts[0];
+        }
+        catch (Exception ex)
+        {
+            LoadError = $"Greška pri osvežavanju kvartova: {ex.Message}";
+        }
+    }
+
     public void PreSelectDistrict(long districtId)
     {
         EnsureLoaded();

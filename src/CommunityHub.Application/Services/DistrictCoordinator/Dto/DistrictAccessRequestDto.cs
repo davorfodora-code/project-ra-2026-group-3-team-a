@@ -13,7 +13,7 @@ public class DistrictAccessRequestDto
     public string Status { get; set; } = string.Empty;
     public string? RejectionReason { get; set; }
 
-    public string CreatedAtFormatted => CreatedAt.ToString("dd.MM.yyyy. HH:mm");
+    public string CreatedAtFormatted => CreatedAt.ToString("dd.MM.yyyy.");
 
     public string StatusDisplay => Status switch
     {

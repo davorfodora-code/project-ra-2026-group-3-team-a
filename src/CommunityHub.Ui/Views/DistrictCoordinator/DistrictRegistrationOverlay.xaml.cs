@@ -16,20 +16,21 @@ public partial class DistrictRegistrationOverlay : UserControl
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.OldValue is DistrictRegistrationViewModel oldVm)
-            oldVm.PickImageRequested -= OnPickImageRequested;
+            oldVm.AddMultipleImagesRequested -= OnAddMultipleImagesRequested;
         if (e.NewValue is DistrictRegistrationViewModel newVm)
-            newVm.PickImageRequested += OnPickImageRequested;
+            newVm.AddMultipleImagesRequested += OnAddMultipleImagesRequested;
     }
 
-    private static void OnPickImageRequested(ImageSlotViewModel slot)
+    private void OnAddMultipleImagesRequested()
     {
         OpenFileDialog dialog = new OpenFileDialog
         {
-            Filter = "Slike|*.jpg;*.jpeg;*.png;*.bmp;*.gif",
-            Title  = $"Odaberite sliku {slot.SlotIndex}"
+            Filter      = "Slike|*.jpg;*.jpeg;*.png;*.bmp;*.gif",
+            Title       = "Odaberite slike",
+            Multiselect = true
         };
 
-        if (dialog.ShowDialog() == true)
-            slot.FilePath = dialog.FileName;
+        if (dialog.ShowDialog() == true && DataContext is DistrictRegistrationViewModel vm)
+            vm.AddImagePaths(dialog.FileNames);
     }
 }

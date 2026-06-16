@@ -5,43 +5,40 @@
              xmlns:local="clr-namespace:CommunityHub.Ui.Views.DistrictCoordinator">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <DataTemplate DataType="{x:Type vm:RegisterForGiftViewModel}">
-            <local:RegisterForGiftView/>
-        </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:RegisterForGiftViewModel}">
+                <local:RegisterForGiftView/>
+            </DataTemplate>
+        </ResourceDictionary>
     </UserControl.Resources>
+
+    <Grid>
+        <!-- LOCAL DIALOG OVERLAY — pokriva samo content area, nav bar ostaje klikabilan -->
+        <ContentControl Panel.ZIndex="10"
+                        Content="{Binding ActiveDialog}"
+                        Visibility="{Binding HasDialog, Converter={StaticResource BoolToVis}}"/>
 
     <Grid Margin="24,20,24,20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Toolbar -->
-        <DockPanel Grid.Row="0" Margin="0,0,0,18" LastChildFill="False">
-            <Button DockPanel.Dock="Left" Content="← Vrati se na finansije kvarta"
-                    Command="{Binding BackToFinancesCommand}"
-                    Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                    Padding="14,7" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
-            <Button DockPanel.Dock="Right" Content="Osveži"
-                    Command="{Binding RefreshCommand}"
-                    Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                    Padding="14,7" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
-        </DockPanel>
-
         <!-- Section title -->
-        <StackPanel Grid.Row="1" Margin="0,0,0,20">
-            <TextBlock Text="Dostupni pokloni grada"
-                       FontSize="16" FontWeight="Bold" Foreground="#2C3E50"/>
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Dostupni pokloni grada" Style="{StaticResource DC.H2}"/>
             <TextBlock Text="Prijavite kvart za poklon grada — pobednik je kvart sa najmanji ukupnim budžetom."
-                       FontSize="12" Foreground="#888" Margin="0,3,0,0"/>
+                       Style="{StaticResource DC.Caption}" Margin="0,3,0,0"/>
         </StackPanel>
 
         <!-- Cards -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <ItemsControl ItemsSource="{Binding Gifts}">
                 <ItemsControl.ItemsPanel>
@@ -53,10 +50,8 @@
                     <DataTemplate>
                         <!-- Card outer wrapper -->
                         <Border Margin="0,0,14,14" CornerRadius="10"
-                                BorderThickness="1" Background="White">
-                            <Border.BorderBrush>
-                                <SolidColorBrush Color="#E0E4E8"/>
-                            </Border.BorderBrush>
+                                BorderThickness="1" Background="{StaticResource DC.Bg.Card}"
+                                BorderBrush="{StaticResource DC.Border}">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="2"
                                                   Opacity="0.08" Direction="270" Color="#000000"/>
@@ -76,10 +71,10 @@
                                             <Setter Property="Background" Value="#BDC3C7"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsOpen}" Value="True">
-                                                    <Setter Property="Background" Value="#27AE60"/>
+                                                    <Setter Property="Background" Value="{StaticResource DC.Success}"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Awarded}" Value="True">
-                                                    <Setter Property="Background" Value="#2980B9"/>
+                                                    <Setter Property="Background" Value="{StaticResource DC.Accent}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -97,10 +92,10 @@
                                                 <Setter Property="Background" Value="#F2F3F4"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOpen}" Value="True">
-                                                        <Setter Property="Background" Value="#E9F7EF"/>
+                                                        <Setter Property="Background" Value="{StaticResource DC.Success.Light}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Awarded}" Value="True">
-                                                        <Setter Property="Background" Value="#EBF5FB"/>
+                                                        <Setter Property="Background" Value="{StaticResource DC.Accent.Light}"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -112,10 +107,10 @@
                                                     <Setter Property="Foreground" Value="#7F8C8D"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsOpen}" Value="True">
-                                                            <Setter Property="Foreground" Value="#1E8449"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource DC.Success}"/>
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding Awarded}" Value="True">
-                                                            <Setter Property="Foreground" Value="#1A5276"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource DC.Accent}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -125,16 +120,16 @@
 
                                     <!-- Amount -->
                                     <TextBlock Text="{Binding AmountDisplay, Mode=OneWay}"
-                                               FontSize="20" FontWeight="Bold" Foreground="#2C3E50"
+                                               FontSize="20" FontWeight="Bold" Foreground="{StaticResource DC.Text.Primary}"
                                                Margin="0,0,0,5"/>
 
                                     <!-- Gift name -->
                                     <TextBlock Text="{Binding Name, Mode=OneWay}"
-                                               FontSize="12" Foreground="#666"
+                                               FontSize="12" Foreground="{StaticResource DC.Text.Secondary}"
                                                TextWrapping="Wrap" Margin="0,0,0,12"/>
 
                                     <!-- Deadline date -->
-                                    <TextBlock FontSize="11" Foreground="#AAA">
+                                    <TextBlock FontSize="11" Foreground="{StaticResource DC.Text.Caption}">
                                         <Run Text="Rok: "/>
                                         <Run Text="{Binding DeadlineDisplay, Mode=OneWay}"/>
                                     </TextBlock>
@@ -147,28 +142,27 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <Border Grid.Row="0" Background="#ECF0F1"/>
+                                    <Border Grid.Row="0" Background="{StaticResource DC.Border}"/>
 
                                     <Grid Grid.Row="1" Margin="16,12,16,14">
 
                                         <!-- "Prijavi se" / "Prijavi još (X/Y)" button -->
                                         <Button Content="{Binding RegisterButtonText, Mode=OneWay}"
                                                 Command="{Binding RegisterCommand}"
+                                                Style="{StaticResource DC.Btn.Primary}"
                                                 HorizontalAlignment="Stretch"
-                                                Background="#2C3E50" Foreground="White"
-                                                BorderThickness="0" Padding="0,9"
-                                                FontSize="12" Cursor="Hand"
+                                                Padding="0,9" FontSize="12"
                                                 Visibility="{Binding ShowRegisterButton, Converter={StaticResource BoolToVis}}"/>
 
                                         <!-- "✓ Svi kvartovi prijavljeni (X/Y)" -->
                                         <TextBlock Text="{Binding AllRegisteredText, Mode=OneWay}"
-                                                   FontSize="12" Foreground="#27AE60" FontWeight="SemiBold"
+                                                   FontSize="12" Foreground="{StaticResource DC.Success}" FontWeight="SemiBold"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                                    Visibility="{Binding ShowAllRegistered, Converter={StaticResource BoolToVis}}"/>
 
                                         <!-- Rok istekao / Dodeljeno: X / Nema prijava -->
                                         <TextBlock Text="{Binding ClosedStatusText, Mode=OneWay}"
-                                                   FontSize="12" Foreground="#7F8C8D"
+                                                   FontSize="12" Foreground="{StaticResource DC.Text.Caption}"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                                    Visibility="{Binding ShowClosedStatus, Converter={StaticResource BoolToVis}}"/>
                                     </Grid>
@@ -181,8 +175,8 @@
         </ScrollViewer>
 
         <!-- Success notification -->
-        <Border Grid.Row="3" Margin="0,12,0,0" HorizontalAlignment="Center"
-                Background="#27AE60" CornerRadius="6" Padding="24,10"
+        <Border Grid.Row="2" Margin="0,12,0,0" HorizontalAlignment="Center"
+                Background="{StaticResource DC.Success}" CornerRadius="6" Padding="24,10"
                 Visibility="{Binding HasNotification, Converter={StaticResource BoolToVis}}">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15" Direction="270"/>
@@ -191,9 +185,6 @@
                        FontSize="13" FontStyle="Italic" FontWeight="SemiBold" Foreground="White"/>
         </Border>
 
-        <!-- Dialog overlay -->
-        <ContentControl Grid.RowSpan="4" Panel.ZIndex="10"
-                        Content="{Binding ActiveDialog}"
-                        Visibility="{Binding HasDialog, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
     </Grid>
 </UserControl>

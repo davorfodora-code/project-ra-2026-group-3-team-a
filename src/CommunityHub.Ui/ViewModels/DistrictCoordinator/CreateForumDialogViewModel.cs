@@ -52,6 +52,8 @@ public class CreateForumDialogViewModel : ViewModelBase
     }
     public bool HasContentError => !string.IsNullOrEmpty(_contentError);
 
+    public bool HasUnsavedInput => !string.IsNullOrWhiteSpace(_title) || !string.IsNullOrWhiteSpace(_content);
+
     public ICommand ConfirmCommand { get; }
     public ICommand CancelCommand { get; }
 

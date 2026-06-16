@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ── 60 % Backgrounds ─────────────────────────────────────── -->
+    <SolidColorBrush x:Key="DC.Bg.Page"   Color="#F7F8F6"/>
+    <SolidColorBrush x:Key="DC.Bg.Card"   Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DC.Bg.Subtle" Color="#F4FBF7"/>
+
+    <!-- ── 30 % Structure  (Tenant PrimaryColor) ────────────────── -->
+    <SolidColorBrush x:Key="DC.Primary"       Color="#314B40"/>
+    <SolidColorBrush x:Key="DC.Primary.Hover" Color="#22362E"/>
+
+    <!-- ── 10 % Accent  (Tenant AccentColor — muted mauve) ──────── -->
+    <SolidColorBrush x:Key="DC.Accent"       Color="#8A6F8E"/>
+    <SolidColorBrush x:Key="DC.Accent.Hover" Color="#7A5E7D"/>
+    <SolidColorBrush x:Key="DC.Accent.Light" Color="#F4EEF5"/>
+
+    <!-- ── Text  (Tenant TextColors) ───────────────────────────── -->
+    <SolidColorBrush x:Key="DC.Text.Primary"   Color="#1F2F29"/>
+    <SolidColorBrush x:Key="DC.Text.Secondary" Color="#5F756B"/>
+    <SolidColorBrush x:Key="DC.Text.Caption"   Color="#9AA8A1"/>
+    <SolidColorBrush x:Key="DC.Text.OnDark"    Color="#FFFFFF"/>
+
+    <!-- ── Borders  (Tenant BorderColor) ───────────────────────── -->
+    <SolidColorBrush x:Key="DC.Border"        Color="#DDE8E2"/>
+    <SolidColorBrush x:Key="DC.Border.Strong" Color="#C4D4CA"/>
+
+    <!-- ── Semantic  (Tenant semantic colors) ───────────────────── -->
+    <SolidColorBrush x:Key="DC.Success"       Color="#314B40"/>
+    <SolidColorBrush x:Key="DC.Success.Light" Color="#E4EDE8"/>
+    <SolidColorBrush x:Key="DC.Danger"        Color="#B54A4A"/>
+    <SolidColorBrush x:Key="DC.Danger.Light"  Color="#FDEAEA"/>
+    <SolidColorBrush x:Key="DC.Warning"       Color="#856404"/>
+    <SolidColorBrush x:Key="DC.Warning.Light" Color="#FFF3CD"/>
+
+</ResourceDictionary>

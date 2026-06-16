@@ -3,46 +3,43 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize"     Value="12"/>
-            <Setter Property="FontWeight"   Value="SemiBold"/>
-            <Setter Property="Foreground"   Value="#2C3E50"/>
-        </Style>
+            <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+                <Setter Property="FontSize"          Value="12"/>
+                <Setter Property="FontWeight"        Value="SemiBold"/>
+                <Setter Property="Foreground"        Value="{StaticResource DC.Text.Primary}"/>
+            </Style>
 
-        <Style x:Key="CellTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize"     Value="13"/>
-            <Setter Property="Foreground"   Value="#2C3E50"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-        </Style>
+            <Style x:Key="CellTextStyle" TargetType="TextBlock">
+                <Setter Property="FontSize"          Value="13"/>
+                <Setter Property="Foreground"        Value="{StaticResource DC.Text.Primary}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="TextWrapping"      Value="Wrap"/>
+            </Style>
 
-        <Style x:Key="StarStyle" TargetType="TextBlock">
-            <Setter Property="FontSize"   Value="16"/>
-            <Setter Property="Foreground" Value="#F39C12"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
+            <Style x:Key="StarStyle" TargetType="TextBlock">
+                <Setter Property="FontSize"          Value="20"/>
+                <Setter Property="Foreground"        Value="#F59E0B"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>  <!-- back button -->
             <RowDefinition Height="Auto"/>  <!-- district selector + avg -->
             <RowDefinition Height="Auto"/>  <!-- table header -->
             <RowDefinition Height="*"/>     <!-- table rows -->
         </Grid.RowDefinitions>
 
-        <!-- Back button -->
-        <DockPanel Grid.Row="0" Margin="0,0,0,14" LastChildFill="False">
-            <Button DockPanel.Dock="Left" Content="Vrati se na finansije kvarta"
-                    Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                    Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
-        </DockPanel>
-
         <!-- District selector + average rating bar -->
-        <Border Grid.Row="1" BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                Padding="14,10" Margin="0,0,0,12">
+        <Border Grid.Row="0" Style="{StaticResource DC.Panel}"
+                Margin="0,0,0,12">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -53,38 +50,38 @@
 
                 <!-- District selector -->
                 <TextBlock Grid.Column="0" Text="Izaberite" FontSize="13"
-                           Foreground="#2C3E50" VerticalAlignment="Center"
+                           Foreground="{StaticResource DC.Text.Secondary}" VerticalAlignment="Center"
                            Margin="0,0,8,0"/>
                 <ComboBox Grid.Column="1"
                           ItemsSource="{Binding Districts}"
                           SelectedItem="{Binding SelectedDistrict}"
-                          DisplayMemberPath="DisplayText"
-                          Height="28" FontSize="13"/>
+                          Style="{StaticResource DC.ComboBox}"
+                          DisplayMemberPath="DisplayText"/>
 
                 <!-- Total count -->
                 <TextBlock Grid.Column="2" VerticalAlignment="Center"
                            HorizontalAlignment="Center"
-                           FontSize="12" Foreground="#666">
+                           FontSize="12" Foreground="{StaticResource DC.Text.Secondary}">
                     <Run Text="Ukupno recenzija: "/>
                     <Run Text="{Binding TotalCount, Mode=OneWay}" FontWeight="SemiBold"/>
                 </TextBlock>
 
                 <!-- Average rating -->
                 <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Prosečna ocena" FontSize="12" Foreground="#555"
+                    <TextBlock Text="Prosečna ocena" FontSize="12" Foreground="{StaticResource DC.Text.Secondary}"
                                VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <TextBlock Text="{Binding AverageStars, Mode=OneWay}"
                                Style="{StaticResource StarStyle}" Margin="0,0,6,0"/>
                     <TextBlock Text="{Binding AverageDisplay, Mode=OneWay}"
                                FontSize="13" FontWeight="SemiBold"
-                               Foreground="#2C3E50" VerticalAlignment="Center"/>
+                               Foreground="{StaticResource DC.Text.Primary}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- Table header -->
-        <Border Grid.Row="2" Background="#F8F9FA"
-                BorderBrush="#D5D8DC" BorderThickness="1,1,1,0">
+        <Border Grid.Row="1" Background="{StaticResource DC.Bg.Subtle}"
+                BorderBrush="{StaticResource DC.Border}" BorderThickness="1,1,1,0">
             <Grid Margin="14,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130"/>
@@ -99,7 +96,7 @@
         </Border>
 
         <!-- Table rows -->
-        <Border Grid.Row="3" BorderBrush="#D5D8DC" BorderThickness="1">
+        <Border Grid.Row="2" BorderBrush="{StaticResource DC.Border}" BorderThickness="1">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Reviews}">
 
@@ -112,7 +109,7 @@
                                         <Setter.Value>
                                             <ControlTemplate>
                                                 <TextBlock Text="Nema recenzija za odabrani kvart u poslednjih godinu dana."
-                                                           FontSize="13" Foreground="#888"
+                                                           FontSize="13" Foreground="{StaticResource DC.Text.Caption}"
                                                            HorizontalAlignment="Center"
                                                            VerticalAlignment="Center"
                                                            Margin="0,40,0,0"/>
@@ -126,13 +123,13 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="#EAECEE" BorderThickness="0,0,0,1"
-                                    Background="White">
+                            <Border BorderBrush="{StaticResource DC.Border}" BorderThickness="0,0,0,1"
+                                    Background="{StaticResource DC.Bg.Card}">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FDFEFE"/>
+                                                <Setter Property="Background" Value="{StaticResource DC.Bg.Subtle}"/>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>

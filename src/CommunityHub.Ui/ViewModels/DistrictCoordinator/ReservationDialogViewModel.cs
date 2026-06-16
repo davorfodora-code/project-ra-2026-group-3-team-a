@@ -36,6 +36,7 @@ public class ReservationDialogViewModel : ViewModelBase
     }
 
     public string CityObjectName { get; }
+    public DateTime MinDate => DateTime.Today;
 
     public string DurationHoursText
     {

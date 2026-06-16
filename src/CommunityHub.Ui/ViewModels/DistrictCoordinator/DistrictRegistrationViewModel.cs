@@ -25,21 +25,15 @@ public class DistrictRegistrationViewModel : ViewModelBase
 
         BasicInfo  = new DistrictBasicInfoViewModel();
         StreetForm = new DistrictStreetInputViewModel();
-        ImageSlots = new ObservableCollection<ImageSlotViewModel>
-        {
-            new ImageSlotViewModel(1),
-            new ImageSlotViewModel(2),
-            new ImageSlotViewModel(3),
-            new ImageSlotViewModel(4),
-        };
+        ImageSlots = new ObservableCollection<ImageSlotViewModel>();
 
-        NextStepCommand  = new RelayCommand(_ => NextStep());
-        BackStepCommand  = new RelayCommand(_ => BackStep(), _ => _currentStep > 1);
-        CancelCommand    = new RelayCommand(_ => CancelRequested?.Invoke());
-        PickImageCommand = new RelayCommand(p =>
+        NextStepCommand     = new RelayCommand(_ => NextStep());
+        BackStepCommand     = new RelayCommand(_ => BackStep(), _ => _currentStep > 1);
+        CancelCommand       = new RelayCommand(_ => CancelRequested?.Invoke());
+        AddImageSlotCommand = new RelayCommand(_ => AddMultipleImagesRequested?.Invoke());
+        RemoveImageCommand  = new RelayCommand(p =>
         {
-            if (p is ImageSlotViewModel slot)
-                PickImageRequested?.Invoke(slot);
+            if (p is ImageSlotViewModel slot) ImageSlots.Remove(slot);
         });
     }
 
@@ -67,6 +61,15 @@ public class DistrictRegistrationViewModel : ViewModelBase
     public bool IsStep2 => _currentStep == 2;
     public bool IsStep3 => _currentStep == 3;
 
+    public bool HasUnsavedInput =>
+        !string.IsNullOrWhiteSpace(BasicInfo.Name) ||
+        !string.IsNullOrWhiteSpace(BasicInfo.Description) ||
+        !string.IsNullOrWhiteSpace(BasicInfo.City) ||
+        !string.IsNullOrWhiteSpace(BasicInfo.Country) ||
+        StreetForm.Streets.Count > 0 ||
+        ImageSlots.Count > 0 ||
+        _currentStep > 1;
+
     public string StepIndicator => _currentStep switch
     {
         1 => "Korak 1/3 – Podaci kvarta",
@@ -77,15 +80,25 @@ public class DistrictRegistrationViewModel : ViewModelBase
 
     public string NextButtonText => _currentStep == 3 ? "Registruj" : "Sledeći korak";
 
-    public ICommand NextStepCommand  { get; }
-    public ICommand BackStepCommand  { get; }
-    public ICommand CancelCommand    { get; }
-    public ICommand PickImageCommand { get; }
+    public ICommand NextStepCommand     { get; }
+    public ICommand BackStepCommand     { get; }
+    public ICommand CancelCommand       { get; }
+    public ICommand AddImageSlotCommand { get; }
+    public ICommand RemoveImageCommand  { get; }
 
-    public event Action<ImageSlotViewModel>? PickImageRequested;
+    public event Action? AddMultipleImagesRequested;
     public event Action? CancelRequested;
     public event Action? RegistrationCompleted;
     public event Action<string, bool>? NotificationRequested;
+
+    public void AddImagePaths(IEnumerable<string> paths)
+    {
+        foreach (string path in paths)
+        {
+            var slot = new ImageSlotViewModel(ImageSlots.Count + 1) { FilePath = path };
+            ImageSlots.Add(slot);
+        }
+    }
 
     private void NextStep()
     {

@@ -3,7 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
@@ -17,31 +22,24 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Back button -->
-            <DockPanel Grid.Row="0" Margin="0,0,0,12" LastChildFill="False">
-                <Button DockPanel.Dock="Left" Content="Vrati se na finansije kvarta"
-                        Background="Transparent" BorderBrush="#BDC3C7" BorderThickness="1"
-                        Padding="12,6" FontSize="12" Foreground="#2C3E50" Cursor="Hand"/>
-            </DockPanel>
-
             <!-- Title + description -->
             <StackPanel Grid.Row="1" Margin="0,0,0,12">
-                <TextBlock Text="Mesta za rezervacije" FontSize="16" FontWeight="Bold"
-                           Foreground="#2C3E50"/>
+                <TextBlock Text="Mesta za rezervacije" Style="{StaticResource DC.H2}"/>
                 <TextBlock Text="Broj glasova u gornjem desnom uglu predstavlja broj građana koji su glasali za dato mesto"
-                           FontSize="11" Foreground="#888" Margin="0,2,0,0"/>
+                           Style="{StaticResource DC.Caption}" Margin="0,2,0,0"/>
             </StackPanel>
 
             <!-- District selector -->
             <DockPanel Grid.Row="2" Margin="0,0,0,16" LastChildFill="False">
                 <TextBlock DockPanel.Dock="Left" Text="Kvart:"
-                           FontSize="13" Foreground="#2C3E50"
+                           FontSize="13" Foreground="{StaticResource DC.Text.Secondary}"
                            VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <ComboBox DockPanel.Dock="Left"
                           ItemsSource="{Binding Districts}"
                           SelectedItem="{Binding SelectedDistrict}"
+                          Style="{StaticResource DC.ComboBox}"
                           DisplayMemberPath="DisplayText"
-                          Width="280" Height="30" FontSize="13"/>
+                          Width="280"/>
             </DockPanel>
 
             <!-- City objects grid -->
@@ -54,8 +52,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="#D5D8DC" BorderThickness="1" CornerRadius="6"
-                                    Background="White" Margin="0,0,16,16" Width="200">
+                            <Border BorderBrush="{StaticResource DC.Border}" BorderThickness="1" CornerRadius="8"
+                                    Background="{StaticResource DC.Bg.Card}" Margin="0,0,16,16" Width="200">
                                 <Grid Margin="14,10">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -67,21 +65,21 @@
                                     <!-- Vote count (top-right) -->
                                     <TextBlock Grid.Row="0"
                                                HorizontalAlignment="Right"
-                                               FontSize="11" Foreground="#888"
+                                               FontSize="11" Foreground="{StaticResource DC.Text.Caption}"
                                                Text="{Binding VoteCount, Mode=OneWay, StringFormat={}{0} glasova}"/>
 
                                     <!-- Name -->
                                     <TextBlock Grid.Row="1"
                                                Text="{Binding Name}"
                                                FontSize="14" FontWeight="Bold"
-                                               Foreground="#2C3E50"
+                                               Foreground="{StaticResource DC.Text.Primary}"
                                                TextWrapping="Wrap"
                                                Margin="0,4,0,4"/>
 
                                     <!-- Location & capacity -->
                                     <TextBlock Grid.Row="2"
                                                Text="{Binding LocationCapacityDisplay}"
-                                               FontSize="11" Foreground="#555"
+                                               FontSize="11" Foreground="{StaticResource DC.Text.Secondary}"
                                                TextWrapping="Wrap"
                                                Margin="0,0,0,12"/>
 
@@ -89,11 +87,9 @@
                                     <Button Grid.Row="3"
                                             Content="Rezerviši"
                                             Command="{Binding ReserveCommand}"
-                                            HorizontalAlignment="Left"
-                                            Background="Transparent"
-                                            BorderBrush="#2C3E50" BorderThickness="1"
-                                            Padding="14,5" FontSize="12"
-                                            Foreground="#2C3E50" Cursor="Hand"/>
+                                            Style="{StaticResource DC.Btn.Secondary}"
+                                            HorizontalAlignment="Right"
+                                            Padding="14,5" FontSize="12"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -103,7 +99,7 @@
 
             <!-- Success/error notification -->
             <Border Grid.Row="4"
-                    Background="#2ECC71" CornerRadius="6"
+                    Background="{StaticResource DC.Success}" CornerRadius="6"
                     Padding="16,10" HorizontalAlignment="Center"
                     Visibility="{Binding HasNotification, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{Binding NotificationText}"
@@ -112,9 +108,5 @@
             </Border>
         </Grid>
 
-        <!-- Dialog overlay -->
-        <ContentControl Content="{Binding ActiveDialog}"
-                        Panel.ZIndex="10"
-                        Visibility="{Binding HasDialog, Converter={StaticResource BoolToVis}}"/>
     </Grid>
 </UserControl>

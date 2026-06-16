@@ -1,0 +1,135 @@
+<UserControl x:Class="CommunityHub.Ui.Views.DistrictCoordinator.FinancialReportDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/DistrictCoordinator/DistrictCoordinatorStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="#CC000000">
+        <Border Background="{StaticResource DC.Bg.Card}" CornerRadius="10"
+                Width="760" VerticalAlignment="Center" HorizontalAlignment="Center"
+                BorderBrush="{StaticResource DC.Border}" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0" Background="{StaticResource DC.Bg.Subtle}"
+                        CornerRadius="10,10,0,0" Padding="20,14">
+                    <DockPanel LastChildFill="False">
+                        <StackPanel DockPanel.Dock="Left">
+                            <TextBlock Text="Generisanje PDF finansijskog izveštaja" Style="{StaticResource DC.H3}"/>
+                            <TextBlock Text="Izaberite kvart i vremenski period"
+                                       FontSize="12" Foreground="{StaticResource DC.Text.Caption}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Button DockPanel.Dock="Right" Content="✕" Command="{Binding CancelCommand}"
+                                Background="Transparent" BorderThickness="0"
+                                FontSize="16" Foreground="{StaticResource DC.Text.Secondary}"
+                                Cursor="Hand" Padding="6,2" VerticalAlignment="Top"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- Body: Left form | Right preview -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ─── LEFT: Form ─── -->
+                    <StackPanel Grid.Column="0" Margin="24,20,24,20">
+                        <TextBlock Text="Kvart" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource DC.Text.Secondary}" Margin="0,0,0,6"/>
+                        <ComboBox ItemsSource="{Binding Districts}"
+                                  SelectedItem="{Binding SelectedDistrict}"
+                                  DisplayMemberPath="DisplayText"
+                                  Style="{StaticResource DC.ComboBox}"
+                                  Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Od datuma" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource DC.Text.Secondary}" Margin="0,0,0,6"/>
+                        <DatePicker SelectedDate="{Binding FromDate}"
+                                    FontSize="13" Margin="0,0,0,18"
+                                    BorderBrush="{StaticResource DC.Border}" BorderThickness="1"/>
+
+                        <TextBlock Text="Do datuma" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource DC.Text.Secondary}" Margin="0,0,0,6"/>
+                        <DatePicker SelectedDate="{Binding ToDate}"
+                                    FontSize="13"
+                                    BorderBrush="{StaticResource DC.Border}" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <!-- Column separator -->
+                    <Border Grid.Column="1" Background="{StaticResource DC.Border}"/>
+
+                    <!-- ─── RIGHT: Preview ─── -->
+                    <Grid Grid.Column="2" Margin="24,20,24,20">
+                        <Border Background="{StaticResource DC.Bg.Subtle}" CornerRadius="8" Padding="20">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <fa:IconImage Icon="FilePdf" Width="48" Height="48"
+                                              Foreground="#CC2222" HorizontalAlignment="Center"
+                                              Margin="0,0,0,12"/>
+                                <TextBlock Text="PDF Izveštaj" FontSize="14" FontWeight="Bold"
+                                           Foreground="{StaticResource DC.Text.Primary}"
+                                           HorizontalAlignment="Center" Margin="0,0,0,14"/>
+                                <TextBlock Text="Izveštaj će sadržati:"
+                                           FontSize="11" Foreground="{StaticResource DC.Text.Secondary}"
+                                           HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="• Sumarni pregled finansija" FontSize="11"
+                                               Foreground="{StaticResource DC.Text.Secondary}" Margin="0,3"/>
+                                    <TextBlock Text="• Pregled po kategorijama budžeta" FontSize="11"
+                                               Foreground="{StaticResource DC.Text.Secondary}" Margin="0,3"/>
+                                    <TextBlock Text="• Donacije i troškovi po kategoriji" FontSize="11"
+                                               Foreground="{StaticResource DC.Text.Secondary}" Margin="0,3"/>
+                                    <TextBlock Text="• Datum generisanja izveštaja" FontSize="11"
+                                               Foreground="{StaticResource DC.Text.Secondary}" Margin="0,3"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!-- Footer -->
+                <Border Grid.Row="2" Background="{StaticResource DC.Bg.Subtle}"
+                        CornerRadius="0,0,10,10" Padding="20,14">
+                    <DockPanel LastChildFill="True">
+                        <!-- Error message -->
+                        <TextBlock DockPanel.Dock="Right"
+                                   Text="{Binding ErrorMessage, Mode=OneWay}"
+                                   Foreground="{StaticResource DC.Danger}" FontSize="12"
+                                   VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="300"
+                                   Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                                   HorizontalAlignment="Right"/>
+                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                            <Button Content="Otkaži" Command="{Binding CancelCommand}"
+                                    Style="{StaticResource DC.Btn.Ghost}"
+                                    Padding="20,8" FontSize="13" Margin="0,0,8,0"/>
+                            <Button Command="{Binding GenerateCommand}"
+                                    Style="{StaticResource DC.Btn.Primary}"
+                                    Padding="20,8" FontSize="13">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconImage Icon="FilePdf" Width="14" Height="14"
+                                                  Foreground="White" Margin="0,0,6,0"
+                                                  VerticalAlignment="Center"/>
+                                    <TextBlock Text="Generisi PDF" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

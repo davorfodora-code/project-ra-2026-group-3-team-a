@@ -28,6 +28,7 @@ public class ImageSlotViewModel : ViewModelBase
                     ? $"Slika {_slotIndex}"
                     : System.IO.Path.GetFileName(value);
                 OnPropertyChanged(nameof(HasImage));
+                OnPropertyChanged(nameof(HasNoImage));
             }
         }
     }
@@ -38,5 +39,6 @@ public class ImageSlotViewModel : ViewModelBase
         private set => SetProperty(ref _displayName, value);
     }
 
-    public bool HasImage => _filePath != null;
+    public bool HasImage   => _filePath != null;
+    public bool HasNoImage => _filePath == null;
 }

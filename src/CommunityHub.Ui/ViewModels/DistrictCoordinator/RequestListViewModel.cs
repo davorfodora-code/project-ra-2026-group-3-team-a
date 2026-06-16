@@ -24,6 +24,13 @@ public class RequestListViewModel : ViewModelBase
 
     public ObservableCollection<DistrictAccessRequestDto> Requests { get; }
 
+    private DistrictAccessRequestDto? _selectedRequest;
+    public DistrictAccessRequestDto? SelectedRequest
+    {
+        get => _selectedRequest;
+        set => SetProperty(ref _selectedRequest, value);
+    }
+
     public string RequestFilter
     {
         get => _requestFilter;
